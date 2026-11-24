@@ -53,6 +53,7 @@ FairyEffects="res://scripts/core/fairy_effects.gd"
 TravelingCart="res://scripts/core/traveling_cart.gd"
 AchievementNotifications="res://scripts/core/achievement_notifications.gd"
 ToolUpgradeEffects="res://scripts/core/tool_upgrade_effects.gd"
+UIStyle="res://scripts/ui/ui_style.gd"
 AudioManager="res://scripts/core/audio_manager.gd"
 CookingMenu="res://scripts/ui/cooking_menu.gd"
 TVChannelsUI="res://scripts/ui/tv_channels_ui.gd"
@@ -65,6 +66,7 @@ FairyEffects="res://scripts/core/fairy_effects.gd"
 TravelingCart="res://scripts/core/traveling_cart.gd"
 AchievementNotifications="res://scripts/core/achievement_notifications.gd"
 ToolUpgradeEffects="res://scripts/core/tool_upgrade_effects.gd"
+UIStyle="res://scripts/ui/ui_style.gd"
 
 [display]
 
