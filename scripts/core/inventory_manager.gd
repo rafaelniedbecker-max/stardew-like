@@ -339,3 +339,416 @@ func get_inventory_weight() -> float:
 ## Verifica se inventário está cheio
 func is_full() -> bool:
 	return _count_used_slots() >= max_inventory_slots
+
+## ==================== QUALITY OF LIFE ====================
+
+## Auto-organiza inventário: agrupa stacks, ordena por categoria
+func auto_organize() -> void:
+	var items = []
+	for item_id in GameManager.inventory:
+		var item = DataLoader.get_item(item_id)
+		var amount = GameManager.inventory[item_id]
+		var max_stack = _get_max_stack(item_id)
+
+		# Divide em stacks se necessário
+		var remaining = amount
+		while remaining > 0:
+			var stack_size = min(remaining, max_stack)
+			items.append({
+				"item_id": item_id,
+				"amount": stack_size,
+				"category": item?.category ?? -1,
+				"sort_key": item?.internal_name ?? item_id
+			})
+			remaining -= stack_size
+
+	# Ordena: categoria -> nome
+	items.sort_custom(func(a, b):
+		if a.category != b.category:
+			return a.category < b.category
+		return a.sort_key < b.sort_key
+	)
+
+	# Reconstrói inventário
+	GameManager.inventory.clear()
+	for entry in items:
+		var id = entry.item_id
+		GameManager.inventory[id] = GameManager.inventory.get(id, 0) + entry.amount
+
+	emit_signal("inventory_changed")
+
+## Ordena por: categoria, raridade, nome
+func sort_by(sort_type: String) -> void:
+	match sort_type:
+		"category":
+			auto_organize()
+		"alphabetical":
+			_sort_alphabetical()
+		"quantity":
+			_sort_by_quantity()
+		"value":
+			_sort_by_value()
+		"rarity":
+			_sort_by_rarity()
+
+func _sort_alphabetical() -> void:
+	var items = []
+	for item_id in GameManager.inventory:
+		var item = DataLoader.get_item(item_id)
+		items.append({"id": item_id, "name": item?.display_name ?? item_id, "amount": GameManager.inventory[item_id]})
+	items.sort_custom(func(a, b): return a.name < b.name)
+
+	GameManager.inventory.clear()
+	for entry in items:
+		GameManager.inventory[entry.id] = entry.amount
+	emit_signal("inventory_changed")
+
+func _sort_by_quantity() -> void:
+	var items = []
+	for item_id in GameManager.inventory:
+		items.append({"id": item_id, "amount": GameManager.inventory[item_id]})
+	items.sort_custom(func(a, b): return b.amount < a.amount)  # Descending
+
+	GameManager.inventory.clear()
+	for entry in items:
+		GameManager.inventory[entry.id] = entry.amount
+	emit_signal("inventory_changed")
+
+func _sort_by_value() -> void:
+	var items = []
+	for item_id in GameManager.inventory:
+		var item = DataLoader.get_item(item_id)
+		var value = (item?.price ?? 0) * GameManager.inventory[item_id]
+		items.append({"id": item_id, "value": value})
+	items.sort_custom(func(a, b): return b.value < a.value)
+
+	GameManager.inventory.clear()
+	for entry in items:
+		GameManager.inventory[entry.id] = GameManager.inventory[entry.id]  # Mantém quantidade
+	emit_signal("inventory_changed")
+
+func _sort_by_rarity() -> void:
+	# Qualidade: Irídio > Ouro > Prata > Normal (baseado no item_id pattern)
+	# Simplificado: ordena por ID numérico decrescente (IDs maiores = mais raros geralmente)
+	var items = []
+	for item_id in GameManager.inventory:
+		var num = item_id.trim_prefix("(").trim_suffix(")").split(")")[1].to_int() if ")" in item_id else 0
+		items.append({"id": item_id, "rarity": num})
+	items.sort_custom(func(a, b): return b.rarity < a.rarity)
+
+	GameManager.inventory.clear()
+	for entry in items:
+		GameManager.inventory[entry.id] = GameManager.inventory[entry.id]
+	emit_signal("inventory_changed")
+
+## Compacta stacks: move itens parciais para completar stacks
+func compact_stacks() -> void:
+	var changed = false
+	var items = GameManager.inventory.duplicate()
+
+	for item_id in items:
+		var amount = items[item_id]
+		var max_stack = _get_max_stack(item_id)
+
+		if amount >= max_stack:
+			continue
+
+		# Procura outro stack do mesmo item para combinar
+		# (No sistema simplificado, já é um único stack por item_id)
+		# Em sistema real com múltiplos slots, procuraria slots parciais
+
+	pass
+
+## Move item para baú se estiver perto de um
+func try_store_in_nearby_chest(item_id: String, amount: int, player_pos: Vector2, range: float = 128.0) -> int:
+	if not BuildingManager:
+		return 0
+
+	var stored = 0
+	var remaining = amount
+
+	for building in BuildingManager.get_all_buildings():
+		if building.global_position.distance_to(player_pos) > range:
+			continue
+
+		if building.building_type in ["Chest", "BigChest", "Fridge", "ShippingBin"]:
+			var chest = building.get_chest("main") or building.get_chest("0")
+			if chest:
+				var space = chest.capacity - _count_chest_items(chest)
+				if space <= 0:
+					continue
+
+				var to_store = min(remaining, space, chest.capacity)
+				# Adiciona ao baú
+				var current = chest.items.get(item_id, 0)
+				var can_add = min(to_store, chest.capacity - current)
+				if can_add > 0:
+					chest.items[item_id] = current + can_add
+					stored += can_add
+					remaining -= can_add
+					changed = true
+
+					if remaining <= 0:
+						break
+
+	if stored > 0 and InventoryManager:
+		InventoryManager.remove_item(item_id, stored)
+		emit_signal("inventory_changed")
+		HUD.show_message("Guardado %d %s no baú próximo" % [stored, DataLoader.get_item(item_id)?.display_name ?? item_id])
+
+	return stored
+
+func _count_chest_items(chest: Dictionary) -> int:
+	var count = 0
+	for amt in chest.items.values():
+		count += amt
+	return count
+
+## Filtra itens por categoria para UI
+func get_items_by_category(category: int) -> Array[Dictionary]:
+	var result = []
+	for item_id in GameManager.inventory:
+		var item = DataLoader.get_item(item_id)
+		if item and item.category == category:
+			result.append({
+				"item_id": item_id,
+				"amount": GameManager.inventory[item_id],
+				"item": item
+			})
+	return result
+
+## Busca itens por nome (para UI de busca)
+func search_items(query: String) -> Array[Dictionary]:
+	var result = []
+	query = query.to_lower()
+	for item_id in GameManager.inventory:
+		var item = DataLoader.get_item(item_id)
+		if item and (query in item.display_name.to_lower() or query in item.internal_name.to_lower()):
+			result.append({
+				"item_id": item_id,
+				"amount": GameManager.inventory[item_id],
+				"item": item
+			})
+	return result
+
+## Obtém itens vendáveis (para shipping bin)
+func get_sellable_items() -> Array[Dictionary]:
+	var result = []
+	for item_id in GameManager.inventory:
+		var item = DataLoader.get_item(item_id)
+		if item and item.price > 0 and not item.is_tool() and not item.is_weapon():
+			result.append({
+				"item_id": item_id,
+				"amount": GameManager.inventory[item_id],
+				"quality": 0,  # Simplificado
+				"price": item.price
+			})
+	return result
+
+## Obtém ingredientes de culinária no inventário
+func get_cooking_ingredients() -> Array[Dictionary]:
+	var result = []
+	for item_id in GameManager.inventory:
+		var item = DataLoader.get_item(item_id)
+		if item and (item.category in [-75, -79, -74, -76, -4, -81, -80] or item.is_cooking_ingredient):
+			result.append({
+				"item_id": item_id,
+				"amount": GameManager.inventory[item_id],
+				"item": item
+			})
+	return result
+
+## Obtém itens para grange display
+func get_all_items_for_grange() -> Array[Dictionary]:
+	var result = []
+	for item_id in GameManager.inventory:
+		var item = DataLoader.get_item(item_id)
+		if item and item.price > 0:
+			# Adiciona cada qualidade separadamente
+			result.append({
+				"item_id": item_id,
+				"quality": 0,
+				"amount": GameManager.inventory[item_id]
+			})
+	return result
+
+## Abre modo de seleção para Seed Maker
+func open_seed_maker_mode(seed_maker: Node, panel: Panel) -> void:
+	_open_item_selector(panel, "seed_maker", func(item_id: String):
+		seed_maker.processing_item = item_id
+		seed_maker._open_ui()
+		panel.queue_free()
+	)
+
+## Abre modo de seleção para Preserves Jar
+func open_preserves_jar_mode(jar: Node, panel: Panel) -> void:
+	_open_item_selector(panel, "preserves_jar", func(item_id: String):
+		jar.processing_item = item_id
+		jar.processing_quality = 0
+		jar._open_ui()
+		panel.queue_free()
+	)
+
+## Abre modo de seleção para presente
+func open_gift_mode(npc_name: String, panel: Panel) -> void:
+	_open_item_selector(panel, "gift", func(item_id: String):
+		# Procura NPC e dá presente
+		var npcs = get_tree().get_nodes_in_group("npc")
+		for n in npcs:
+			if n.npc_name == npc_name:
+				n.give_gift(item_id)
+				break
+		panel.queue_free()
+	)
+
+## Abre modo de seleção para Grange
+func open_grange_mode(slot_index: int, slot_button: Button) -> void:
+	_open_item_selector(get_tree().root.get_child(0), "grange", func(item_id: String):
+		# Define item no slot
+		var item = DataLoader.get_item(item_id)
+		if item:
+			slot_button.set("item_id", item_id)
+			slot_button.set("quality", 0)
+			slot_button.set("amount", 1)
+			# Atualiza visual
+			var icon = slot_button.get_node_or_null("Icon")
+			if icon and item.texture_path != "":
+				icon.texture = load(item.texture_path)
+			var name = slot_button.get_node_or_null("Name")
+			if name:
+				name.text = item.display_name
+			var qual = slot_button.get_node_or_null("Quality")
+			if qual:
+				qual.text = ""
+			# Atualiza pontuação
+			if FestivalMinigames:
+				FestivalMinigames._update_grange_score(FestivalMinigames._get_current_slots(), FestivalMinigames._get_current_score_label())
+	)
+
+## Seletor genérico de itens
+func _open_item_selector(parent: Node, mode: String, callback: Callable) -> void:
+	var panel = Panel.new()
+	panel.name = "ItemSelector_%s" % mode
+	panel.anchors_preset = 15
+	panel.offset_left = 100
+	panel.offset_top = 50
+	panel.offset_right = -100
+	panel.offset_bottom = -50
+
+	var vbox = VBoxContainer.new()
+	panel.add_child(vbox)
+
+	var title = Label.new()
+	var titles = {
+		"seed_maker": "🌱 Escolher Item para Seed Maker",
+		"preserves_jar": "🫙 Escolher Item para Preserves Jar",
+		"gift": "🎁 Escolher Presente",
+		"grange": "🏆 Escolher Item para Exposição"
+	}
+	title.text = titles.get(mode, "Escolher Item")
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.theme_override_font_size = 20
+	vbox.add_child(title)
+
+	var search = LineEdit.new()
+	search.placeholder_text = "Buscar..."
+	search.text_changed.connect(func(text): _filter_selector_grid(grid, text))
+	vbox.add_child(search)
+
+	var scroll = ScrollContainer.new()
+	var grid = GridContainer.new()
+	grid.columns = 8
+	grid.theme_override_constants/h_separation = 5
+	grid.theme_override_constants/v_separation = 5
+	scroll.add_child(grid)
+	scroll.custom_minimum_size = Vector2(0, 300)
+	vbox.add_child(scroll)
+
+	# Filtra itens baseado no modo
+	var items = _get_selector_items(mode)
+	_populate_selector_grid(grid, items, callback)
+
+	var close_btn = Button.new()
+	close_btn.text = "Cancelar"
+	close_btn.custom_minimum_size = Vector2(0, 40)
+	close_btn.pressed.connect(panel.queue_free.bind())
+	vbox.add_child(close_btn)
+
+	parent.add_child(panel)
+
+func _get_selector_items(mode: String) -> Array[Dictionary]:
+	var result = []
+
+	for item_id in GameManager.inventory:
+		var item = DataLoader.get_item(item_id)
+		if not item:
+			continue
+
+		var allowed = false
+		match mode:
+			"seed_maker":
+				allowed = item.category in [-75, -79, -74, -76]  # Frutas/vegetais
+			"preserves_jar":
+				allowed = item.category in [-75, -79, -74, -76, -4, -81, -80]  # Frutas, veg, peixes, forrageados
+			"gift":
+				allowed = true  # Qualquer item
+			"grange":
+				allowed = item.price > 0
+			_: allowed = true
+
+		if allowed:
+			result.append({
+				"item_id": item_id,
+				"amount": GameManager.inventory[item_id],
+				"item": item
+			})
+
+	return result
+
+func _populate_selector_grid(grid: GridContainer, items: Array[Dictionary], callback: Callable) -> void:
+	for child in grid.get_children():
+		child.queue_free()
+
+	for entry in items:
+		var item_id = entry.item_id
+		var amount = entry.amount
+		var item = entry.item
+
+		var btn = Button.new()
+		btn.custom_minimum_size = Vector2(70, 70)
+		btn.flat = true
+
+		var vbox = VBoxContainer.new()
+		vbox.anchors_preset = 15
+		btn.add_child(vbox)
+
+		var icon = TextureRect.new()
+		icon.custom_minimum_size = Vector2(48, 48)
+		if item.texture_path != "":
+			icon.texture = load(item.texture_path)
+		vbox.add_child(icon)
+
+		var name = Label.new()
+		name.text = item.display_name
+		name.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		name.theme_override_font_size = 10
+		name.autowrap_mode = 1
+		vbox.add_child(name)
+
+		var qty = Label.new()
+		qty.text = "x%d" % amount
+		qty.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		qty.theme_override_font_size = 9
+		vbox.add_child(qty)
+
+		btn.pressed.connect(callback.bind(item_id))
+		grid.add_child(btn)
+
+func _filter_selector_grid(grid: GridContainer, text: String) -> void:
+	text = text.to_lower()
+	for child in grid.get_children():
+		if child is Button:
+			var name_label = child.get_node_or_null("VBoxContainer/Label")
+			if name_label:
+				var visible = text == "" or text in name_label.text.to_lower()
+				child.visible = visible
