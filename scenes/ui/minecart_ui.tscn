@@ -1,0 +1,63 @@
+[gd_scene load_steps=2 format=3 uid://bkqrxw9w9x8op]
+
+[ext_resource type="Script" path="res://scripts/ui/minecart_ui.gd" id="1"]
+
+[node name="MinecartUI" type="Control"]
+script = ExtResource("1")
+anchors_preset = 15
+offset_left = 150
+offset_top = 50
+offset_right = -150
+offset_bottom = -50
+
+[node name="Panel" type="Panel" parent="."]
+anchors_preset = 15
+offset_left = 0
+offset_top = 0
+offset_right = 0
+offset_bottom = 0
+
+[node name="TopBar" type="HBoxContainer" parent="Panel"]
+anchors_preset = 9
+offset_left = 20
+offset_top = 15
+offset_right = -20
+offset_bottom = 0
+
+[node name="CurrentLocationLabel" type="Label" parent="TopBar"]
+text = "📍 Atual: Parada de Ônibus"
+theme_override_font_size = 18
+theme_override_colors/font_color = Color(1.0, 0.9, 0.3)
+
+[node name="CostLabel" type="Label" parent="TopBar"]
+text = "💰 Custo: Grátis"
+theme_override_font_size = 16
+theme_override_colors/font_color = Color(0.5, 1.0, 0.5)
+
+[node name="CloseButton" type="Button" parent="TopBar"]
+anchors_preset = 11
+offset_left = -100
+offset_top = 5
+offset_right = -10
+offset_bottom = -35
+text = "Fechar"
+custom_minimum_size = Vector2(90, 35)
+theme_override_font_size = 16
+
+[node name="LocationsContainer" type="VBoxContainer" parent="Panel"]
+anchors_preset = 15
+offset_left = 30
+offset_top = 60
+offset_right = -30
+offset_bottom = -30
+theme_override_constants/separation = 10
+
+[node name="CloseButton" type="Button" parent="Panel"]
+anchors_preset = 11
+offset_left = -100
+offset_top = 10
+offset_right = -10
+offset_bottom = -40
+text = "Fechar"
+custom_minimum_size = Vector2(90, 40)
+theme_override_font_size = 18

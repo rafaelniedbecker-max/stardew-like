@@ -58,6 +58,7 @@ DesertManager="res://scripts/core/desert_manager.gd"
 FurnitureManager="res://scripts/core/furniture_manager.gd"
 MuseumUI="res://scripts/ui/museum_ui.gd"
 CommunityCenterUI="res://scripts/ui/community_center_ui.gd"
+MinecartUI="res://scripts/ui/minecart_ui.gd"
 AudioManager="res://scripts/core/audio_manager.gd"
 CookingMenu="res://scripts/ui/cooking_menu.gd"
 TVChannelsUI="res://scripts/ui/tv_channels_ui.gd"
@@ -75,6 +76,7 @@ DesertManager="res://scripts/core/desert_manager.gd"
 FurnitureManager="res://scripts/core/furniture_manager.gd"
 MuseumUI="res://scripts/ui/museum_ui.gd"
 CommunityCenterUI="res://scripts/ui/community_center_ui.gd"
+MinecartUI="res://scripts/ui/minecart_ui.gd"
 
 [display]
 

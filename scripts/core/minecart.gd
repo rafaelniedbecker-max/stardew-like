@@ -163,6 +163,10 @@ func _change_scene(scene_path: String, spawn_pos: Vector2) -> void:
 
 ## ==================== UI ====================
 func open_minecart_menu(current_location: String) -> void:
+	if MinecartUI:
+		MinecartUI.open()
+		return
+
 	if minecart_scene:
 		var ui = minecart_scene.instantiate()
 		ui.initialize(current_location, get_available_destinations(current_location))
@@ -231,6 +235,18 @@ func _get_player_current_location(player: Node) -> String:
 	# Determina local baseado na cena atual ou posição
 	# Simplificado: retorna "Town" como padrão
 	return "Town"
+
+func get_unlocked_locations() -> Array:
+	return unlocked_locations
+
+func get_current_location() -> String:
+	# Em implementação real, determinaria pela cena atual
+	return "Bus Stop"
+
+func travel_to(location: String) -> void:
+	var player = get_tree().root.get_child(0).get_node_or_null("Player")
+	var current_loc = _get_player_current_location(player)
+	travel(current_loc, location)
 
 func _show_message(text: String) -> void:
 	print("MineCart: %s" % text)
