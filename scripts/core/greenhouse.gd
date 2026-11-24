@@ -376,6 +376,189 @@ func _save_crops() -> void:
 	if GameManager:
 		GameManager.set("greenhouse_crops", crop_plots)
 
+## ==================== SPRINKLERS ====================
+var sprinklers: Dictionary = {}  # key -> {type, range, pattern}
+
+const SPRINKLER_TYPES = {
+	"basic": {"range": 1, "pattern": "cross", "item_id": "(BC)1"},
+	"quality": {"range": 1, "pattern": "square", "item_id": "(BC)2"},
+	"iridium": {"range": 2, "pattern": "square", "item_id": "(BC)3"},
+}
+
+func place_sprinkler(position: Vector2i, sprinkler_type: String) -> bool:
+	if not SPRINKLER_TYPES.has(sprinkler_type):
+		return false
+
+	var key = "%d,%d" % [position.x, position.y]
+	if crop_plots.has(key) and crop_plots[key].crop_id != "":
+		return false
+
+	sprinklers[key] = {
+		"type": sprinkler_type,
+		"range": SPRINKLER_TYPES[sprinkler_type].range,
+		"pattern": SPRINKLER_TYPES[sprinkler_type].pattern
+	}
+	_save_crops()
+	return true
+
+func remove_sprinkler(position: Vector2i) -> bool:
+	var key = "%d,%d" % [position.x, position.y]
+	if sprinklers.has(key):
+		sprinklers.erase(key)
+		_save_crops()
+		return true
+	return false
+
+func _process_sprinklers() -> void:
+	for key in sprinklers:
+		var sprinkler = sprinklers[key]
+		var range = sprinkler.range
+		var pattern = sprinkler.pattern
+		var pos_parts = key.split(",")
+		var pos = Vector2i(pos_parts[0].to_int(), pos_parts[1].to_int())
+
+		var tiles = _get_sprinkler_tiles(pos, range, pattern)
+		for tile in tiles:
+			var tile_key = "%d,%d" % [tile.x, tile.y]
+			if crop_plots.has(tile_key):
+				water_by_sprinkler(tile)
+
+func _get_sprinkler_tiles(center: Vector2i, range: int, pattern: String) -> Array[Vector2i]:
+	var tiles = []
+
+	if pattern == "cross":
+		for i in range(1, range + 1):
+			tiles.append(Vector2i(center.x + i, center.y))
+			tiles.append(Vector2i(center.x - i, center.y))
+			tiles.append(Vector2i(center.x, center.y + i))
+			tiles.append(Vector2i(center.x, center.y - i))
+	elif pattern == "square":
+		for x in range(-range, range + 1):
+			for y in range(-range, range + 1):
+				if x == 0 and y == 0:
+					continue
+				tiles.append(Vector2i(center.x + x, center.y + y))
+
+	return tiles
+
+func water_by_sprinkler(position: Vector2i) -> bool:
+	var key = "%d,%d" % [position.x, position.y]
+	if not crop_plots.has(key):
+		return false
+
+	var plot = crop_plots[key]
+	if plot.crop_id == "" or plot.is_fully_grown or plot.is_dead:
+		return false
+
+	if plot.watered:
+		return false
+
+	plot.watered = true
+	plot.sprinkler_watered = true
+	return true
+
+func _process_sprinklers_in_grow_day() -> void:
+	# Chama sprinklers antes de grow_day
+	_process_sprinklers()
+
+## ==================== FRUIT TREES ====================
+var fruit_trees: Dictionary = {}
+
+const FRUIT_TREE_SPACING = 3  # Espaço 3x3 entre árvores
+
+func plant_fruit_tree(position: Vector2i, tree_id: String) -> bool:
+	if not unlocked:
+		return false
+
+	var key = "%d,%d" % [position.x, position.y]
+	if fruit_trees.has(key) or (crop_plots.has(key) and crop_plots[key].crop_id != ""):
+		return false
+
+	var tree_data = DataLoader.get_fruit_tree(tree_id)
+	if not tree_data:
+		return false
+
+	# Verifica espaço 3x3
+	for x in range(-1, 2):
+		for y in range(-1, 2):
+			var check_key = "%d,%d" % [position.x + x, position.y + y]
+			if crop_plots.has(check_key) and crop_plots[check_key].crop_id != "":
+				return false
+			if fruit_trees.has(check_key):
+				return false
+
+	fruit_trees[key] = {
+		"tree_id": tree_id,
+		"position": position,
+		"growth_day": 0,
+		"stage": 0,
+		"fruiting_season": tree_data.fruiting_season,
+		"has_fruit": false,
+		"fruit_quality": 0
+	}
+
+	_save_crops()
+	return true
+
+func _process_fruit_trees() -> void:
+	for key in fruit_trees:
+		var tree = fruit_trees[key]
+		tree.growth_day += 1
+
+		if tree.stage == 0 and tree.growth_day >= 7:
+			tree.stage = 1
+		elif tree.stage == 1 and tree.growth_day >= 21:
+			tree.stage = 2
+			tree.growth_day = 0
+
+		if tree.stage == 2:
+			var current_season = GameManager.current_season if GameManager else 0
+			var fruiting_seasons = tree.fruiting_season.split(",")
+
+			if str(current_season) in fruiting_seasons:
+				if not tree.has_fruit and randf() < 0.3:
+					tree.has_fruit = true
+					tree.fruit_quality = _calculate_fruit_quality(tree)
+			else:
+				tree.has_fruit = false
+
+	_save_crops()
+
+func harvest_fruit_tree(position: Vector2i) -> Dictionary:
+	var key = "%d,%d" % [position.x, position.y]
+	if not fruit_trees.has(key):
+		return {}
+
+	var tree = fruit_trees[key]
+	if not tree.has_fruit:
+		return {}
+
+	var tree_data = DataLoader.get_fruit_tree(tree.tree_id)
+	var fruit_item = tree_data.fruit_item_id
+
+	if InventoryManager:
+		InventoryManager.add_item(fruit_item, 1, tree.fruit_quality)
+
+	tree.has_fruit = false
+	tree.fruit_quality = 0
+	_save_crops()
+
+	emit_signal("crop_harvested", position, fruit_item, 1, tree.fruit_quality)
+	return {"item_id": fruit_item, "amount": 1, "quality": tree.fruit_quality}
+
+func _calculate_fruit_quality(tree: Dictionary) -> int:
+	var chance = 0.0
+	chance += (tree.growth_day / 365.0) * 0.3
+	chance += GameManager.daily_luck if GameManager else 0.0
+
+	if chance > 0.8: return 3
+	elif chance > 0.6: return 2
+	elif chance > 0.3: return 1
+	return 0
+
+func _process_fruit_trees_in_grow_day() -> void:
+	_process_fruit_trees()
+
 ## ==================== UTILIDADES ====================
 func get_crop_at(position: Vector2i) -> Dictionary:
 	var key = "%d,%d" % [position.x, position.y]

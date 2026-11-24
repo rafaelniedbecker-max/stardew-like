@@ -1,26 +1,27 @@
 class_name CommunityCenterUI
 extends Control
 
-## UI do Centro Comunitário - bundles, recompensas, progresso
+## UI do Centro Comunitário: bundles, salas, recompensas
 
 @onready var panel: Panel = $Panel
 @onready var close_button: Button = $Panel/CloseButton
 @onready var tabs: TabContainer = $Panel/TabContainer
-@onready var completion_label: Label = $Panel/TopBar/CompletionLabel
-@onready var junimo_note_button: Button = $Panel/TopBar/JunimoNoteButton
+@onready var progress_bar: ProgressBar = $Panel/TopBar/ProgressBar
+@onready var progress_label: Label = $Panel/TopBar/ProgressLabel
+@onready var junimo_note: Label = $Panel/JunimoNote
 
 ## Estado
 var current_room: String = ""
 var bundles_data: Dictionary = {}
 
-## Salas do CC
+## Salas
 const ROOMS = [
-	{"id": "Boiler Room", "name": "Sala da Caldeira", "icon": "🔥"},
-	{"id": "Pantry", "name": "Despensa", "icon": "🍞"},
-	{"id": "Crafts Room", "name": "Sala de Artesanato", "icon": "🔨"},
-	{"id": "Fish Tank", "name": "Tanque de Peixes", "icon": "🐟"},
-	{"id": "Bulletin Board", "name": "Quadro de Avisos", "icon": "📋"},
-	{"id": "Vault", "name": "Cofre", "icon": "🏦"}
+	{"id": "boiler_room", "name": "Caldeira", "icon": "🔥", "bundles": []},
+	{"id": "crafts_room", "name": "Oficina", "icon": "🔨", "bundles": []},
+	{"id": "pantry", "name": "Despensa", "icon": "🍎", "bundles": []},
+	{"id": "fish_tank", "name": "Tanque de Peixes", "icon": "🐟", "bundles": []},
+	{"id": "bulletin_board", "name": "Quadro de Avisos", "icon": "📋", "bundles": []},
+	{"id": "vault", "name": "Cofre", "icon": "💰", "bundles": []}
 ]
 
 ## ==================== INICIALIZAÇÃO ====================
@@ -28,221 +29,176 @@ func _ready() -> void:
 	visible = false
 	panel.visible = false
 	close_button.pressed.connect(hide)
-	tabs.tab_changed.connect(_on_tab_changed)
-	junimo_note_button.pressed.connect(_show_junimo_note)
 
 	_create_tabs()
 	_load_cc_data()
+
+	if CommunityCenter:
+		CommunityCenter.bundle_completed.connect(_on_bundle_completed)
+		CommunityCenter.room_completed.connect(_on_room_completed)
+		CommunityCenter.cc_completed.connect(_on_cc_completed)
 
 func _create_tabs() -> void:
 	for room in ROOMS:
 		var scroll = ScrollContainer.new()
 		var vbox = VBoxContainer.new()
-		vbox.theme_override_constants/separation = 15
+		vbox.theme_override_constants/separation = 10
 		scroll.add_child(vbox)
 		tabs.add_child(scroll)
 		tabs.set_tab_title(tabs.get_child_count() - 1, "%s %s" % [room.icon, room.name])
 
-		# Armazena referência da sala
-		vbox.set("room_id", room.id)
+		# Guarda referência
+		tabs.get_child(tabs.get_child_count() - 1).set("room_id", room.id)
 
 func _load_cc_data() -> void:
 	if not CommunityCenter:
 		return
 
 	bundles_data = CommunityCenter.get_save_data()
-	_update_completion_label()
 	_populate_all_rooms()
+	_update_progress()
 
 func _populate_all_rooms() -> void:
 	for i in range(tabs.get_child_count()):
-		var vbox = tabs.get_child(i)
-		var room_id = vbox.get("room_id", "")
-		_populate_room(vbox, room_id)
+		var tab = tabs.get_child(i)
+		var room_id = tab.get("room_id")
+		var vbox = tab.get_node("VBoxContainer")
 
-func _populate_room(vbox: VBoxContainer, room_id: String) -> void:
-	vbox.clear()
+		for child in vbox.get_children():
+			child.queue_free()
 
-	if not CommunityCenter:
-		return
+		if not CommunityCenter:
+			continue
 
-	var bundles = CommunityCenter.get_room_bundles(room_id)
-	for bundle_name in bundles:
-		var bundle_data = bundles[bundle_name]
-		var bundle_ui = _create_bundle_ui(bundle_name, bundle_data)
-		vbox.add_child(bundle_ui)
+		var room_bundles = CommunityCenter.get_room_bundles(room_id)
+		for bundle_name, bundle_data in room_bundles:
+			var bundle_ui = _create_bundle_ui(bundle_name, bundle_data)
+			vbox.add_child(bundle_ui)
 
 func _create_bundle_ui(bundle_name: String, bundle_data: Dictionary) -> Panel:
 	var panel = Panel.new()
 	panel.custom_minimum_size = Vector2(0, 120)
 
 	var vbox = VBoxContainer.new()
+	vbox.anchors_preset = 15
 	vbox.theme_override_constants/separation = 8
 	panel.add_child(vbox)
 
-	# Header do bundle
+	# Header
 	var header = HBoxContainer.new()
 	header.theme_override_constants/separation = 10
-	vbox.add_child(header)
 
 	var title = Label.new()
-	title.text = "%s" % bundle_name
+	title.text = bundle_name
 	title.theme_override_font_size = 18
-	title.autowrap_mode = 1
+	title.add_theme_color_override("font_color", Color(1.0, 0.9, 0.3))
 	header.add_child(title)
 
-	# Status
-	var completed = bundle_data.get("completed", false)
-	var status_label = Label.new()
+	var status = Label.new()
+	var completed = CommunityCenter.is_bundle_completed(bundle_name)
 	if completed:
-		status_label.text = "✅ COMPLETO"
-		status_label.add_theme_color_override("font_color", Color(0.5, 1.0, 0.5))
+		status.text = "✅ COMPLETO"
+		status.add_theme_color_override("font_color", Color(0.5, 1.0, 0.5))
 	else:
-		var items_done = bundle_data.get("items_donated", 0)
-		var items_total = bundle_data.get("items_required", 0)
-		status_label.text = "📦 %d/%d" % [items_done, items_total]
-		status_label.add_theme_color_override("font_color", Color(1.0, 0.9, 0.3))
-	status_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-	header.add_child(status_label)
+		status.text = "🔄 EM ANDAMENTO"
+		status.add_theme_color_override("font_color", Color(1.0, 0.8, 0.3))
+	status.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	status.theme_override_font_size = 14
+	header.add_child(status)
+
+	vbox.add_child(header)
 
 	# Itens necessários
-	var items = bundle_data.get("items", [])
-	var grid = GridContainer.new()
-	grid.columns = 5
-	grid.theme_override_constants/h_separation = 8
-	grid.theme_override_constants/v_separation = 8
-	vbox.add_child(grid)
+	var items_container = VBoxContainer.new()
+	items_container.theme_override_constants/separation = 5
 
-	for item_req in items:
-		var item_id = item_req.item_id
-		var required = item_req.count
-		var donated = item_req.get("donated", 0)
+	var required_items = bundle_data.get("items", [])
+	for item_req in required_items:
+		var item_id = item_req.get("item_id", "")
+		var amount = item_req.get("amount", 1)
+		var quality = item_req.get("quality", 0)
 
 		var item = DataLoader.get_item(item_id)
-		if not item:
-			continue
+		var has_amount = InventoryManager.get_item_count(item_id) >= amount if InventoryManager else 0
 
-		var btn = Button.new()
-		btn.custom_minimum_size = Vector2(80, 80)
-		btn.flat = true
-		btn.disabled = donated >= required
-
-		var vbox_item = VBoxContainer.new()
-		vbox_item.anchors_preset = 15
-		btn.add_child(vbox_item)
+		var hbox = HBoxContainer.new()
+		hbox.theme_override_constants/separation = 10
 
 		var icon = TextureRect.new()
-		icon.custom_minimum_size = Vector2(48, 48)
-		if item.texture_path != "":
+		icon.custom_minimum_size = Vector2(32, 32)
+		if item and item.texture_path != "":
 			icon.texture = load(item.texture_path)
-		grid.add_child(btn)
+		hbox.add_child(icon)
 
 		var name = Label.new()
-		name.text = item.display_name
-		name.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		name.theme_override_font_size = 10
-		name.autowrap_mode = 1
-		vbox_item.add_child(name)
+		name.text = "%s x%d" % [item?.display_name ?? item_id, amount]
+		name.theme_override_font_size = 14
+		if not has_amount:
+			name.add_theme_color_override("font_color", Color(1.0, 0.4, 0.4))
+		hbox.add_child(name)
 
-		var qty = Label.new()
-		qty.text = "%d/%d" % [donated, required]
-		qty.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		qty.theme_override_font_size = 11
-		if donated >= required:
-			qty.add_theme_color_override("font_color", Color(0.5, 1.0, 0.5))
-		vbox_item.add_child(qty)
+		var q_indicator = Label.new()
+		if quality > 0:
+			var q_names = ["", "⭐", "⭐⭐", "⭐⭐⭐"]
+			q_indicator.text = q_names[quality] if quality < 4 else ""
+			q_indicator.theme_override_font_size = 12
+			hbox.add_child(q_indicator)
 
-		var quality = Label.new()
-		if item_req.get("quality", 0) > 0:
-			quality.text = "⭐" * item_req.quality
-			quality.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-			quality.theme_override_font_size = 12
-			quality.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2))
-			vbox_item.add_child(quality)
+		items_container.add_child(hbox)
 
-		btn.pressed.connect(_on_item_selected.bind(item_id, bundle_name, required, donated))
+	vbox.add_child(items_container)
 
-	# Recompensa
-	if completed:
-		var reward = bundle_data.get("reward", {})
-		if reward:
-			var reward_box = HBoxContainer.new()
-			reward_box.alignment = HORIZONTAL_ALIGNMENT_CENTER
-			reward_box.theme_override_constants/separation = 10
+	# Barra de progresso
+	if not completed:
+		var progress = ProgressBar.new()
+		progress.max_value = required_items.size()
+		var completed_count = _count_completed_items(bundle_name)
+		progress.value = completed_count
+		vbox.add_child(progress)
 
-			var reward_icon = TextureRect.new()
-			reward_icon.custom_minimum_size = Vector2(40, 40)
-			var reward_item = DataLoader.get_item(reward.item_id)
-			if reward_item and reward_item.texture_path != "":
-				reward_icon.texture = load(reward_item.texture_path)
-			reward_box.add_child(reward_icon)
+		var progress_label = Label.new()
+		progress_label.text = "%d/%d itens" % [completed_count, required_items.size()]
+		progress_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+		progress_label.theme_override_font_size = 12
+		progress_label.add_theme_color_override("font_color", Color(0.8, 0.8, 0.8))
+		vbox.add_child(progress_label)
 
-			var reward_label = Label.new()
-			reward_label.text = "Recompensa: %s x%d" % [reward_item?.display_name ?? reward.item_id, reward.amount]
-			reward_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-			reward_label.theme_override_font_size = 13
-			reward_label.add_theme_color_override("font_color", Color(0.5, 1.0, 0.5))
-			reward_box.add_child(reward_label)
-
-			vbox.add_child(reward_box)
+	# Botão doar (se não completo)
+	if not completed:
+		var donate_btn = Button.new()
+		donate_btn.text = "🎁 Doar Itens"
+		donate_btn.custom_minimum_size = Vector2(0, 40)
+		donate_btn.theme_override_font_size = 14
+		donate_btn.pressed.connect(_open_donate_ui.bind(bundle_name))
+		vbox.add_child(donate_btn)
+	else:
+		var complete_label = Label.new()
+		complete_label.text = "✨ BUNDLE COMPLETO! Recompensa: %s" % bundle_data.get("reward", "???")
+		complete_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		complete_label.add_theme_color_override("font_color", Color(0.5, 1.0, 0.5))
+		complete_label.theme_override_font_size = 13
+		vbox.add_child(complete_label)
 
 	return panel
 
-func _on_item_selected(item_id: String, bundle_name: String, required: int, donated: int) -> void:
-	if donated >= required:
-		HUD.show_message("Este item já foi completado!")
-		return
-
-	if not InventoryManager.has_item(item_id):
-		HUD.show_message("Você não tem este item!")
-		return
-
-	if InventoryManager.remove_item(item_id, 1):
-		if CommunityCenter:
-			CommunityCenter.donate_to_bundle(bundle_name, item_id, 1)
-			_reload_room(bundle_name)
-			HUD.show_message("Doado: %s!" % DataLoader.get_item(item_id)?.display_name)
-
-			if ParticleManager:
-				ParticleManager.spawn("harvest", get_tree().get_first_node_in_group("player").global_position)
-
-			if AudioManager:
-				AudioManager.play_sfx("res://assets/sfx/cc_donate.ogg")
-	else:
-		HUD.show_message("Erro ao doar!")
-
-func _reload_room(room_name: String) -> void:
-	# Recarrega apenas a sala afetada
-	for i in range(tabs.get_child_count()):
-		var vbox = tabs.get_child(i)
-		if vbox.get("room_id", "") == room_name:
-			_populate_room(vbox, room_name)
-			break
-
-	_update_completion_label()
-
-func _update_completion_label() -> void:
+func _count_completed_items(bundle_name: String) -> int:
 	if not CommunityCenter:
+		return 0
+	var bundle = CommunityCenter.get_bundle_instance(bundle_name)
+	if bundle:
+		var count = 0
+		for obj in bundle.objectives:
+			if obj.current >= obj.required:
+				count += 1
+		return count
+	return 0
+
+func _open_donate_ui(bundle_name: String) -> void:
+	if not CommunityCenter or not InventoryManager:
 		return
 
-	var total = 0
-	var completed = 0
-
-	for room in ROOMS:
-		var bundles = CommunityCenter.get_room_bundles(room.id)
-		for bundle_name in bundles:
-			var bundle_data = bundles[bundle_name]
-			total += 1
-			if bundle_data.get("completed", false):
-				completed += 1
-
-	var pct = total > 0 ? (completed / total * 100) : 0
-	completion_label.text = "Centro Comunitário: %d%% (%d/%d bundles)" % [pct, completed, total]
-
-func _show_junimo_note() -> void:
-	# Abre nota do Junimo com dicas
 	var panel = Panel.new()
-	panel.name = "JunimoNoteUI"
+	panel.name = "DonateUI_%s" % bundle_name
 	panel.anchors_preset = 15
 	panel.offset_left = 200
 	panel.offset_top = 100
@@ -253,44 +209,143 @@ func _show_junimo_note() -> void:
 	panel.add_child(vbox)
 
 	var title = Label.new()
-	title.text = "📝 Nota dos Junimos"
+	title.text = "🎁 Doar para: %s" % bundle_name
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	title.theme_override_font_size = 24
+	title.theme_override_font_size = 20
 	vbox.add_child(title)
 
-	var tips = [
-		"Os Junimos adoram frutas e vegetais frescos!",
-		"Complete bundles para ganhar recompensas especiais.",
-		"A caldeira precisa de minérios e geodas.",
-		"A despensa quer cultivos de todas as estações.",
-		"A sala de artesanato pede itens artesanais.",
-		"O tanque de peixes precisa de peixes de qualidade.",
-		"O quadro de avisos aceita forrageamento e itens diversos.",
-		"O cofre só aceita ouro! Muito ouro!",
-		"Dica: Guarde itens de qualidade prata/ouro para bundles difíceis.",
-		"Os Junimos trabalham à noite enquanto você dorme."
-	]
+	var bundle = CommunityCenter.get_bundle_instance(bundle_name)
+	if not bundle:
+		return
 
-	for tip in tips:
-		var lbl = Label.new()
-		lbl.text = "💡 %s" % tip
-		lbl.autowrap_mode = 1
-		lbl.theme_override_font_size = 13
-		lbl.add_theme_color_override("font_color", Color(0.8, 0.9, 1.0))
-		vbox.add_child(lbl)
+	var scroll = ScrollContainer.new()
+	var grid = GridContainer.new()
+	grid.columns = 4
+	grid.theme_override_constants/h_separation = 10
+	grid.theme_override_constants/v_separation = 5
+	scroll.add_child(grid)
+	scroll.custom_minimum_size = Vector2(0, 300)
+	vbox.add_child(scroll)
+
+	for obj in bundle.objectives:
+		if obj.current >= obj.required:
+			continue
+
+		var needed = obj.required - obj.current
+		var item_id = obj.target_item_id
+		var item = DataLoader.get_item(item_id)
+		if not item:
+			continue
+
+		var have = InventoryManager.get_item_count(item_id)
+		if have <= 0:
+			continue
+
+		var btn = Button.new()
+		btn.custom_minimum_size = Vector2(120, 100)
+		btn.flat = true
+
+		var vbox_i = VBoxContainer.new()
+		vbox_i.anchors_preset = 15
+		btn.add_child(vbox_i)
+
+		var icon = TextureRect.new()
+		icon.custom_minimum_size = Vector2(48, 48)
+		if item.texture_path != "":
+			icon.texture = load(item.texture_path)
+		vbox_i.add_child(icon)
+
+		var name = Label.new()
+		name.text = item.display_name
+		name.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		name.theme_override_font_size = 12
+		name.autowrap_mode = 1
+		vbox_i.add_child(name)
+
+		var qty = Label.new()
+		qty.text = "Tem: %d | Precisa: %d" % [have, needed]
+		qty.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		qty.theme_override_font_size = 11
+		if have >= needed:
+			qty.add_theme_color_override("font_color", Color(0.5, 1.0, 0.5))
+		else:
+			qty.add_theme_color_override("font_color", Color(1.0, 0.8, 0.3))
+		vbox_i.add_child(qty)
+
+		btn.pressed.connect(_donate_item.bind(bundle_name, item_id, panel))
+		grid.add_child(btn)
 
 	var close_btn = Button.new()
-	close_btn.text = "Fechar"
+	close_btn.text = "Cancelar"
 	close_btn.custom_minimum_size = Vector2(0, 40)
 	close_btn.pressed.connect(panel.queue_free.bind())
 	vbox.add_child(close_btn)
 
 	get_tree().root.get_child(0).add_child(panel)
 
-func _reload_room(room_name: String) -> void:
-	# Recarrega dados
-	_load_cc_data()
+func _donate_item(bundle_name: String, item_id: String, panel: Panel) -> void:
+	if CommunityCenter.complete_bundle_item(bundle_name, item_id, 1):
+		UIStyle.show_toast("🎁 Doado!", "Item doado ao bundle!", "success")
+		panel.queue_free()
+		_populate_all_rooms()
+		_update_progress()
+	else:
+		UIStyle.show_toast("❌ Erro", "Não foi possível doar", "danger")
 
+func _on_bundle_completed(bundle_key: String) -> void:
+	_populate_all_rooms()
+	_update_progress()
+	UIStyle.show_toast("🎉 Bundle Completo!", "%s finalizado!" % bundle_key, "achievement", 5.0)
+
+	# Partículas
+	if ParticleManager:
+		ParticleManager.show_level_up(get_tree().root.get_child(0).global_position, "Bundle Completo!")
+
+func _on_room_completed(room_id: String) -> void:
+	var room_names = {"boiler_room": "Caldeira", "crafts_room": "Oficina", "pantry": "Despensa", "fish_tank": "Tanque de Peixes", "bulletin_board": "Quadro de Avisos", "vault": "Cofre"}
+	UIStyle.show_toast("🏆 Sala Completa!", "%s restaurada!" % room_names.get(room_id, room_id), "achievement", 6.0)
+
+	# Desbloqueia próxima sala
+	_populate_all_rooms()
+	_update_progress()
+
+func _on_cc_completed() -> void:
+	UIStyle.show_toast("🏆 Centro Comunitário Completo!", "Todos os bundles finalizados! Junimo Hut desbloqueado!", "achievement", 8.0)
+
+	if ParticleManager:
+		ParticleManager.show_level_up(get_tree().root.get_child(0).global_position, "CC Completo!")
+
+	if AudioManager:
+		AudioManager.play_sfx("res://assets/sfx/cc_complete.ogg")
+
+func _update_progress() -> void:
+	if not CommunityCenter:
+		return
+
+	var total_bundles = 0
+	var completed_bundles = 0
+
+	for room in ROOMS:
+		var bundles = CommunityCenter.get_room_bundles(room.id)
+		for bundle_name, _ in bundles:
+			total_bundles += 1
+			if CommunityCenter.is_bundle_completed(bundle_name):
+				completed_bundles += 1
+
+	progress_bar.max_value = total_bundles
+	progress_bar.value = completed_bundles
+	progress_label.text = "Bundles: %d/%d (%.0f%%)" % [completed_bundles, total_bundles, (completed_bundles / total_bundles * 100) if total_bundles > 0 else 0]
+
+	# Nota do Junimo
+	if junimo_note:
+		if completed_bundles == total_bundles and total_bundles > 0:
+			junimo_note.text = "🎉 Os Junimos estão felizes! O Centro Comunitário foi restaurado!"
+			junimo_note.add_theme_color_override("font_color", Color(0.5, 1.0, 0.5))
+		else:
+			junimo_note.text = "🧙 Os Junimos aguardam suas doações... (%d/%d bundles)" % [completed_bundles, total_bundles]
+			junimo_note.add_theme_color_override("font_color", Color(0.8, 0.8, 0.8))
+
+## ==================== PÚBLICO ====================
 func open() -> void:
 	visible = true
 	panel.visible = true
