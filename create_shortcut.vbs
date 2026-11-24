@@ -15,7 +15,7 @@ Dim godotPath, projectPath, arguments
 godotPath = ""
 
 ' Seu projeto (já configurado para seu PC)
-projectPath = "C:\Users\Administrador\Documents\test\stardew_godot"
+projectPath = "C:\Users\Administrador\Documents\stardew\stardew_game"
 arguments = "--path """ & projectPath & """"
 
 ' ========================================

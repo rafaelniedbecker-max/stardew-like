@@ -38,10 +38,10 @@ create_shortcut.vbs
 ## Opção 5: Linha de Comando Direta
 ```cmd
 # Se Godot estiver no PATH:
-godot --path "C:\Users\Administrador\Documents\test\stardew_godot"
+godot --path "C:\Users\Administrador\Documents\stardew\stardew_game"
 
 # Ou caminho completo:
-"C:\Program Files\Godot\Godot_v4.7.2-stable_win64.exe" --path "C:\Users\Administrador\Documents\test\stardew_godot"
+"C:\Program Files\Godot\Godot_v4.7.2-stable_win64.exe" --path "C:\Users\Administrador\Documents\stardew\stardew_game"
 ```
 
 ## Opção 6: Godot Editor
@@ -71,7 +71,7 @@ godot --path "C:\Users\Administrador\Documents\test\stardew_godot"
 3. Ou edite `run_game_advanced.bat` e defina `SET GODOT_EXE="C:\caminho\Godot.exe"`
 
 ### "Project.godot não encontrado"
-- Execute os scripts a partir da pasta do projeto: `C:\Users\Administrador\Documents\test\stardew_godot`
+- Execute os scripts a partir da pasta do projeto: `C:\Users\Administrador\Documents\stardew\stardew_game`
 
 ### Erro de encoding (caracteres estranhos)
 - Use `run_game_advanced.bat` que tem `chcp 65001` (UTF-8)
