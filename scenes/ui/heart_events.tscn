@@ -1,0 +1,77 @@
+[gd_scene load_steps=2 format=3 uid://bkqrxw9w9x8om]
+
+[ext_resource type="Script" path="res://scripts/ui/heart_events.gd" id="1"]
+
+[node name="HeartEventsUI" type="Control"]
+script = ExtResource("1")
+anchors_preset = 15
+offset_left = 0
+offset_top = 0
+offset_right = 0
+offset_bottom = 0
+
+[node name="Panel" type="Panel" parent="."]
+anchors_preset = 15
+offset_left = 0
+offset_top = 0
+offset_right = 0
+offset_bottom = 0
+
+[node name="Background" type="TextureRect" parent="Panel"]
+color = Color(0, 0, 0, 0.85)
+anchors_preset = 15
+offset_left = 0
+offset_top = 0
+offset_right = 0
+offset_bottom = 0
+
+[node name="DialogueBox" type="VBoxContainer" parent="Panel"]
+anchors_preset = 2
+offset_left = 50
+offset_top = 0
+offset_right = -50
+offset_bottom = 50
+theme_override_constants/separation = 10
+
+[node name="Portrait" type="TextureRect" parent="DialogueBox"]
+custom_minimum_size = Vector2(120, 120)
+stretch_mode = 2
+visible = false
+
+[node name="SpeakerName" type="Label" parent="DialogueBox"]
+text = ""
+horizontal_alignment = 1
+theme_override_font_size = 22
+theme_override_colors/font_color = Color(1.0, 0.9, 0.3)
+
+[node name="DialogueText" type="Label" parent="DialogueBox"]
+text = ""
+horizontal_alignment = 1
+autowrap_mode = 1
+theme_override_font_size = 18
+theme_override_colors/font_color = Color(1, 1, 1)
+
+[node name="ChoicesContainer" type="HBoxContainer" parent="DialogueBox"]
+visible = false
+theme_override_constants/separation = 15
+alignment = 1
+
+[node name="SkipButton" type="Button" parent="Panel"]
+anchors_preset = 10
+offset_left = 20
+offset_top = 20
+offset_right = 0
+offset_bottom = 0
+text = "⏭ Pular"
+custom_minimum_size = Vector2(100, 35)
+theme_override_font_size = 14
+
+[node name="AutoButton" type="Button" parent="Panel"]
+anchors_preset = 10
+offset_left = 130
+offset_top = 20
+offset_right = 0
+offset_bottom = 0
+text = "⏸ Auto"
+custom_minimum_size = Vector2(100, 35)
+theme_override_font_size = 14

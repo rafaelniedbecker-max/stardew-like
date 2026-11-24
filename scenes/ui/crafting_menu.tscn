@@ -1,0 +1,117 @@
+[gd_scene load_steps=3 format=3 uid://bkqrxw9w9x8oi]
+
+[ext_resource type="Script" path="res://scripts/ui/crafting_menu.gd" id="1"]
+
+[node name="CraftingMenu" type="Control"]
+script = ExtResource("1")
+anchors_preset = 15
+layer = 10
+
+[node name="Panel" type="Panel" parent="."]
+anchors_preset = 15
+offset_left = 50
+offset_top = 30
+offset_right = -50
+offset_bottom = -30
+layout_mode = 3
+
+[node name="TopBar" type="HBoxContainer" parent="Panel"]
+anchors_preset = 9
+
+[node name="Label" type="Label" parent="TopBar"]
+text = "Crafting & Cooking"
+theme_override_font_size = 24
+
+[node name="GoldLabel" type="Label" parent="TopBar"]
+text = "500g"
+theme_override_font_size = 20
+theme_override_colors/font_color = Color(1, 0.85, 0.1)
+
+[node name="SearchBox" type="LineEdit" parent="Panel"]
+anchors_preset = 9
+offset_top = 50
+placeholder_text = "Buscar receita..."
+
+[node name="CategoryBar" type="HBoxContainer" parent="Panel"]
+anchors_preset = 9
+offset_top = 90
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CategoryBar"]
+theme_override_constants/separation = 5
+
+[node name="TabContainer" type="TabContainer" parent="Panel"]
+anchors_preset = 15
+offset_top = 130
+offset_bottom = 0
+
+[node name="CraftTab" type="TabButton" parent="TabContainer"]
+text = "Crafting"
+
+[node name="CraftPanel" type="ScrollContainer" parent="CraftTab"]
+
+[node name="GridContainer" type="GridContainer" parent="CraftPanel/ScrollContainer"]
+columns = 5
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 10
+
+[node name="CookTab" type="TabButton" parent="TabContainer"]
+text = "Culinária"
+
+[node name="CookPanel" type="ScrollContainer" parent="CookTab"]
+
+[node name="GridContainer" type="GridContainer" parent="CookPanel/ScrollContainer"]
+columns = 5
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 10
+
+[node name="RecipeDetails" type="Panel" parent="Panel"]
+anchors_preset = 6  # TOP_RIGHT
+offset_right = -10
+offset_top = 130
+offset_bottom = 10
+custom_minimum_size = Vector2(300, 0)
+visible = false
+
+[node name="VBoxContainer" type="VBoxContainer" parent="RecipeDetails"]
+theme_override_constants/separation = 10
+
+[node name="NameLabel" type="Label" parent="VBoxContainer"]
+text = "Recipe Name"
+theme_override_font_size = 18
+
+[node name="DescLabel" type="Label" parent="VBoxContainer"]
+text = "Description"
+theme_override_font_size = 12
+theme_override_colors/font_color = Color(0.8, 0.8, 0.8)
+
+[node name="HSeparator" type="HSeparator" parent="VBoxContainer"]
+
+[node name="Label" type="Label" parent="VBoxContainer"]
+text = "Ingredientes:"
+theme_override_font_size = 14
+theme_override_colors/font_color = Color(1, 0.85, 0.1)
+
+[node name="IngredientsContainer" type="VBoxContainer" parent="VBoxContainer"]
+theme_override_constants/separation = 3
+
+[node name="HSeparator2" type="HSeparator" parent="VBoxContainer"]
+
+[node name="Label" type="Label" parent="VBoxContainer"]
+text = "Resultado:"
+theme_override_font_size = 14
+theme_override_colors/font_color = Color(1, 0.85, 0.1)
+
+[node name="ResultContainer" type="HBoxContainer" parent="VBoxContainer"]
+theme_override_constants/separation = 10
+
+[node name="CraftButton" type="Button" parent="VBoxContainer"]
+text = "Craftar"
+custom_minimum_size = Vector2(0, 40)
+theme_override_font_size = 16
+
+[node name="CloseButton" type="Button" parent="Panel"]
+anchors_preset = 6
+offset_right = -10
+offset_top = 10
+text = "X"
+custom_minimum_size = Vector2(40, 40)

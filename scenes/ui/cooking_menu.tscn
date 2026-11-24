@@ -1,0 +1,110 @@
+[gd_scene load_steps=2 format=3 uid://bkqrxw9w9x8oi]
+
+[ext_resource type="Script" path="res://scripts/ui/cooking_menu.gd" id="1"]
+
+[node name="CookingMenu" type="Control"]
+script = ExtResource("1")
+anchors_preset = 15
+offset_left = 100
+offset_top = 50
+offset_right = -100
+offset_bottom = -50
+
+[node name="Panel" type="Panel" parent="."]
+anchors_preset = 15
+offset_left = 0
+offset_top = 0
+offset_right = 0
+offset_bottom = 0
+
+[node name="TopBar" type="HBoxContainer" parent="Panel"]
+anchors_preset = 9
+offset_left = 10
+offset_top = 10
+offset_right = -10
+offset_bottom = 0
+
+[node name="TitleLabel" type="Label" parent="TopBar"]
+text = "🍳 Livro de Receitas"
+theme_override_font_size = 24
+
+[node name="KnownCountLabel" type="Label" parent="TopBar"]
+text = "Conhecidas: 0/0"
+theme_override_font_size = 16
+theme_override_colors/font_color = Color(0.8, 0.8, 0.8)
+
+[node name="SearchBox" type="LineEdit" parent="TopBar"]
+placeholder_text = "Buscar receita..."
+custom_minimum_size = Vector2(200, 30)
+
+[node name="FilterTabs" type="TabBar" parent="TopBar"]
+tab_count = 6
+tab_titles = ["Todas", "Descobertas", "Desconhecidas", "Culinária", "Confeitaria", "Bebidas"]
+
+[node name="LeftSide" type="VBoxContainer" parent="Panel"]
+anchors_preset = 7
+offset_left = 10
+offset_top = 50
+offset_right = -10
+offset_bottom = -10
+
+[node name="RecipeList" type="ItemList" parent="LeftSide"]
+anchors_preset = 15
+offset_left = 0
+offset_top = 0
+offset_right = 0
+offset_bottom = 0
+custom_minimum_size = Vector2(300, 0)
+
+[node name="RightSide" type="VBoxContainer" parent="Panel"]
+anchors_preset = 10
+offset_left = 320
+offset_top = 50
+offset_right = -10
+offset_bottom = -10
+
+[node name="RecipeInfo" type="VBoxContainer" parent="RightSide"]
+anchors_preset = 8
+offset_left = 0
+offset_top = 0
+offset_right = 0
+offset_bottom = -60
+theme_override_constants/separation = 10
+
+[node name="Ingredients" type="ScrollContainer" parent="RightSide"]
+anchors_preset = 2
+offset_left = 0
+offset_top = 0
+offset_right = 0
+offset_bottom = -60
+
+[node name="IngredientGrid" type="GridContainer" parent="Ingredients"]
+anchors_preset = 15
+offset_left = 0
+offset_top = 0
+offset_right = 0
+offset_bottom = 0
+columns = 1
+theme_override_constants/h_separation = 5
+theme_override_constants/v_separation = 5
+
+[node name="CookButton" type="Button" parent="RightSide"]
+anchors_preset = 14
+offset_left = 0
+offset_top = 0
+offset_right = 0
+offset_bottom = -10
+text = "🍳 Cozinhar"
+disabled = true
+custom_minimum_size = Vector2(0, 50)
+theme_override_font_size = 18
+
+[node name="CloseButton" type="Button" parent="Panel"]
+anchors_preset = 11
+offset_left = -120
+offset_top = 10
+offset_right = -10
+offset_bottom = -40
+text = "Fechar"
+custom_minimum_size = Vector2(100, 40)
+theme_override_font_size = 18

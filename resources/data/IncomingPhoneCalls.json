@@ -1,0 +1,55 @@
+{
+  "0": {
+    "FromNpc": "Vincent",
+    "Dialogue": "[LocalizedText Strings\\Characters:Phone_Ring_Vincent]",
+    "IgnoreBaseChance": false,
+    "MaxCalls": 1
+  },
+  "1": {
+    "FromNpc": "Lewis",
+    "Dialogue": "[LocalizedText Strings\\Characters:Phone_Ring_Lewis]",
+    "IgnoreBaseChance": false,
+    "MaxCalls": 1
+  },
+  "2": {
+    "FromNpc": "Pierre",
+    "Dialogue": "[LocalizedText Strings\\Characters:Phone_Ring_Pierre]",
+    "IgnoreBaseChance": false,
+    "MaxCalls": 1
+  },
+  "3": {
+    "Dialogue": "[LocalizedText Strings\\Characters:Phone_Ring_Foreign]",
+    "IgnoreBaseChance": false,
+    "SimpleDialogueSplitBy": "#",
+    "MaxCalls": 1
+  },
+  "4": {
+    "TriggerCondition": "PLAYER_HAS_SEEN_EVENT Any 2120303",
+    "RingCondition": "PLAYER_HAS_SEEN_EVENT Current 2120303",
+    "FromPortrait": "Portraits\\Bear",
+    "FromDisplayName": "[LocalizedText Strings\\NPCNames:Bear]",
+    "Dialogue": "[LocalizedText Strings\\Characters:Phone_Ring_Bear]",
+    "IgnoreBaseChance": false,
+    "MaxCalls": 1
+  },
+  "5": {
+    "Dialogue": "[LocalizedText Strings\\Characters:Phone_Ring_HatMouse]",
+    "IgnoreBaseChance": false,
+    "SimpleDialogueSplitBy": "#",
+    "MaxCalls": 1
+  },
+  "6": {
+    "TriggerCondition": "PLAYER_HAS_MAIL Any cursed_doll",
+    "RingCondition": "PLAYER_HAS_MAIL Current cursed_doll",
+    "Dialogue": "[LocalizedText Strings\\Characters:Phone_Ring_Cursed]",
+    "IgnoreBaseChance": false,
+    "SimpleDialogueSplitBy": "#",
+    "MaxCalls": 1
+  },
+  "7": {
+    "Dialogue": "[LocalizedText Strings\\\\Characters:Phone_Ring_RoboCaller]",
+    "IgnoreBaseChance": false,
+    "SimpleDialogueSplitBy": "#",
+    "MaxCalls": 1
+  }
+}

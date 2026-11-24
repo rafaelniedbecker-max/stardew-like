@@ -1,0 +1,177 @@
+[gd_scene load_steps=3 format=3 uid://bkqrxw9w9x8oj]
+
+[ext_resource type="Script" path="res://scripts/ui/fishing_minigame.gd" id="1"]
+
+[node name="FishingMinigame" type="Control"]
+script = ExtResource("1")
+anchors_preset = 15
+offset_left = 0
+offset_top = 0
+offset_right = 0
+offset_bottom = 0
+
+[node name="Background" type="ColorRect" parent="."]
+color = Color(0.05, 0.1, 0.2, 0.95)
+anchors_preset = 15
+offset_left = 0
+offset_top = 0
+offset_right = 0
+offset_bottom = 0
+
+[node name="WaterArea" type="TextureRect" parent="Background"]
+anchors_preset = 3
+offset_left = 200
+offset_top = 150
+offset_right = -200
+offset_bottom = -150
+
+[node name="FishBarContainer" type="Control" parent="WaterArea"]
+anchors_preset = 3
+offset_left = 10
+offset_top = 10
+offset_right = -10
+offset_bottom = -10
+
+[node name="FishBarTrack" type="TextureRect" parent="FishBarContainer"]
+anchors_preset = 15
+offset_left = 0
+offset_top = 0
+offset_right = 0
+offset_bottom = 0
+color = Color(0.1, 0.15, 0.3, 1.0)
+
+[node name="FishBar" type="Control" parent="FishBarContainer"]
+anchors_preset = 1
+offset_left = 0
+offset_top = 0
+offset_right = 0
+offset_bottom = 0
+
+[node name="FishBarFill" type="TextureRect" parent="FishBar"]
+anchors_preset = 15
+offset_left = 0
+offset_top = 0
+offset_right = 0
+offset_bottom = 0
+color = Color(0.3, 0.7, 1.0, 0.8)
+stretch_mode = 2
+
+[node name="FishBarBorder" type="TextureRect" parent="FishBar"]
+anchors_preset = 15
+offset_left = -2
+offset_top = -2
+offset_right = 2
+offset_bottom = 2
+color = Color(0.5, 0.8, 1.0, 1.0)
+
+[node name="FishSprite" type="AnimatedSprite2D" parent="FishBarContainer"]
+anchors_preset = 15
+offset_left = 0
+offset_top = 0
+offset_right = 0
+offset_bottom = 0
+
+[node name="FishIcon" type="TextureRect" parent="FishBarContainer"]
+anchors_preset = 15
+offset_left = 0
+offset_top = 0
+offset_right = 0
+offset_bottom = 0
+stretch_mode = 2
+
+[node name="CatchProgressContainer" type="Control" parent="Background"]
+anchors_preset = 8
+offset_left = 200
+offset_top = 80
+offset_right = -200
+offset_bottom = -50
+
+[node name="CatchProgressBar" type="ProgressBar" parent="CatchProgressContainer"]
+anchors_preset = 15
+offset_left = 0
+offset_top = 0
+offset_right = 0
+offset_bottom = 0
+min_value = 0.0
+max_value = 100.0
+value = 0.0
+
+[node name="CatchLabel" type="Label" parent="CatchProgressContainer"]
+anchors_preset = 15
+offset_left = 0
+offset_top = -30
+offset_right = 0
+offset_bottom = 0
+text = "Progresso: 0%"
+horizontal_alignment = 1
+theme_override_font_size = 16
+
+[node name="PerfectLabel" type="Label" parent="CatchProgressContainer"]
+anchors_preset = 15
+offset_left = 0
+offset_top = 30
+offset_right = 0
+offset_bottom = 0
+text = "✨ PERFECT!"
+horizontal_alignment = 1
+theme_override_font_size = 18
+visible = false
+theme_override_colors/font_color = Color(1.0, 0.9, 0.3)
+
+[node name="InfoPanel" type="VBoxContainer" parent="Background"]
+anchors_preset = 7
+offset_left = 20
+offset_top = 20
+offset_right = 0
+offset_bottom = -20
+theme_override_constants/separation = 8
+
+[node name="FishNameLabel" type="Label" parent="InfoPanel"]
+text = "Peixe: ???"
+theme_override_font_size = 20
+theme_override_colors/font_color = Color(1.0, 1.0, 1.0)
+
+[node name="FishDifficultyLabel" type="Label" parent="InfoPanel"]
+text = "Dificuldade: ★★☆☆☆"
+theme_override_font_size = 14
+theme_override_colors/font_color = Color(0.8, 0.8, 0.8)
+
+[node name="RodLabel" type="Label" parent="InfoPanel"]
+text = "Vara: Bambu"
+theme_override_font_size = 14
+theme_override_colors/font_color = Color(0.8, 0.8, 0.8)
+
+[node name="TackleLabel" type="Label" parent="InfoPanel"]
+text = "Isca: Nenhuma"
+theme_override_font_size = 14
+theme_override_colors/font_color = Color(0.8, 0.8, 0.8)
+
+[node name="LevelLabel" type="Label" parent="InfoPanel"]
+text = "Pesca: Nível 0"
+theme_override_font_size = 14
+theme_override_colors/font_color = Color(0.8, 0.8, 0.8)
+
+[node name="ControlsHint" type="Label" parent="Background"]
+anchors_preset = 2
+offset_left = 0
+offset_top = 0
+offset_right = 0
+offset_bottom = 20
+text = "↑ / ↓ ou W / S para mover a barra  |  Mantenha o peixe dentro da barra!"
+horizontal_alignment = 1
+theme_override_font_size = 16
+theme_override_colors/font_color = Color(0.7, 0.7, 0.7)
+
+[node name="PerfectEffect" type="CPUParticles2D" parent="Background"]
+emitting = false
+one_shot = true
+amount = 20
+lifetime = 1.0
+explosiveness = 1.0
+spread = 90
+gravity = Vector2(0, -50)
+initial_velocity = 100
+scale = 0.5
+color = Color(1.0, 0.9, 0.3, 1.0)
+color_ramp = Gradient()
+color_ramp.colors = PackedColorArray([Color(1.0, 1.0, 0.5, 1.0), Color(1.0, 0.8, 0.0, 0.0)])

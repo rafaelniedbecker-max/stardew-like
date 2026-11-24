@@ -1,0 +1,152 @@
+{
+  "Cauliflower": {
+    "FromItemId": "(O)190",
+    "HarvestItems": [
+      {
+        "Chance": 1.0,
+        "ScaledMinStackWhenShaving": 2,
+        "ScaledMaxStackWhenShaving": 2,
+        "Id": "(O)190",
+        "ItemId": "(O)190",
+        "MinStack": 15,
+        "MaxStack": 21,
+        "Quality": -1,
+        "ToolUpgradeLevel": -1,
+        "IsRecipe": false,
+        "StackModifierMode": 0,
+        "QualityModifierMode": 0
+      }
+    ],
+    "Texture": "TileSheets\\Crops",
+    "TexturePosition": {
+      "X": 112,
+      "Y": 512
+    },
+    "TileSize": {
+      "X": 3,
+      "Y": 3
+    },
+    "Health": 3,
+    "Chance": 0.01
+  },
+  "Melon": {
+    "FromItemId": "(O)254",
+    "HarvestItems": [
+      {
+        "Chance": 1.0,
+        "ScaledMinStackWhenShaving": 2,
+        "ScaledMaxStackWhenShaving": 2,
+        "Id": "(O)254",
+        "ItemId": "(O)254",
+        "MinStack": 15,
+        "MaxStack": 21,
+        "Quality": -1,
+        "ToolUpgradeLevel": -1,
+        "IsRecipe": false,
+        "StackModifierMode": 0,
+        "QualityModifierMode": 0
+      }
+    ],
+    "Texture": "TileSheets\\Crops",
+    "TexturePosition": {
+      "X": 160,
+      "Y": 512
+    },
+    "TileSize": {
+      "X": 3,
+      "Y": 3
+    },
+    "Health": 3,
+    "Chance": 0.01
+  },
+  "Pumpkin": {
+    "FromItemId": "(O)276",
+    "HarvestItems": [
+      {
+        "Chance": 1.0,
+        "ScaledMinStackWhenShaving": 2,
+        "ScaledMaxStackWhenShaving": 2,
+        "Id": "(O)276",
+        "ItemId": "(O)276",
+        "MinStack": 15,
+        "MaxStack": 21,
+        "Quality": -1,
+        "ToolUpgradeLevel": -1,
+        "IsRecipe": false,
+        "StackModifierMode": 0,
+        "QualityModifierMode": 0
+      }
+    ],
+    "Texture": "TileSheets\\Crops",
+    "TexturePosition": {
+      "X": 208,
+      "Y": 512
+    },
+    "TileSize": {
+      "X": 3,
+      "Y": 3
+    },
+    "Health": 3,
+    "Chance": 0.01
+  },
+  "Powdermelon": {
+    "FromItemId": "(O)Powdermelon",
+    "HarvestItems": [
+      {
+        "Chance": 1.0,
+        "ScaledMinStackWhenShaving": 2,
+        "ScaledMaxStackWhenShaving": 2,
+        "Id": "(O)Powdermelon",
+        "ItemId": "(O)Powdermelon",
+        "MinStack": 15,
+        "MaxStack": 21,
+        "Quality": -1,
+        "ToolUpgradeLevel": -1,
+        "IsRecipe": false,
+        "StackModifierMode": 0,
+        "QualityModifierMode": 0
+      }
+    ],
+    "Texture": "LooseSprites\\Cursors_1_6",
+    "TexturePosition": {
+      "X": 320,
+      "Y": 448
+    },
+    "TileSize": {
+      "X": 3,
+      "Y": 3
+    },
+    "Health": 3,
+    "Chance": 0.01
+  },
+  "QiFruit": {
+    "FromItemId": "(O)889",
+    "HarvestItems": [
+      {
+        "Chance": 1.0,
+        "ScaledMinStackWhenShaving": 2,
+        "ScaledMaxStackWhenShaving": 2,
+        "Id": "(O)889",
+        "ItemId": "(O)889",
+        "MinStack": 20,
+        "MaxStack": 26,
+        "Quality": -1,
+        "ToolUpgradeLevel": -1,
+        "IsRecipe": false,
+        "StackModifierMode": 0,
+        "QualityModifierMode": 0
+      }
+    ],
+    "Texture": "LooseSprites\\Cursors_1_6",
+    "TexturePosition": {
+      "X": 368,
+      "Y": 448
+    },
+    "TileSize": {
+      "X": 3,
+      "Y": 3
+    },
+    "Health": 3,
+    "Chance": 0.01
+  }
+}

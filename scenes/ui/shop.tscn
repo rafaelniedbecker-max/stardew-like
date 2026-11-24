@@ -1,0 +1,148 @@
+[gd_scene load_steps=3 format=3 uid://bkqrxw9w9x8oh]
+
+[ext_resource type="Script" path="res://scripts/ui/shop_ui.gd" id="1"]
+
+[node name="ShopUI" type="Control"]
+script = ExtResource("1")
+anchors_preset = 15  # FULL_RECT
+layer = 10
+
+[node name="Panel" type="Panel" parent="."]
+anchors_preset = 9  # TOP_WIDE
+offset_left = 100
+offset_top = 50
+offset_right = -100
+offset_bottom = -50
+layout_mode = 3
+
+[node name="TopBar" type="HBoxContainer" parent="Panel"]
+theme_override_constants/separation = 10
+
+[node name="OwnerPortrait" type="TextureRect" parent="TopBar"]
+custom_minimum_size = Vector2(64, 64)
+stretch_mode = 2
+
+[node name="OwnerInfo" type="VBoxContainer" parent="TopBar"]
+
+[node name="OwnerName" type="Label" parent="OwnerInfo"]
+text = "Pierre"
+theme_override_font_size = 24
+theme_override_colors/font_color = Color(1, 0.8, 0.2)
+
+[node name="OwnerDialogue" type="Label" parent="OwnerInfo"]
+text = "Welcome to Pierre's General Store!"
+autowrap_mode = 2
+theme_override_font_size = 14
+
+[node name="GoldLabel" type="Label" parent="TopBar"]
+text = "500g"
+theme_override_font_size = 20
+theme_override_colors/font_color = Color(1, 0.85, 0.1)
+
+[node name="FilterBar" type="HBoxContainer" parent="Panel"]
+anchors_preset = 9
+offset_top = 100
+
+[node name="HBoxContainer" type="HBoxContainer" parent="FilterBar"]
+theme_override_constants/separation = 5
+
+[node name="TabContainer" type="TabContainer" parent="Panel"]
+anchors_preset = 15
+offset_top = 140
+offset_bottom = 60
+
+[node name="BuyTab" type="TabButton" parent="TabContainer"]
+text = "Comprar"
+
+[node name="BuyPanel" type="ScrollContainer" parent="BuyTab"]
+custom_minimum_size = Vector2(0, 300)
+
+[node name="GridContainer" type="GridContainer" parent="BuyPanel/ScrollContainer"]
+columns = 4
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 10
+
+[node name="SellTab" type="TabButton" parent="TabContainer"]
+text = "Vender"
+
+[node name="SellPanel" type="ScrollContainer" parent="SellTab"]
+custom_minimum_size = Vector2(0, 300)
+
+[node name="GridContainer" type="GridContainer" parent="SellPanel/ScrollContainer"]
+columns = 4
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 10
+
+[node name="CloseButton" type="Button" parent="Panel"]
+anchors_preset = 6  # TOP_RIGHT
+offset_right = -10
+offset_top = 10
+text = "X"
+custom_minimum_size = Vector2(40, 40)
+
+[node name="ItemTooltip" type="Panel" parent="."]
+visible = false
+mouse_filter = 0
+custom_minimum_size = Vector2(250, 150)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ItemTooltip"]
+theme_override_constants/separation = 5
+
+[node name="NameLabel" type="Label" parent="VBoxContainer"]
+text = "Item Name"
+theme_override_font_size = 18
+theme_override_colors/font_color = Color(1, 1, 1)
+
+[node name="DescLabel" type="Label" parent="VBoxContainer"]
+text = "Description"
+autowrap_mode = 2
+theme_override_font_size = 12
+theme_override_colors/font_color = Color(0.8, 0.8, 0.8)
+
+[node name="PriceLabel" type="Label" parent="VBoxContainer"]
+text = "100g | Estoque: 10"
+theme_override_font_size = 14
+theme_override_colors/font_color = Color(1, 0.85, 0.1)
+
+[node name="QualityLabel" type="Label" parent="VBoxContainer"]
+text = "Qualidade: Normal → Prata → Ouro → Irídio"
+theme_override_font_size = 11
+theme_override_colors/font_color = Color(0.7, 0.7, 0.7)
+
+[node name="QuantityDialog" type="ConfirmationDialog" parent="."]
+title = "Quantidade"
+
+[node name="VBoxContainer" type="VBoxContainer" parent="QuantityDialog"]
+theme_override_constants/separation = 10
+
+[node name="QtyLabel" type="Label" parent="VBoxContainer"]
+text = "Comprar: Parsnip Seeds"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+theme_override_constants/separation = 10
+
+[node name="Label" type="Label" parent="HBoxContainer"]
+text = "Quantidade:"
+
+[node name="SpinBox" type="SpinBox" parent="HBoxContainer"]
+min_value = 1
+max_value = 999
+value = 1
+step = 1
+
+[node name="TotalLabel" type="Label" parent="VBoxContainer"]
+text = "Total: 20g"
+theme_override_font_size = 16
+theme_override_colors/font_color = Color(1, 0.85, 0.1)
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+theme_override_constants/separation = 10
+
+[node name="BuyButton" type="Button" parent="HBoxContainer"]
+text = "Comprar"
+custom_minimum_size = Vector2(100, 40)
+
+[node name="SellButton" type="Button" parent="HBoxContainer"]
+text = "Vender"
+custom_minimum_size = Vector2(100, 40)
+visible = false

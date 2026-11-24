@@ -1,0 +1,207 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=5
+
+[application]
+
+config/name="Stardew-Like"
+run/main_scene="res://scenes/world/world.tscn"
+config/features=PackedStringArray("4.7")
+
+[autoload]
+
+GameManager="res://scripts/core/game_manager.gd"
+TimeManager="res://scripts/core/time_manager.gd"
+InventoryManager="res://scripts/core/inventory_manager.gd"
+SaveManager="res://scripts/core/save_manager.gd"
+DataLoader="res://scripts/data/data_loader.gd"
+BuildingManager="res://scripts/core/building_manager.gd"
+FestivalManager="res://scripts/core/festival_manager.gd"
+QuestManager="res://scripts/core/quest_manager.gd"
+RelationshipManager="res://scripts/core/relationship_manager.gd"
+BuffManager="res://scripts/core/buff_manager.gd"
+MineManager="res://scripts/core/mine_manager.gd"
+FishingManager="res://scripts/core/fishing_manager.gd"
+SpecialOrdersBoard="res://scripts/ui/special_orders_board.gd"
+CommunityCenter="res://scripts/core/community_center.gd"
+Museum="res://scripts/core/museum.gd"
+Greenhouse="res://scripts/core/greenhouse.gd"
+MineCart="res://scripts/core/minecart.gd"
+PetManager="res://scripts/core/pet_manager.gd"
+TVChannels="res://scripts/core/tv_channels.gd"
+MailSystem="res://scripts/core/mail_system.gd"
+CharacterCustomization="res://scripts/core/character_customization.gd"
+CollectionsMenu="res://scripts/ui/collections_menu.gd"
+Logger="res://scripts/core/logger.gd"
+ParticleManager="res://scripts/core/particle_manager.gd"
+PauseMenu="res://scripts/ui/pause_menu.gd"
+SettingsMenu="res://scripts/ui/settings_menu.gd"
+CookingMenu="res://scripts/ui/cooking_menu.gd"
+TVChannelsUI="res://scripts/ui/tv_channels_ui.gd"
+FestivalMinigames="res://scripts/ui/festival_minigames.gd"
+HeartEventsUI="res://scripts/ui/heart_events.gd"
+MineTransitions="res://scripts/ui/mine_transitions.gd"
+AudioManager="res://scripts/core/audio_manager.gd"
+CookingMenu="res://scripts/ui/cooking_menu.gd"
+TVChannelsUI="res://scripts/ui/tv_channels_ui.gd"
+FestivalMinigames="res://scripts/ui/festival_minigames.gd"
+HeartEventsUI="res://scripts/ui/heart_events.gd"
+MineTransitions="res://scripts/ui/mine_transitions.gd"
+
+[display]
+
+window/size/viewport_width=1280
+window/size/viewport_height=720
+window/mode=0
+window/title="Stardew-Like"
+
+[input]
+
+actions=[{
+"deadzone": 0.5,
+"events": [{
+"physical_keycode": "W",
+"type": "Key"
+}, {
+"physical_keycode": "Up",
+"type": "Key"
+}],
+"name": "move_up"
+}, {
+"deadzone": 0.5,
+"events": [{
+"physical_keycode": "S",
+"type": "Key"
+}, {
+"physical_keycode": "Down",
+"type": "Key"
+}],
+"name": "move_down"
+}, {
+"deadzone": 0.5,
+"events": [{
+"physical_keycode": "A",
+"type": "Key"
+}, {
+"physical_keycode": "Left",
+"type": "Key"
+}],
+"name": "move_left"
+}, {
+"deadzone": 0.5,
+"events": [{
+"physical_keycode": "D",
+"type": "Key"
+}, {
+"physical_keycode": "Right",
+"type": "Key"
+}],
+"name": "move_right"
+}, {
+"deadzone": 0.5,
+"events": [{
+"physical_keycode": "E",
+"type": "Key"
+}, {
+"physical_keycode": "Space",
+"type": "Key"
+}],
+"name": "interact"
+}, {
+"deadzone": 0.5,
+"events": [{
+"button_index": 0,
+"type": "MouseButton"
+}],
+"name": "tool_use"
+}, {
+"deadzone": 0.5,
+"events": [{
+"button_index": 1,
+"type": "MouseButton"
+}],
+"name": "tool_alt"
+}, {
+"deadzone": 0.5,
+"events": [{
+"physical_keycode": "Tab",
+"type": "Key"
+}, {
+"physical_keycode": "I",
+"type": "Key"
+}],
+"name": "inventory"
+}, {
+"deadzone": 0.5,
+"events": [{
+"physical_keycode": "Escape",
+"type": "Key"
+}],
+"name": "pause"
+}, {
+"deadzone": 0.5,
+"events": [{
+"physical_keycode": "Key1",
+"type": "Key"
+}],
+"name": "hotbar_1"
+}, {
+"deadzone": 0.5,
+"events": [{
+"physical_keycode": "Key2",
+"type": "Key"
+}],
+"name": "hotbar_2"
+}, {
+"deadzone": 0.5,
+"events": [{
+"physical_keycode": "Key3",
+"type": "Key"
+}],
+"name": "hotbar_3"
+}, {
+"deadzone": 0.5,
+"events": [{
+"physical_keycode": "Key4",
+"type": "Key"
+}],
+"name": "hotbar_4"
+}, {
+"deadzone": 0.5,
+"events": [{
+"physical_keycode": "Key5",
+"type": "Key"
+}],
+"name": "hotbar_5"
+}, {
+"deadzone": 0.5,
+"events": [{
+"physical_keycode": "Key6",
+"type": "Key"
+}],
+"name": "hotbar_6"
+}, {
+"deadzone": 0.5,
+"events": [{
+"physical_keycode": "Key7",
+"type": "Key"
+}],
+"name": "hotbar_7"
+}, {
+"deadzone": 0.5,
+"events": [{
+"physical_keycode": "Key8",
+"type": "Key"
+}],
+"name": "hotbar_8"
+}]
+
+[rendering]
+
+canvas/light_2d/use_new_backend=true

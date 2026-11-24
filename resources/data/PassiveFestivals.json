@@ -1,0 +1,54 @@
+{
+  "NightMarket": {
+    "DisplayName": "[LocalizedText Strings\\UI:Billboard_NightMarket]",
+    "Condition": "",
+    "ShowOnCalendar": true,
+    "Season": 3,
+    "StartDay": 15,
+    "EndDay": 17,
+    "StartTime": 1700,
+    "StartMessage": "[LocalizedText Strings\\Events:BeachNightMarket_NowOpen]",
+    "OnlyShowMessageOnFirstDay": false,
+    "MapReplacements": {
+      "Beach": "BeachNightMarket"
+    }
+  },
+  "DesertFestival": {
+    "DisplayName": "[LocalizedText Strings\\1_6_Strings:DesertFestival]",
+    "Condition": "LOCATION_ACCESSIBLE Desert",
+    "ShowOnCalendar": true,
+    "Season": 0,
+    "StartDay": 15,
+    "EndDay": 17,
+    "StartTime": 1000,
+    "StartMessage": "[LocalizedText Strings\\1_6_Strings:DesertFestival_NowOpen]",
+    "OnlyShowMessageOnFirstDay": false,
+    "MapReplacements": {
+      "Desert": "DesertFestival"
+    },
+    "DailySetupMethod": "StardewValley.Locations.DesertFestival, Stardew Valley: SetupFestivalDay",
+    "CleanupMethod": "StardewValley.Locations.DesertFestival, Stardew Valley: CleanupFestival"
+  },
+  "TroutDerby": {
+    "DisplayName": "",
+    "Condition": "",
+    "ShowOnCalendar": false,
+    "Season": 1,
+    "StartDay": 20,
+    "EndDay": 21,
+    "StartTime": 610,
+    "StartMessage": "[LocalizedText Strings\\1_6_Strings:TroutDerby_NowOpen]",
+    "OnlyShowMessageOnFirstDay": true
+  },
+  "SquidFest": {
+    "DisplayName": "",
+    "Condition": "",
+    "ShowOnCalendar": false,
+    "Season": 3,
+    "StartDay": 12,
+    "EndDay": 13,
+    "StartTime": 610,
+    "StartMessage": "[LocalizedText Strings\\1_6_Strings:SquidFest_NowOpen]",
+    "OnlyShowMessageOnFirstDay": true
+  }
+}

@@ -1,0 +1,1104 @@
+{
+  "White Chicken": {
+    "DisplayName": "[LocalizedText Strings\\FarmAnimals:DisplayType_Chicken_White]",
+    "House": "Coop",
+    "Gender": 0,
+    "PurchasePrice": 400,
+    "SellPrice": 800,
+    "ShopTexture": "LooseSprites\\Cursors",
+    "ShopSourceRect": {
+      "X": 0,
+      "Y": 448,
+      "Width": 32,
+      "Height": 16
+    },
+    "ShopDisplayName": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5922]",
+    "ShopDescription": "[LocalizedText Strings\\StringsFromCSFiles:PurchaseAnimalsMenu.cs.11334]\\n[LocalizedText Strings\\StringsFromCSFiles:PurchaseAnimalsMenu.cs.11335]",
+    "ShopMissingBuildingDescription": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5926]",
+    "RequiredBuilding": "Coop",
+    "AlternatePurchaseTypes": [
+      {
+        "Id": "BlueChicken",
+        "Condition": "RANDOM 0.25, PLAYER_HAS_SEEN_EVENT Current 3900074",
+        "AnimalIds": [
+          "Blue Chicken"
+        ]
+      },
+      {
+        "Id": "Default",
+        "AnimalIds": [
+          "Brown Chicken",
+          "White Chicken"
+        ]
+      }
+    ],
+    "EggItemIds": [
+      "176",
+      "174"
+    ],
+    "IncubationTime": -1,
+    "IncubatorParentSheetOffset": 1,
+    "BirthText": "[LocalizedText Strings\\Locations:AnimalHouse_Incubator_Hatch_RegularEgg]",
+    "DaysToMature": 3,
+    "CanGetPregnant": false,
+    "DaysToProduce": 1,
+    "HarvestType": 0,
+    "ProduceItemIds": [
+      {
+        "Id": "Default",
+        "MinimumFriendship": 0,
+        "ItemId": "176"
+      }
+    ],
+    "DeluxeProduceItemIds": [
+      {
+        "Id": "Default",
+        "MinimumFriendship": 0,
+        "ItemId": "174"
+      }
+    ],
+    "ProduceOnMature": false,
+    "FriendshipForFasterProduce": -1,
+    "DeluxeProduceMinimumFriendship": 200,
+    "DeluxeProduceCareDivisor": 1200.0,
+    "DeluxeProduceLuckMultiplier": 0.0,
+    "CanEatGoldenCrackers": true,
+    "ProfessionForHappinessBoost": 2,
+    "ProfessionForQualityBoost": 2,
+    "ProfessionForFasterProduce": -1,
+    "Sound": "cluck",
+    "Texture": "Animals\\White Chicken",
+    "BabyTexture": "Animals\\BabyWhite Chicken",
+    "UseFlippedRightForLeft": false,
+    "SpriteWidth": 16,
+    "SpriteHeight": 16,
+    "UseDoubleUniqueAnimationFrames": true,
+    "SleepFrame": 16,
+    "EmoteOffset": {
+      "X": 0,
+      "Y": -16
+    },
+    "SwimOffset": {
+      "X": 0,
+      "Y": 112
+    },
+    "CanSwim": false,
+    "BabiesFollowAdults": true,
+    "GrassEatAmount": 2,
+    "HappinessDrain": 7,
+    "UpDownPetHitboxTileSize": "1, 1",
+    "LeftRightPetHitboxTileSize": "1, 1",
+    "BabyUpDownPetHitboxTileSize": "1, 1",
+    "BabyLeftRightPetHitboxTileSize": "1, 1",
+    "StatToIncrementOnProduce": [
+      {
+        "Id": "ChickenEggsLayed",
+        "RequiredTags": [
+          "egg_item"
+        ],
+        "StatName": "ChickenEggsLayed"
+      }
+    ],
+    "ShowInSummitCredits": true
+  },
+  "Brown Chicken": {
+    "DisplayName": "[LocalizedText Strings\\FarmAnimals:DisplayType_Chicken_Brown]",
+    "House": "Coop",
+    "Gender": 0,
+    "PurchasePrice": -1,
+    "SellPrice": 800,
+    "ShopSourceRect": {
+      "X": 0,
+      "Y": 0,
+      "Width": 0,
+      "Height": 0
+    },
+    "EggItemIds": [
+      "180",
+      "182"
+    ],
+    "IncubationTime": -1,
+    "IncubatorParentSheetOffset": 2,
+    "BirthText": "[LocalizedText Strings\\Locations:AnimalHouse_Incubator_Hatch_RegularEgg]",
+    "DaysToMature": 3,
+    "CanGetPregnant": false,
+    "DaysToProduce": 1,
+    "HarvestType": 0,
+    "ProduceItemIds": [
+      {
+        "Id": "Default",
+        "MinimumFriendship": 0,
+        "ItemId": "180"
+      }
+    ],
+    "DeluxeProduceItemIds": [
+      {
+        "Id": "Default",
+        "MinimumFriendship": 0,
+        "ItemId": "182"
+      }
+    ],
+    "ProduceOnMature": false,
+    "FriendshipForFasterProduce": -1,
+    "DeluxeProduceMinimumFriendship": 200,
+    "DeluxeProduceCareDivisor": 1200.0,
+    "DeluxeProduceLuckMultiplier": 0.0,
+    "CanEatGoldenCrackers": true,
+    "ProfessionForHappinessBoost": 2,
+    "ProfessionForQualityBoost": 2,
+    "ProfessionForFasterProduce": -1,
+    "Sound": "cluck",
+    "Texture": "Animals\\Brown Chicken",
+    "BabyTexture": "Animals\\BabyBrown Chicken",
+    "UseFlippedRightForLeft": false,
+    "SpriteWidth": 16,
+    "SpriteHeight": 16,
+    "UseDoubleUniqueAnimationFrames": true,
+    "SleepFrame": 16,
+    "EmoteOffset": {
+      "X": 0,
+      "Y": -16
+    },
+    "SwimOffset": {
+      "X": 0,
+      "Y": 112
+    },
+    "CanSwim": false,
+    "BabiesFollowAdults": true,
+    "GrassEatAmount": 2,
+    "HappinessDrain": 7,
+    "UpDownPetHitboxTileSize": "1, 1",
+    "LeftRightPetHitboxTileSize": "1, 1",
+    "BabyUpDownPetHitboxTileSize": "1, 1",
+    "BabyLeftRightPetHitboxTileSize": "1, 1",
+    "StatToIncrementOnProduce": [
+      {
+        "Id": "ChickenEggsLayed",
+        "RequiredTags": [
+          "egg_item"
+        ],
+        "StatName": "ChickenEggsLayed"
+      }
+    ],
+    "ShowInSummitCredits": true
+  },
+  "Blue Chicken": {
+    "DisplayName": "[LocalizedText Strings\\FarmAnimals:DisplayType_Chicken_Blue]",
+    "House": "Coop",
+    "Gender": 0,
+    "PurchasePrice": -1,
+    "SellPrice": 800,
+    "ShopSourceRect": {
+      "X": 0,
+      "Y": 0,
+      "Width": 0,
+      "Height": 0
+    },
+    "IncubationTime": -1,
+    "IncubatorParentSheetOffset": 1,
+    "DaysToMature": 3,
+    "CanGetPregnant": false,
+    "DaysToProduce": 1,
+    "HarvestType": 0,
+    "ProduceItemIds": [
+      {
+        "Id": "Default",
+        "MinimumFriendship": 0,
+        "ItemId": "176"
+      }
+    ],
+    "DeluxeProduceItemIds": [
+      {
+        "Id": "Default",
+        "MinimumFriendship": 0,
+        "ItemId": "174"
+      }
+    ],
+    "ProduceOnMature": false,
+    "FriendshipForFasterProduce": -1,
+    "DeluxeProduceMinimumFriendship": 200,
+    "DeluxeProduceCareDivisor": 1200.0,
+    "DeluxeProduceLuckMultiplier": 0.0,
+    "CanEatGoldenCrackers": true,
+    "ProfessionForHappinessBoost": 2,
+    "ProfessionForQualityBoost": 2,
+    "ProfessionForFasterProduce": -1,
+    "Sound": "cluck",
+    "Texture": "Animals\\Blue Chicken",
+    "BabyTexture": "Animals\\BabyBlue Chicken",
+    "UseFlippedRightForLeft": false,
+    "SpriteWidth": 16,
+    "SpriteHeight": 16,
+    "UseDoubleUniqueAnimationFrames": true,
+    "SleepFrame": 16,
+    "EmoteOffset": {
+      "X": 0,
+      "Y": -16
+    },
+    "SwimOffset": {
+      "X": 0,
+      "Y": 112
+    },
+    "CanSwim": false,
+    "BabiesFollowAdults": true,
+    "GrassEatAmount": 2,
+    "HappinessDrain": 7,
+    "UpDownPetHitboxTileSize": "1, 1",
+    "LeftRightPetHitboxTileSize": "1, 1",
+    "BabyUpDownPetHitboxTileSize": "1, 1",
+    "BabyLeftRightPetHitboxTileSize": "1, 1",
+    "StatToIncrementOnProduce": [
+      {
+        "Id": "ChickenEggsLayed",
+        "RequiredTags": [
+          "egg_item"
+        ],
+        "StatName": "ChickenEggsLayed"
+      }
+    ],
+    "ShowInSummitCredits": true
+  },
+  "Void Chicken": {
+    "DisplayName": "[LocalizedText Strings\\FarmAnimals:DisplayType_Chicken_Void]",
+    "House": "Coop",
+    "Gender": 0,
+    "PurchasePrice": -1,
+    "SellPrice": 800,
+    "ShopSourceRect": {
+      "X": 0,
+      "Y": 0,
+      "Width": 0,
+      "Height": 0
+    },
+    "EggItemIds": [
+      "305"
+    ],
+    "IncubationTime": -1,
+    "IncubatorParentSheetOffset": 2,
+    "BirthText": "[LocalizedText Strings\\Locations:AnimalHouse_Incubator_Hatch_VoidEgg]",
+    "DaysToMature": 3,
+    "CanGetPregnant": false,
+    "DaysToProduce": 1,
+    "HarvestType": 0,
+    "ProduceItemIds": [
+      {
+        "Id": "Default",
+        "MinimumFriendship": 0,
+        "ItemId": "305"
+      }
+    ],
+    "DeluxeProduceItemIds": [],
+    "ProduceOnMature": false,
+    "FriendshipForFasterProduce": -1,
+    "DeluxeProduceMinimumFriendship": 200,
+    "DeluxeProduceCareDivisor": 1200.0,
+    "DeluxeProduceLuckMultiplier": 0.0,
+    "CanEatGoldenCrackers": true,
+    "ProfessionForHappinessBoost": 2,
+    "ProfessionForQualityBoost": 2,
+    "ProfessionForFasterProduce": -1,
+    "Sound": "cluck",
+    "Texture": "Animals\\Void Chicken",
+    "BabyTexture": "Animals\\BabyVoid Chicken",
+    "UseFlippedRightForLeft": false,
+    "SpriteWidth": 16,
+    "SpriteHeight": 16,
+    "UseDoubleUniqueAnimationFrames": true,
+    "SleepFrame": 16,
+    "EmoteOffset": {
+      "X": 0,
+      "Y": -16
+    },
+    "SwimOffset": {
+      "X": 0,
+      "Y": 112
+    },
+    "CanSwim": false,
+    "BabiesFollowAdults": true,
+    "GrassEatAmount": 2,
+    "HappinessDrain": 5,
+    "UpDownPetHitboxTileSize": "1, 1",
+    "LeftRightPetHitboxTileSize": "1, 1",
+    "BabyUpDownPetHitboxTileSize": "1, 1",
+    "BabyLeftRightPetHitboxTileSize": "1, 1",
+    "StatToIncrementOnProduce": [
+      {
+        "Id": "ChickenEggsLayed",
+        "RequiredTags": [
+          "egg_item"
+        ],
+        "StatName": "ChickenEggsLayed"
+      }
+    ],
+    "ShowInSummitCredits": true
+  },
+  "Golden Chicken": {
+    "DisplayName": "[LocalizedText Strings\\FarmAnimals:DisplayType_Chicken_Golden]",
+    "House": "Coop",
+    "Gender": 0,
+    "PurchasePrice": -1,
+    "SellPrice": 800,
+    "ShopSourceRect": {
+      "X": 0,
+      "Y": 0,
+      "Width": 0,
+      "Height": 0
+    },
+    "EggItemIds": [
+      "928"
+    ],
+    "IncubationTime": -1,
+    "IncubatorParentSheetOffset": 1,
+    "BirthText": "[LocalizedText Strings\\Locations:AnimalHouse_Incubator_Hatch_GoldenEgg]",
+    "DaysToMature": 3,
+    "CanGetPregnant": false,
+    "DaysToProduce": 1,
+    "HarvestType": 0,
+    "ProduceItemIds": [
+      {
+        "Id": "Default",
+        "MinimumFriendship": 0,
+        "ItemId": "928"
+      }
+    ],
+    "DeluxeProduceItemIds": [],
+    "ProduceOnMature": false,
+    "FriendshipForFasterProduce": -1,
+    "DeluxeProduceMinimumFriendship": 200,
+    "DeluxeProduceCareDivisor": 1200.0,
+    "DeluxeProduceLuckMultiplier": 0.0,
+    "CanEatGoldenCrackers": true,
+    "ProfessionForHappinessBoost": 2,
+    "ProfessionForQualityBoost": 2,
+    "ProfessionForFasterProduce": -1,
+    "Sound": "cluck",
+    "Texture": "Animals\\Golden Chicken",
+    "BabyTexture": "Animals\\BabyGolden Chicken",
+    "UseFlippedRightForLeft": false,
+    "SpriteWidth": 16,
+    "SpriteHeight": 16,
+    "UseDoubleUniqueAnimationFrames": true,
+    "SleepFrame": 16,
+    "EmoteOffset": {
+      "X": 0,
+      "Y": -16
+    },
+    "SwimOffset": {
+      "X": 0,
+      "Y": 112
+    },
+    "CanSwim": false,
+    "BabiesFollowAdults": true,
+    "GrassEatAmount": 2,
+    "HappinessDrain": 10,
+    "UpDownPetHitboxTileSize": "1, 1",
+    "LeftRightPetHitboxTileSize": "1, 1",
+    "BabyUpDownPetHitboxTileSize": "1, 1",
+    "BabyLeftRightPetHitboxTileSize": "1, 1",
+    "StatToIncrementOnProduce": [
+      {
+        "Id": "ChickenEggsLayed",
+        "RequiredTags": [
+          "egg_item"
+        ],
+        "StatName": "ChickenEggsLayed"
+      }
+    ],
+    "ShowInSummitCredits": true
+  },
+  "Duck": {
+    "DisplayName": "[LocalizedText Strings\\FarmAnimals:DisplayType_Duck]",
+    "House": "Coop",
+    "Gender": 0,
+    "PurchasePrice": 600,
+    "SellPrice": 1200,
+    "ShopTexture": "LooseSprites\\Cursors",
+    "ShopSourceRect": {
+      "X": 0,
+      "Y": 464,
+      "Width": 32,
+      "Height": 16
+    },
+    "ShopDisplayName": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5937]",
+    "ShopDescription": "[LocalizedText Strings\\StringsFromCSFiles:PurchaseAnimalsMenu.cs.11337]\\n[LocalizedText Strings\\StringsFromCSFiles:PurchaseAnimalsMenu.cs.11335]",
+    "ShopMissingBuildingDescription": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5940]",
+    "RequiredBuilding": "Big Coop",
+    "EggItemIds": [
+      "442"
+    ],
+    "IncubationTime": -1,
+    "IncubatorParentSheetOffset": 1,
+    "BirthText": "[LocalizedText Strings\\Locations:AnimalHouse_Incubator_Hatch_DuckEgg]",
+    "DaysToMature": 5,
+    "CanGetPregnant": false,
+    "DaysToProduce": 2,
+    "HarvestType": 0,
+    "ProduceItemIds": [
+      {
+        "Id": "Default",
+        "MinimumFriendship": 0,
+        "ItemId": "442"
+      }
+    ],
+    "DeluxeProduceItemIds": [
+      {
+        "Id": "Default",
+        "MinimumFriendship": 0,
+        "ItemId": "444"
+      }
+    ],
+    "ProduceOnMature": false,
+    "FriendshipForFasterProduce": -1,
+    "DeluxeProduceMinimumFriendship": 200,
+    "DeluxeProduceCareDivisor": 4750.0,
+    "DeluxeProduceLuckMultiplier": 1.01,
+    "CanEatGoldenCrackers": true,
+    "ProfessionForHappinessBoost": 2,
+    "ProfessionForQualityBoost": 2,
+    "ProfessionForFasterProduce": -1,
+    "Sound": "Duck",
+    "Texture": "Animals\\Duck",
+    "BabyTexture": "Animals\\BabyWhite Chicken",
+    "UseFlippedRightForLeft": false,
+    "SpriteWidth": 16,
+    "SpriteHeight": 16,
+    "UseDoubleUniqueAnimationFrames": true,
+    "SleepFrame": 16,
+    "EmoteOffset": {
+      "X": 0,
+      "Y": -16
+    },
+    "SwimOffset": {
+      "X": 0,
+      "Y": 112
+    },
+    "CanSwim": true,
+    "BabiesFollowAdults": true,
+    "GrassEatAmount": 2,
+    "HappinessDrain": 5,
+    "UpDownPetHitboxTileSize": "1, 1",
+    "LeftRightPetHitboxTileSize": "1, 1",
+    "BabyUpDownPetHitboxTileSize": "1, 1",
+    "BabyLeftRightPetHitboxTileSize": "1, 1",
+    "StatToIncrementOnProduce": [
+      {
+        "Id": "DuckEggsLayed",
+        "RequiredTags": [
+          "egg_item"
+        ],
+        "StatName": "DuckEggsLayed"
+      }
+    ],
+    "ShowInSummitCredits": true
+  },
+  "Rabbit": {
+    "DisplayName": "[LocalizedText Strings\\FarmAnimals:DisplayType_Rabbit]",
+    "House": "Coop",
+    "Gender": 2,
+    "PurchasePrice": 4000,
+    "SellPrice": 8000,
+    "ShopTexture": "LooseSprites\\Cursors",
+    "ShopSourceRect": {
+      "X": 64,
+      "Y": 464,
+      "Width": 32,
+      "Height": 16
+    },
+    "ShopDisplayName": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5945]",
+    "ShopDescription": "[LocalizedText Strings\\StringsFromCSFiles:PurchaseAnimalsMenu.cs.11340]\\n[LocalizedText Strings\\StringsFromCSFiles:PurchaseAnimalsMenu.cs.11335]",
+    "ShopMissingBuildingDescription": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5947]",
+    "RequiredBuilding": "Deluxe Coop",
+    "IncubationTime": -1,
+    "IncubatorParentSheetOffset": 1,
+    "DaysToMature": 6,
+    "CanGetPregnant": false,
+    "DaysToProduce": 4,
+    "HarvestType": 0,
+    "ProduceItemIds": [
+      {
+        "Id": "Default",
+        "MinimumFriendship": 0,
+        "ItemId": "440"
+      }
+    ],
+    "DeluxeProduceItemIds": [
+      {
+        "Id": "Default",
+        "MinimumFriendship": 0,
+        "ItemId": "446"
+      }
+    ],
+    "ProduceOnMature": false,
+    "FriendshipForFasterProduce": -1,
+    "DeluxeProduceMinimumFriendship": 0,
+    "DeluxeProduceCareDivisor": 5000.0,
+    "DeluxeProduceLuckMultiplier": 1.02,
+    "CanEatGoldenCrackers": true,
+    "ProfessionForHappinessBoost": 2,
+    "ProfessionForQualityBoost": 2,
+    "ProfessionForFasterProduce": -1,
+    "Sound": "rabbit",
+    "Texture": "Animals\\Rabbit",
+    "BabyTexture": "Animals\\BabyRabbit",
+    "UseFlippedRightForLeft": false,
+    "SpriteWidth": 16,
+    "SpriteHeight": 16,
+    "UseDoubleUniqueAnimationFrames": true,
+    "SleepFrame": 16,
+    "EmoteOffset": {
+      "X": 0,
+      "Y": -16
+    },
+    "SwimOffset": {
+      "X": 0,
+      "Y": 112
+    },
+    "CanSwim": false,
+    "BabiesFollowAdults": false,
+    "GrassEatAmount": 2,
+    "HappinessDrain": 5,
+    "UpDownPetHitboxTileSize": "1, 1",
+    "LeftRightPetHitboxTileSize": "1, 1",
+    "BabyUpDownPetHitboxTileSize": "1, 1",
+    "BabyLeftRightPetHitboxTileSize": "1, 1",
+    "StatToIncrementOnProduce": [
+      {
+        "Id": "RabbitWoolProduced",
+        "RequiredItemId": "(O)440",
+        "StatName": "RabbitWoolProduced"
+      }
+    ],
+    "ShowInSummitCredits": true
+  },
+  "Dinosaur": {
+    "DisplayName": "[LocalizedText Strings\\FarmAnimals:DisplayType_Dinosaur]",
+    "House": "Coop",
+    "Gender": 0,
+    "PurchasePrice": -1,
+    "SellPrice": 1000,
+    "ShopSourceRect": {
+      "X": 0,
+      "Y": 0,
+      "Width": 0,
+      "Height": 0
+    },
+    "EggItemIds": [
+      "107"
+    ],
+    "IncubationTime": 18000,
+    "IncubatorParentSheetOffset": 1,
+    "BirthText": "[LocalizedText Strings\\Locations:AnimalHouse_Incubator_Hatch_DinosaurEgg]",
+    "DaysToMature": 0,
+    "CanGetPregnant": false,
+    "DaysToProduce": 7,
+    "HarvestType": 0,
+    "ProduceItemIds": [
+      {
+        "Id": "Default",
+        "MinimumFriendship": 0,
+        "ItemId": "107"
+      }
+    ],
+    "DeluxeProduceItemIds": [],
+    "ProduceOnMature": false,
+    "FriendshipForFasterProduce": -1,
+    "DeluxeProduceMinimumFriendship": 200,
+    "DeluxeProduceCareDivisor": 1200.0,
+    "DeluxeProduceLuckMultiplier": 0.0,
+    "CanEatGoldenCrackers": true,
+    "ProfessionForHappinessBoost": 2,
+    "ProfessionForQualityBoost": 2,
+    "ProfessionForFasterProduce": -1,
+    "Texture": "Animals\\Dinosaur",
+    "UseFlippedRightForLeft": true,
+    "SpriteWidth": 16,
+    "SpriteHeight": 16,
+    "UseDoubleUniqueAnimationFrames": true,
+    "SleepFrame": 16,
+    "EmoteOffset": {
+      "X": 0,
+      "Y": -16
+    },
+    "SwimOffset": {
+      "X": 0,
+      "Y": 112
+    },
+    "CanSwim": false,
+    "BabiesFollowAdults": false,
+    "GrassEatAmount": 2,
+    "HappinessDrain": 3,
+    "UpDownPetHitboxTileSize": "1, 1",
+    "LeftRightPetHitboxTileSize": "1, 1",
+    "BabyUpDownPetHitboxTileSize": "1, 1",
+    "BabyLeftRightPetHitboxTileSize": "1, 1",
+    "ShowInSummitCredits": true
+  },
+  "White Cow": {
+    "DisplayName": "[LocalizedText Strings\\FarmAnimals:DisplayType_Cow_White]",
+    "House": "Barn",
+    "Gender": 0,
+    "PurchasePrice": 750,
+    "SellPrice": 1500,
+    "ShopTexture": "LooseSprites\\Cursors",
+    "ShopSourceRect": {
+      "X": 32,
+      "Y": 448,
+      "Width": 32,
+      "Height": 16
+    },
+    "ShopDisplayName": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5927]",
+    "ShopDescription": "[LocalizedText Strings\\StringsFromCSFiles:PurchaseAnimalsMenu.cs.11343]\\n[LocalizedText Strings\\StringsFromCSFiles:PurchaseAnimalsMenu.cs.11344]",
+    "ShopMissingBuildingDescription": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5931]",
+    "RequiredBuilding": "Barn",
+    "AlternatePurchaseTypes": [
+      {
+        "Id": "Default",
+        "AnimalIds": [
+          "White Cow",
+          "Brown Cow"
+        ]
+      }
+    ],
+    "IncubationTime": -1,
+    "IncubatorParentSheetOffset": 1,
+    "DaysToMature": 5,
+    "CanGetPregnant": true,
+    "DaysToProduce": 1,
+    "HarvestType": 1,
+    "HarvestTool": "Milk Pail",
+    "ProduceItemIds": [
+      {
+        "Id": "Default",
+        "MinimumFriendship": 0,
+        "ItemId": "184"
+      }
+    ],
+    "DeluxeProduceItemIds": [
+      {
+        "Id": "Default",
+        "MinimumFriendship": 0,
+        "ItemId": "186"
+      }
+    ],
+    "ProduceOnMature": false,
+    "FriendshipForFasterProduce": -1,
+    "DeluxeProduceMinimumFriendship": 200,
+    "DeluxeProduceCareDivisor": 1200.0,
+    "DeluxeProduceLuckMultiplier": 0.0,
+    "CanEatGoldenCrackers": true,
+    "ProfessionForHappinessBoost": 3,
+    "ProfessionForQualityBoost": 3,
+    "ProfessionForFasterProduce": -1,
+    "Sound": "cow",
+    "Texture": "Animals\\White Cow",
+    "BabyTexture": "Animals\\BabyWhite Cow",
+    "UseFlippedRightForLeft": true,
+    "SpriteWidth": 32,
+    "SpriteHeight": 32,
+    "UseDoubleUniqueAnimationFrames": false,
+    "SleepFrame": 12,
+    "EmoteOffset": {
+      "X": 0,
+      "Y": 0
+    },
+    "SwimOffset": {
+      "X": 0,
+      "Y": 112
+    },
+    "Shadow": {
+      "Visible": false
+    },
+    "CanSwim": false,
+    "BabiesFollowAdults": false,
+    "GrassEatAmount": 4,
+    "HappinessDrain": 6,
+    "UpDownPetHitboxTileSize": "1, 1.75",
+    "LeftRightPetHitboxTileSize": "1.75, 1.25",
+    "BabyUpDownPetHitboxTileSize": "1, 1.75",
+    "BabyLeftRightPetHitboxTileSize": "1.75, 1",
+    "StatToIncrementOnProduce": [
+      {
+        "Id": "cowMilkProduced",
+        "StatName": "cowMilkProduced"
+      }
+    ],
+    "ShowInSummitCredits": true
+  },
+  "Brown Cow": {
+    "DisplayName": "[LocalizedText Strings\\FarmAnimals:DisplayType_Cow_Brown]",
+    "House": "Barn",
+    "Gender": 0,
+    "PurchasePrice": -1,
+    "SellPrice": 1500,
+    "ShopSourceRect": {
+      "X": 0,
+      "Y": 0,
+      "Width": 0,
+      "Height": 0
+    },
+    "IncubationTime": -1,
+    "IncubatorParentSheetOffset": 1,
+    "DaysToMature": 5,
+    "CanGetPregnant": true,
+    "DaysToProduce": 1,
+    "HarvestType": 1,
+    "HarvestTool": "Milk Pail",
+    "ProduceItemIds": [
+      {
+        "Id": "Default",
+        "MinimumFriendship": 0,
+        "ItemId": "184"
+      }
+    ],
+    "DeluxeProduceItemIds": [
+      {
+        "Id": "Default",
+        "MinimumFriendship": 0,
+        "ItemId": "186"
+      }
+    ],
+    "ProduceOnMature": false,
+    "FriendshipForFasterProduce": -1,
+    "DeluxeProduceMinimumFriendship": 200,
+    "DeluxeProduceCareDivisor": 1200.0,
+    "DeluxeProduceLuckMultiplier": 0.0,
+    "CanEatGoldenCrackers": true,
+    "ProfessionForHappinessBoost": 3,
+    "ProfessionForQualityBoost": 3,
+    "ProfessionForFasterProduce": -1,
+    "Sound": "cow",
+    "Texture": "Animals\\Brown Cow",
+    "BabyTexture": "Animals\\BabyBrown Cow",
+    "UseFlippedRightForLeft": true,
+    "SpriteWidth": 32,
+    "SpriteHeight": 32,
+    "UseDoubleUniqueAnimationFrames": false,
+    "SleepFrame": 12,
+    "EmoteOffset": {
+      "X": 0,
+      "Y": 0
+    },
+    "SwimOffset": {
+      "X": 0,
+      "Y": 112
+    },
+    "Shadow": {
+      "Visible": false
+    },
+    "CanSwim": false,
+    "BabiesFollowAdults": false,
+    "GrassEatAmount": 4,
+    "HappinessDrain": 6,
+    "UpDownPetHitboxTileSize": "1, 1.75",
+    "LeftRightPetHitboxTileSize": "1.75, 1.25",
+    "BabyUpDownPetHitboxTileSize": "1, 1.75",
+    "BabyLeftRightPetHitboxTileSize": "1.75, 1",
+    "StatToIncrementOnProduce": [
+      {
+        "Id": "cowMilkProduced",
+        "StatName": "cowMilkProduced"
+      }
+    ],
+    "ShowInSummitCredits": false
+  },
+  "Goat": {
+    "DisplayName": "[LocalizedText Strings\\FarmAnimals:DisplayType_Goat]",
+    "House": "Barn",
+    "Gender": 0,
+    "PurchasePrice": 2000,
+    "SellPrice": 4000,
+    "ShopTexture": "LooseSprites\\Cursors",
+    "ShopSourceRect": {
+      "X": 64,
+      "Y": 448,
+      "Width": 32,
+      "Height": 16
+    },
+    "ShopDisplayName": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5933]",
+    "ShopDescription": "[LocalizedText Strings\\StringsFromCSFiles:PurchaseAnimalsMenu.cs.11349]\\n[LocalizedText Strings\\StringsFromCSFiles:PurchaseAnimalsMenu.cs.11344]",
+    "ShopMissingBuildingDescription": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5936]",
+    "RequiredBuilding": "Big Barn",
+    "IncubationTime": -1,
+    "IncubatorParentSheetOffset": 1,
+    "DaysToMature": 5,
+    "CanGetPregnant": true,
+    "DaysToProduce": 2,
+    "HarvestType": 1,
+    "HarvestTool": "Milk Pail",
+    "ProduceItemIds": [
+      {
+        "Id": "Default",
+        "MinimumFriendship": 0,
+        "ItemId": "436"
+      }
+    ],
+    "DeluxeProduceItemIds": [
+      {
+        "Id": "Default",
+        "MinimumFriendship": 0,
+        "ItemId": "438"
+      }
+    ],
+    "ProduceOnMature": false,
+    "FriendshipForFasterProduce": -1,
+    "DeluxeProduceMinimumFriendship": 200,
+    "DeluxeProduceCareDivisor": 1200.0,
+    "DeluxeProduceLuckMultiplier": 0.0,
+    "CanEatGoldenCrackers": true,
+    "ProfessionForHappinessBoost": 3,
+    "ProfessionForQualityBoost": 3,
+    "ProfessionForFasterProduce": -1,
+    "Sound": "goat",
+    "Texture": "Animals\\Goat",
+    "BabyTexture": "Animals\\BabyGoat",
+    "UseFlippedRightForLeft": true,
+    "SpriteWidth": 32,
+    "SpriteHeight": 32,
+    "UseDoubleUniqueAnimationFrames": false,
+    "SleepFrame": 12,
+    "EmoteOffset": {
+      "X": 0,
+      "Y": 0
+    },
+    "SwimOffset": {
+      "X": 0,
+      "Y": 112
+    },
+    "Shadow": {
+      "Visible": false
+    },
+    "CanSwim": false,
+    "BabiesFollowAdults": false,
+    "GrassEatAmount": 4,
+    "HappinessDrain": 5,
+    "UpDownPetHitboxTileSize": "1, 1.75",
+    "LeftRightPetHitboxTileSize": "1.75, 1.25",
+    "BabyUpDownPetHitboxTileSize": "1, 1.75",
+    "BabyLeftRightPetHitboxTileSize": "1.75, 1",
+    "StatToIncrementOnProduce": [
+      {
+        "Id": "goatMilkProduced",
+        "StatName": "goatMilkProduced"
+      }
+    ],
+    "ShowInSummitCredits": true
+  },
+  "Sheep": {
+    "DisplayName": "[LocalizedText Strings\\FarmAnimals:DisplayType_Sheep]",
+    "House": "Barn",
+    "Gender": 0,
+    "PurchasePrice": 4000,
+    "SellPrice": 8000,
+    "ShopTexture": "LooseSprites\\Cursors",
+    "ShopSourceRect": {
+      "X": 32,
+      "Y": 464,
+      "Width": 32,
+      "Height": 16
+    },
+    "ShopDisplayName": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5942]",
+    "ShopDescription": "[LocalizedText Strings\\StringsFromCSFiles:PurchaseAnimalsMenu.cs.11352]\\n[LocalizedText Strings\\StringsFromCSFiles:PurchaseAnimalsMenu.cs.11344]",
+    "ShopMissingBuildingDescription": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5944]",
+    "RequiredBuilding": "Deluxe Barn",
+    "IncubationTime": -1,
+    "IncubatorParentSheetOffset": 1,
+    "DaysToMature": 4,
+    "CanGetPregnant": true,
+    "DaysToProduce": 3,
+    "HarvestType": 1,
+    "HarvestTool": "Shears",
+    "ProduceItemIds": [
+      {
+        "Id": "Default",
+        "MinimumFriendship": 0,
+        "ItemId": "440"
+      }
+    ],
+    "DeluxeProduceItemIds": [],
+    "ProduceOnMature": true,
+    "FriendshipForFasterProduce": 900,
+    "DeluxeProduceMinimumFriendship": 200,
+    "DeluxeProduceCareDivisor": 1200.0,
+    "DeluxeProduceLuckMultiplier": 0.0,
+    "CanEatGoldenCrackers": true,
+    "ProfessionForHappinessBoost": 3,
+    "ProfessionForQualityBoost": 3,
+    "ProfessionForFasterProduce": 3,
+    "Sound": "sheep",
+    "Texture": "Animals\\Sheep",
+    "HarvestedTexture": "Animals\\ShearedSheep",
+    "BabyTexture": "Animals\\BabySheep",
+    "UseFlippedRightForLeft": true,
+    "SpriteWidth": 32,
+    "SpriteHeight": 32,
+    "UseDoubleUniqueAnimationFrames": false,
+    "SleepFrame": 12,
+    "EmoteOffset": {
+      "X": 0,
+      "Y": 0
+    },
+    "SwimOffset": {
+      "X": 0,
+      "Y": 112
+    },
+    "Shadow": {
+      "Visible": false
+    },
+    "CanSwim": false,
+    "BabiesFollowAdults": false,
+    "GrassEatAmount": 4,
+    "HappinessDrain": 5,
+    "UpDownPetHitboxTileSize": "1.5, 1.75",
+    "LeftRightPetHitboxTileSize": "1.75, 1.25",
+    "BabyUpDownPetHitboxTileSize": "1, 1.75",
+    "BabyLeftRightPetHitboxTileSize": "1.75, 1",
+    "StatToIncrementOnProduce": [
+      {
+        "Id": "sheepWoolProduced",
+        "StatName": "sheepWoolProduced"
+      }
+    ],
+    "ShowInSummitCredits": true
+  },
+  "Pig": {
+    "DisplayName": "[LocalizedText Strings\\FarmAnimals:DisplayType_Pig]",
+    "House": "Barn",
+    "Gender": 2,
+    "PurchasePrice": 8000,
+    "SellPrice": 16000,
+    "ShopTexture": "LooseSprites\\Cursors",
+    "ShopSourceRect": {
+      "X": 0,
+      "Y": 480,
+      "Width": 32,
+      "Height": 16
+    },
+    "ShopDisplayName": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5948]",
+    "ShopDescription": "[LocalizedText Strings\\StringsFromCSFiles:PurchaseAnimalsMenu.cs.11346]\\n[LocalizedText Strings\\StringsFromCSFiles:PurchaseAnimalsMenu.cs.11344]",
+    "ShopMissingBuildingDescription": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5950]",
+    "RequiredBuilding": "Deluxe Barn",
+    "IncubationTime": -1,
+    "IncubatorParentSheetOffset": 1,
+    "DaysToMature": 10,
+    "CanGetPregnant": true,
+    "DaysToProduce": 1,
+    "HarvestType": 2,
+    "ProduceItemIds": [
+      {
+        "Id": "Default",
+        "MinimumFriendship": 0,
+        "ItemId": "430"
+      }
+    ],
+    "DeluxeProduceItemIds": [],
+    "ProduceOnMature": false,
+    "FriendshipForFasterProduce": -1,
+    "DeluxeProduceMinimumFriendship": 200,
+    "DeluxeProduceCareDivisor": 1200.0,
+    "DeluxeProduceLuckMultiplier": 0.0,
+    "CanEatGoldenCrackers": false,
+    "ProfessionForHappinessBoost": 3,
+    "ProfessionForQualityBoost": 3,
+    "ProfessionForFasterProduce": -1,
+    "Sound": "pig",
+    "Texture": "Animals\\Pig",
+    "BabyTexture": "Animals\\BabyPig",
+    "UseFlippedRightForLeft": true,
+    "SpriteWidth": 32,
+    "SpriteHeight": 32,
+    "UseDoubleUniqueAnimationFrames": false,
+    "SleepFrame": 12,
+    "EmoteOffset": {
+      "X": 0,
+      "Y": 0
+    },
+    "SwimOffset": {
+      "X": 0,
+      "Y": 112
+    },
+    "Shadow": {
+      "Visible": false
+    },
+    "CanSwim": false,
+    "BabiesFollowAdults": false,
+    "GrassEatAmount": 4,
+    "HappinessDrain": 4,
+    "UpDownPetHitboxTileSize": "1.5, 1.75",
+    "LeftRightPetHitboxTileSize": "1.75, 1.25",
+    "BabyUpDownPetHitboxTileSize": "1, 1.75",
+    "BabyLeftRightPetHitboxTileSize": "1.75, 1",
+    "ShowInSummitCredits": true
+  },
+  "Ostrich": {
+    "DisplayName": "[LocalizedText Strings\\FarmAnimals:DisplayType_Ostrich]",
+    "House": "Barn",
+    "Gender": 0,
+    "PurchasePrice": -1,
+    "SellPrice": 16000,
+    "ShopTexture": "LooseSprites\\Cursors",
+    "ShopSourceRect": {
+      "X": 32,
+      "Y": 480,
+      "Width": 32,
+      "Height": 16
+    },
+    "ShopDescription": "[LocalizedText Strings\\StringsFromCSFiles:Ostrich_Description]\\n[LocalizedText Strings\\StringsFromCSFiles:PurchaseAnimalsMenu.cs.11344]",
+    "ShopMissingBuildingDescription": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5931]",
+    "RequiredBuilding": "Barn",
+    "EggItemIds": [
+      "289"
+    ],
+    "IncubationTime": -1,
+    "IncubatorParentSheetOffset": 1,
+    "BirthText": "[LocalizedText Strings\\Locations:AnimalHouse_Incubator_Hatch_Ostrich]",
+    "DaysToMature": 7,
+    "CanGetPregnant": false,
+    "DaysToProduce": 7,
+    "HarvestType": 0,
+    "ProduceItemIds": [
+      {
+        "Id": "Default",
+        "MinimumFriendship": 0,
+        "ItemId": "289"
+      }
+    ],
+    "DeluxeProduceItemIds": [],
+    "ProduceOnMature": false,
+    "FriendshipForFasterProduce": -1,
+    "DeluxeProduceMinimumFriendship": 200,
+    "DeluxeProduceCareDivisor": 1200.0,
+    "DeluxeProduceLuckMultiplier": 0.0,
+    "CanEatGoldenCrackers": true,
+    "ProfessionForHappinessBoost": 3,
+    "ProfessionForQualityBoost": 3,
+    "ProfessionForFasterProduce": -1,
+    "Sound": "Ostrich",
+    "Texture": "Animals\\Ostrich",
+    "BabyTexture": "Animals\\BabyOstrich",
+    "UseFlippedRightForLeft": true,
+    "SpriteWidth": 32,
+    "SpriteHeight": 32,
+    "UseDoubleUniqueAnimationFrames": false,
+    "SleepFrame": 12,
+    "EmoteOffset": {
+      "X": 0,
+      "Y": 0
+    },
+    "SwimOffset": {
+      "X": 0,
+      "Y": 112
+    },
+    "Shadow": {
+      "Visible": false
+    },
+    "CanSwim": false,
+    "BabiesFollowAdults": false,
+    "GrassEatAmount": 4,
+    "HappinessDrain": 5,
+    "UpDownPetHitboxTileSize": "1.5, 2",
+    "LeftRightPetHitboxTileSize": "2, 2",
+    "BabyUpDownPetHitboxTileSize": "1, 1",
+    "BabyLeftRightPetHitboxTileSize": "1, 1",
+    "ShowInSummitCredits": true
+  }
+}

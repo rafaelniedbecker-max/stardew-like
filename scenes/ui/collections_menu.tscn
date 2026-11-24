@@ -1,0 +1,48 @@
+[gd_scene load_steps=2 format=3 uid://bkqrxw9w9x8of]
+
+[ext_resource type="Script" path="res://scripts/ui/collections_menu.gd" id="1"]
+
+[node name="CollectionsMenu" type="Control"]
+script = ExtResource("1")
+anchors_preset = 15
+offset_left = 50
+offset_top = 30
+offset_right = -50
+offset_bottom = -30
+
+[node name="Panel" type="Panel" parent="."]
+anchors_preset = 15
+offset_left = 0
+offset_top = 0
+offset_right = 0
+offset_bottom = 0
+
+[node name="TopBar" type="HBoxContainer" parent="Panel"]
+anchors_preset = 9
+offset_left = 10
+offset_top = 10
+offset_right = -10
+offset_bottom = 0
+
+[node name="CompletionLabel" type="Label" parent="TopBar"]
+text = "Completude: 0%"
+theme_override_font_size = 18
+
+[node name="SearchBox" type="LineEdit" parent="TopBar"]
+placeholder_text = "Buscar..."
+custom_minimum_size = Vector2(200, 30)
+
+[node name="TabBar" type="TabContainer" parent="Panel"]
+anchors_preset = 15
+offset_left = 10
+offset_top = 50
+offset_right = -10
+offset_bottom = 50
+
+[node name="CloseButton" type="Button" parent="Panel"]
+anchors_preset = 11
+offset_left = -100
+offset_top = 10
+offset_right = -10
+offset_bottom = -40
+text = "Fechar"

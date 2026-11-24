@@ -1,0 +1,178 @@
+{
+  "628": {
+    "DisplayName": "[LocalizedText Strings\\Objects:Cherry_Name]",
+    "Seasons": [
+      0
+    ],
+    "Fruit": [
+      {
+        "Chance": 1.0,
+        "Id": "Default",
+        "ItemId": "(O)638",
+        "MinStack": -1,
+        "MaxStack": -1,
+        "Quality": -1,
+        "ToolUpgradeLevel": -1,
+        "IsRecipe": false,
+        "StackModifierMode": 0,
+        "QualityModifierMode": 0
+      }
+    ],
+    "Texture": "TileSheets\\fruitTrees",
+    "TextureSpriteRow": 0
+  },
+  "629": {
+    "DisplayName": "[LocalizedText Strings\\Objects:Apricot_Name]",
+    "Seasons": [
+      0
+    ],
+    "Fruit": [
+      {
+        "Chance": 1.0,
+        "Id": "Default",
+        "ItemId": "(O)634",
+        "MinStack": -1,
+        "MaxStack": -1,
+        "Quality": -1,
+        "ToolUpgradeLevel": -1,
+        "IsRecipe": false,
+        "StackModifierMode": 0,
+        "QualityModifierMode": 0
+      }
+    ],
+    "Texture": "TileSheets\\fruitTrees",
+    "TextureSpriteRow": 1
+  },
+  "630": {
+    "DisplayName": "[LocalizedText Strings\\Objects:Orange_Name]",
+    "Seasons": [
+      1
+    ],
+    "Fruit": [
+      {
+        "Chance": 1.0,
+        "Id": "Default",
+        "ItemId": "(O)635",
+        "MinStack": -1,
+        "MaxStack": -1,
+        "Quality": -1,
+        "ToolUpgradeLevel": -1,
+        "IsRecipe": false,
+        "StackModifierMode": 0,
+        "QualityModifierMode": 0
+      }
+    ],
+    "Texture": "TileSheets\\fruitTrees",
+    "TextureSpriteRow": 2
+  },
+  "631": {
+    "DisplayName": "[LocalizedText Strings\\Objects:Peach_Name]",
+    "Seasons": [
+      1
+    ],
+    "Fruit": [
+      {
+        "Chance": 1.0,
+        "Id": "Default",
+        "ItemId": "(O)636",
+        "MinStack": -1,
+        "MaxStack": -1,
+        "Quality": -1,
+        "ToolUpgradeLevel": -1,
+        "IsRecipe": false,
+        "StackModifierMode": 0,
+        "QualityModifierMode": 0
+      }
+    ],
+    "Texture": "TileSheets\\fruitTrees",
+    "TextureSpriteRow": 3
+  },
+  "632": {
+    "DisplayName": "[LocalizedText Strings\\Objects:Pomegranate_Name]",
+    "Seasons": [
+      2
+    ],
+    "Fruit": [
+      {
+        "Chance": 1.0,
+        "Id": "Default",
+        "ItemId": "(O)637",
+        "MinStack": -1,
+        "MaxStack": -1,
+        "Quality": -1,
+        "ToolUpgradeLevel": -1,
+        "IsRecipe": false,
+        "StackModifierMode": 0,
+        "QualityModifierMode": 0
+      }
+    ],
+    "Texture": "TileSheets\\fruitTrees",
+    "TextureSpriteRow": 4
+  },
+  "633": {
+    "DisplayName": "[LocalizedText Strings\\Objects:Apple_Name]",
+    "Seasons": [
+      2
+    ],
+    "Fruit": [
+      {
+        "Chance": 1.0,
+        "Id": "Default",
+        "ItemId": "(O)613",
+        "MinStack": -1,
+        "MaxStack": -1,
+        "Quality": -1,
+        "ToolUpgradeLevel": -1,
+        "IsRecipe": false,
+        "StackModifierMode": 0,
+        "QualityModifierMode": 0
+      }
+    ],
+    "Texture": "TileSheets\\fruitTrees",
+    "TextureSpriteRow": 5
+  },
+  "69": {
+    "DisplayName": "[LocalizedText Strings\\Objects:Banana_Name]",
+    "Seasons": [
+      1
+    ],
+    "Fruit": [
+      {
+        "Chance": 1.0,
+        "Id": "Default",
+        "ItemId": "(O)91",
+        "MinStack": -1,
+        "MaxStack": -1,
+        "Quality": -1,
+        "ToolUpgradeLevel": -1,
+        "IsRecipe": false,
+        "StackModifierMode": 0,
+        "QualityModifierMode": 0
+      }
+    ],
+    "Texture": "TileSheets\\fruitTrees",
+    "TextureSpriteRow": 7
+  },
+  "835": {
+    "DisplayName": "[LocalizedText Strings\\Objects:Mango_Name]",
+    "Seasons": [
+      1
+    ],
+    "Fruit": [
+      {
+        "Chance": 1.0,
+        "Id": "Default",
+        "ItemId": "(O)834",
+        "MinStack": -1,
+        "MaxStack": -1,
+        "Quality": -1,
+        "ToolUpgradeLevel": -1,
+        "IsRecipe": false,
+        "StackModifierMode": 0,
+        "QualityModifierMode": 0
+      }
+    ],
+    "Texture": "TileSheets\\fruitTrees",
+    "TextureSpriteRow": 8
+  }
+}

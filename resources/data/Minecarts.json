@@ -1,0 +1,51 @@
+{
+  "Default": {
+    "UnlockCondition": "PLAYER_HAS_MAIL Host ccBoilerRoom Received",
+    "Destinations": [
+      {
+        "Id": "Mines",
+        "DisplayName": "[LocalizedText Strings\\Locations:MineCart_Destination_Mines]",
+        "Condition": "PLAYER_HAS_MAIL Any landslideDone",
+        "Price": 0,
+        "TargetLocation": "Mine",
+        "TargetTile": {
+          "X": 13,
+          "Y": 9
+        },
+        "TargetDirection": "right"
+      },
+      {
+        "Id": "Town",
+        "DisplayName": "[LocalizedText Strings\\Locations:MineCart_Destination_Town]",
+        "Price": 0,
+        "TargetLocation": "Town",
+        "TargetTile": {
+          "X": 105,
+          "Y": 80
+        },
+        "TargetDirection": "right"
+      },
+      {
+        "Id": "Bus",
+        "DisplayName": "[LocalizedText Strings\\Locations:MineCart_Destination_BusStop]",
+        "Price": 0,
+        "TargetLocation": "BusStop",
+        "TargetTile": {
+          "X": 14,
+          "Y": 4
+        }
+      },
+      {
+        "Id": "Quarry",
+        "DisplayName": "[LocalizedText Strings\\Locations:MineCart_Destination_Quarry]",
+        "Condition": "PLAYER_HAS_MAIL Host ccCraftsRoom Received",
+        "Price": 0,
+        "TargetLocation": "Mountain",
+        "TargetTile": {
+          "X": 124,
+          "Y": 12
+        }
+      }
+    ]
+  }
+}

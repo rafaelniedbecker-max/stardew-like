@@ -1,0 +1,81 @@
+[gd_scene load_steps=2 format=3 uid://bkqrxw9w9x8on]
+
+[ext_resource type="Script" path="res://scripts/ui/mine_transitions.gd" id="1"]
+
+[node name="MineTransitions" type="Control"]
+script = ExtResource("1")
+anchors_preset = 15
+offset_left = 100
+offset_top = 50
+offset_right = -100
+offset_bottom = -50
+
+[node name="Panel" type="Panel" parent="."]
+anchors_preset = 15
+offset_left = 0
+offset_top = 0
+offset_right = 0
+offset_bottom = 0
+
+[node name="LevelLabel" type="Label" parent="Panel"]
+anchors_preset = 9
+offset_left = 20
+offset_top = 20
+offset_right = -20
+offset_bottom = 0
+text = "Nível 1"
+horizontal_alignment = 1
+theme_override_font_size = 32
+theme_override_colors/font_color = Color(1, 1, 1)
+
+[node name="ThemeLabel" type="Label" parent="Panel"]
+anchors_preset = 9
+offset_left = 20
+offset_top = 60
+offset_right = -20
+offset_bottom = 0
+text = "Minas (1-40)"
+horizontal_alignment = 1
+theme_override_font_size = 18
+theme_override_colors/font_color = Color(0.8, 0.8, 0.8)
+
+[node name="ProgressBar" type="ProgressBar" parent="Panel"]
+anchors_preset = 8
+offset_left = 20
+offset_top = 0
+offset_right = -20
+offset_bottom = -100
+min_value = 0
+max_value = 100
+value = 0
+
+[node name="ElevatorButton" type="Button" parent="Panel"]
+anchors_preset = 14
+offset_left = 20
+offset_top = 0
+offset_right = -20
+offset_bottom = 20
+text = "⛗ Elevador"
+custom_minimum_size = Vector2(0, 50)
+theme_override_font_size = 18
+
+[node name="LeaveButton" type="Button" parent="Panel"]
+anchors_preset = 12
+offset_left = 20
+offset_top = 0
+offset_right = -20
+offset_bottom = 20
+text = "🚪 Sair da Mina"
+custom_minimum_size = Vector2(0, 50)
+theme_override_font_size = 18
+
+[node name="Particles" type="CPUParticles2D" parent="Panel"]
+emitting = false
+one_shot = true
+amount = 30
+lifetime = 2.0
+explosiveness = 0.5
+spread = 90
+gravity = Vector2(0, 50)
+initial_velocity = 100
+scale = 0.5

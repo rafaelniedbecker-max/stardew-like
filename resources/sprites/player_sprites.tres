@@ -1,0 +1,75 @@
+[gd_resource type="SpriteFrames" load_steps=2 format=3 uid://bkqrxw9w9x8oe]
+
+[sub_resource type="Texture2D" id="Texture2D_1"]
+width = 16
+height = 16
+format = 3
+data = "BASE64_PLACEHOLDER"
+
+[resource]
+anims = {
+"idle_down": {
+loop: true,
+frames: [{texture: SubResource("Texture2D_1"), duration: 1.0}]
+},
+"idle_right": {
+loop: true,
+frames: [{texture: SubResource("Texture2D_1"), duration: 1.0}]
+},
+"idle_up": {
+loop: true,
+frames: [{texture: SubResource("Texture2D_1"), duration: 1.0}]
+},
+"idle_left": {
+loop: true,
+frames: [{texture: SubResource("Texture2D_1"), duration: 1.0}]
+},
+"walk_down": {
+loop: true,
+frames: [{texture: SubResource("Texture2D_1"), duration: 0.15}, {texture: SubResource("Texture2D_1"), duration: 0.15}, {texture: SubResource("Texture2D_1"), duration: 0.15}, {texture: SubResource("Texture2D_1"), duration: 0.15}]
+},
+"walk_right": {
+loop: true,
+frames: [{texture: SubResource("Texture2D_1"), duration: 0.15}, {texture: SubResource("Texture2D_1"), duration: 0.15}, {texture: SubResource("Texture2D_1"), duration: 0.15}, {texture: SubResource("Texture2D_1"), duration: 0.15}]
+},
+"walk_up": {
+loop: true,
+frames: [{texture: SubResource("Texture2D_1"), duration: 0.15}, {texture: SubResource("Texture2D_1"), duration: 0.15}, {texture: SubResource("Texture2D_1"), duration: 0.15}, {texture: SubResource("Texture2D_1"), duration: 0.15}]
+},
+"walk_left": {
+loop: true,
+frames: [{texture: SubResource("Texture2D_1"), duration: 0.15}, {texture: SubResource("Texture2D_1"), duration: 0.15}, {texture: SubResource("Texture2D_1"), duration: 0.15}, {texture: SubResource("Texture2D_1"), duration: 0.15}]
+},
+"tool_down": {
+loop: false,
+frames: [{texture: SubResource("Texture2D_1"), duration: 0.1}, {texture: SubResource("Texture2D_1"), duration: 0.1}, {texture: SubResource("Texture2D_1"), duration: 0.1}]
+},
+"tool_right": {
+loop: false,
+frames: [{texture: SubResource("Texture2D_1"), duration: 0.1}, {texture: SubResource("Texture2D_1"), duration: 0.1}, {texture: SubResource("Texture2D_1"), duration: 0.1}]
+},
+"tool_up": {
+loop: false,
+frames: [{texture: SubResource("Texture2D_1"), duration: 0.1}, {texture: SubResource("Texture2D_1"), duration: 0.1}, {texture: SubResource("Texture2D_1"), duration: 0.1}]
+},
+"tool_left": {
+loop: false,
+frames: [{texture: SubResource("Texture2D_1"), duration: 0.1}, {texture: SubResource("Texture2D_1"), duration: 0.1}, {texture: SubResource("Texture2D_1"), duration: 0.1}]
+},
+"tool_charge_down": {
+loop: true,
+frames: [{texture: SubResource("Texture2D_1"), duration: 0.2}, {texture: SubResource("Texture2D_1"), duration: 0.2}]
+},
+"tool_charge_right": {
+loop: true,
+frames: [{texture: SubResource("Texture2D_1"), duration: 0.2}, {texture: SubResource("Texture2D_1"), duration: 0.2}]
+},
+"tool_charge_up": {
+loop: true,
+frames: [{texture: SubResource("Texture2D_1"), duration: 0.2}, {texture: SubResource("Texture2D_1"), duration: 0.2}]
+},
+"tool_charge_left": {
+loop: true,
+frames: [{texture: SubResource("Texture2D_1"), duration: 0.2}, {texture: SubResource("Texture2D_1"), duration: 0.2}]
+}
+}

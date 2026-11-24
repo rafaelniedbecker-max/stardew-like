@@ -1,0 +1,345 @@
+{
+  "_disabled_": {
+    "Name": "Invalid",
+    "Available": false,
+    "AlternativeTrackIds": [
+      "buglevelloop",
+      "coin",
+      "communityCenter",
+      "jojaOfficeSoundscape",
+      "nightTime",
+      "ocean",
+      "title_day"
+    ]
+  },
+  "spring1": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5718]"
+  },
+  "spring2": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5720]"
+  },
+  "spring3": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5722]"
+  },
+  "50s": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5724]"
+  },
+  "ragtime": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5864_1]"
+  },
+  "abigailflute": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5726]"
+  },
+  "abigailfluteduet": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5728]"
+  },
+  "aerobics": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5730]"
+  },
+  "winter1": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5732]"
+  },
+  "winter2": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5734]"
+  },
+  "winter3": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5736]"
+  },
+  "near the planet core": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5738]"
+  },
+  "summer1": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5740]"
+  },
+  "summer2": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5742]"
+  },
+  "summer3": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5744]"
+  },
+  "fall1": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5746]"
+  },
+  "fall2": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5748]"
+  },
+  "fall3": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5750]"
+  },
+  "breezy": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5752]"
+  },
+  "christmasTheme": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5754]"
+  },
+  "cloth": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5756]"
+  },
+  "cloudcountry": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5758]"
+  },
+  "of dwarves": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5760]"
+  },
+  "grandpas_theme": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5762]"
+  },
+  "flowerdance": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5764]"
+  },
+  "fallfest": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5766]"
+  },
+  "icicles": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5768]"
+  },
+  "xor": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5770]"
+  },
+  "wizardsong": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5772]"
+  },
+  "woodstheme": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5774]"
+  },
+  "wedding": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5776]"
+  },
+  "tribal": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5778]"
+  },
+  "tinymusicbox": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5780]"
+  },
+  "ticktock": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5782]"
+  },
+  "starshoot": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5784]"
+  },
+  "springtown": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5786]"
+  },
+  "spirits_eve": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5788]"
+  },
+  "spacemusic": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5790]"
+  },
+  "shimmeringbastion": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5792]"
+  },
+  "heavy": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5794]"
+  },
+  "settlingin": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5796]"
+  },
+  "secret gnomes": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5798]"
+  },
+  "sampractice": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5800]"
+  },
+  "saloon1": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5802]"
+  },
+  "sadpiano": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5804]"
+  },
+  "poppy": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5806]"
+  },
+  "playful": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5808]"
+  },
+  "overcast": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5810]"
+  },
+  "moonlightjellies": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5812]"
+  },
+  "marnieshop": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5814]"
+  },
+  "marlonstheme": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5816]"
+  },
+  "maintheme": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5819]"
+  },
+  "title_night": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5821]"
+  },
+  "librarytheme": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5823]"
+  },
+  "junimostarsong": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5825]"
+  },
+  "kindadumbautumn": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5827]"
+  },
+  "jaunty": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5829]"
+  },
+  "honkytonky": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5831]"
+  },
+  "gusviolin": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5833]"
+  },
+  "event1": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5835]"
+  },
+  "sweet": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5864_2]"
+  },
+  "event2": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5837]"
+  },
+  "elliottpiano": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5839]"
+  },
+  "echos": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5841]"
+  },
+  "distantbanjo": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5843]"
+  },
+  "desolate": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5845]"
+  },
+  "crystal bells": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5847]"
+  },
+  "cowboy_overworld": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5849]"
+  },
+  "cowboy_outlawsong": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5851]"
+  },
+  "cowboy_undead": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5853]"
+  },
+  "cowboy_boss": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5855]"
+  },
+  "cowboy_singing": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5857]"
+  },
+  "cavern": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5859]"
+  },
+  "wavy": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5861]"
+  },
+  "jojaofficesoundscape": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5863]"
+  },
+  "shanetheme": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5864_3]"
+  },
+  "emilytheme": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5864_4]"
+  },
+  "emilydance": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5864_5]"
+  },
+  "emilydream": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5864_6]"
+  },
+  "musicboxsong": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5864_8]"
+  },
+  "buglevelloop": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Utility.cs.5864_9]"
+  },
+  "night_market": {
+    "Name": "[LocalizedText Strings\\UI:Billboard_NightMarket]"
+  },
+  "submarine_song": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Dialogue.cs.721]"
+  },
+  "mermaidsong": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:Dialogue.cs.718]"
+  },
+  "sam_acoustic1": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:sam_acoustic1]"
+  },
+  "sam_acoustic2": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:sam_acoustic2]"
+  },
+  "harveys_theme_jazz": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:harveys_theme_jazz]"
+  },
+  "movie_classic": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:movie_classic]"
+  },
+  "movie_nature": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:movie_nature]"
+  },
+  "movie_wumbus": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:movie_wumbus]"
+  },
+  "movietheater": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:movietheater]"
+  },
+  "movietheaterafter": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:movietheaterafter]"
+  },
+  "crane_game": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:crane_game]"
+  },
+  "junimokart": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:junimokart]"
+  },
+  "junimokart_mushroommusic": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:junimokart_mushroommusic]"
+  },
+  "junimokart_slimemusic": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:junimokart_slimemusic]"
+  },
+  "junimokart_whalemusic": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:junimokart_whalemusic]"
+  },
+  "junimokart_ghostmusic": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:junimokart_ghostmusic]"
+  },
+  "crane_game_fast": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:crane_game_fast]"
+  },
+  "sunroom": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:SunRoom]"
+  },
+  "islandmusic": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:IslandMusic]"
+  },
+  "fieldofficetentmusic": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:fieldOfficeTentMusic]"
+  },
+  "volcanomines1": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:VolcanoMines1]"
+  },
+  "volcanomines2": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:VolcanoMines2]"
+  },
+  "caldera": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:caldera]"
+  },
+  "frogcave": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:FrogCave]"
+  },
+  "sad_kid": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:sad_kid]"
+  },
+  "pirate_theme": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:PIRATE_THEME]"
+  },
+  "pirate_theme(muffled)": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:PIRATE_THEME_MUFFLED]"
+  },
+  "end_credits": {
+    "Name": "[LocalizedText Strings\\StringsFromCSFiles:EndCredits_SongName]"
+  }
+}

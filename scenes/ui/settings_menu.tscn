@@ -1,0 +1,35 @@
+[gd_scene load_steps=2 format=3 uid://bkqrxw9w9x8oh]
+
+[ext_resource type="Script" path="res://scripts/ui/settings_menu.gd" id="1"]
+
+[node name="SettingsMenu" type="Control"]
+script = ExtResource("1")
+anchors_preset = 15
+offset_left = 0
+offset_top = 0
+offset_right = 0
+offset_bottom = 0
+
+[node name="Panel" type="Panel" parent="."]
+anchors_preset = 15
+offset_left = 200
+offset_top = 100
+offset_right = -200
+offset_bottom = -100
+
+[node name="TabBar" type="TabContainer" parent="Panel"]
+anchors_preset = 15
+offset_left = 0
+offset_top = 0
+offset_right = 0
+offset_bottom = -50
+
+[node name="CloseButton" type="Button" parent="Panel"]
+anchors_preset = 11
+offset_left = -120
+offset_top = 10
+offset_right = -10
+offset_bottom = -40
+text = "Fechar"
+custom_minimum_size = Vector2(100, 40)
+theme_override_font_size = 18

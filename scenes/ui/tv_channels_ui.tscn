@@ -1,0 +1,86 @@
+[gd_scene load_steps=2 format=3 uid://bkqrxw9w9x8ok]
+
+[ext_resource type="Script" path="res://scripts/ui/tv_channels_ui.gd" id="1"]
+
+[node name="TVChannelsUI" type="Control"]
+script = ExtResource("1")
+anchors_preset = 15
+offset_left = 150
+offset_top = 80
+offset_right = -150
+offset_bottom = -80
+
+[node name="Panel" type="Panel" parent="."]
+anchors_preset = 15
+offset_left = 0
+offset_top = 0
+offset_right = 0
+offset_bottom = 0
+
+[node name="TopBar" type="HBoxContainer" parent="Panel"]
+anchors_preset = 9
+offset_left = 10
+offset_top = 10
+offset_right = -10
+offset_bottom = 0
+
+[node name="ChannelButtons" type="HBoxContainer" parent="TopBar"]
+anchors_preset = 15
+offset_left = 10
+offset_top = 0
+offset_right = -10
+offset_bottom = 0
+theme_override_constants/separation = 5
+
+[node name="CloseButton" type="Button" parent="TopBar"]
+anchors_preset = 11
+offset_left = -100
+offset_top = 0
+offset_right = -10
+offset_bottom = -40
+text = "Fechar"
+custom_minimum_size = Vector2(90, 35)
+theme_override_font_size = 16
+
+[node name="ContentArea" type="Control" parent="Panel"]
+anchors_preset = 15
+offset_left = 20
+offset_top = 60
+offset_right = -20
+offset_bottom = -20
+
+[node name="FortuneContent" type="VBoxContainer" parent="ContentArea"]
+anchors_preset = 15
+offset_left = 0
+offset_top = 0
+offset_right = 0
+offset_bottom = 0
+theme_override_constants/separation = 15
+visible = false
+
+[node name="WeatherContent" type="VBoxContainer" parent="ContentArea"]
+anchors_preset = 15
+offset_left = 0
+offset_top = 0
+offset_right = 0
+offset_bottom = 0
+theme_override_constants/separation = 15
+visible = false
+
+[node name="CookingContent" type="VBoxContainer" parent="ContentArea"]
+anchors_preset = 15
+offset_left = 0
+offset_top = 0
+offset_right = 0
+offset_bottom = 0
+theme_override_constants/separation = 15
+visible = false
+
+[node name="TipsContent" type="VBoxContainer" parent="ContentArea"]
+anchors_preset = 15
+offset_left = 0
+offset_top = 0
+offset_right = 0
+offset_bottom = 0
+theme_override_constants/separation = 15
+visible = false

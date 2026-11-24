@@ -1,0 +1,43 @@
+[gd_resource type="SpriteFrames" load_steps=2 format=3 uid://bkqrxw9w9x8og]
+
+[sub_resource type="Texture2D" id="Texture2D_1"]
+width = 16
+height = 16
+format = 3
+data = "BASE64_PLACEHOLDER"
+
+[resource]
+anims = {
+"phase_0": {
+loop: false,
+frames: [{texture: SubResource("Texture2D_1"), duration: 1.0}]
+},
+"phase_1": {
+loop: false,
+frames: [{texture: SubResource("Texture2D_1"), duration: 1.0}]
+},
+"phase_2": {
+loop: false,
+frames: [{texture: SubResource("Texture2D_1"), duration: 1.0}]
+},
+"phase_3": {
+loop: false,
+frames: [{texture: SubResource("Texture2D_1"), duration: 1.0}]
+},
+"phase_4": {
+loop: false,
+frames: [{texture: SubResource("Texture2D_1"), duration: 1.0}]
+},
+"phase_5": {
+loop: false,
+frames: [{texture: SubResource("Texture2D_1"), duration: 1.0}]
+},
+"dead": {
+loop: false,
+frames: [{texture: SubResource("Texture2D_1"), duration: 1.0}]
+},
+"ready": {
+loop: true,
+frames: [{texture: SubResource("Texture2D_1"), duration: 0.5}, {texture: SubResource("Texture2D_1"), duration: 0.5}]
+}
+}
