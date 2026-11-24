@@ -122,6 +122,11 @@ func _handle_input() -> void:
 	if Input.is_action_just_pressed("pause"):
 		emit_signal("menu_opened", "pause")
 
+	# Camera Ride (C)
+	if Input.is_action_just_pressed("camera_ride"):
+		if CameraRide:
+			CameraRide.open_control_ui()
+
 	# Hotbar 1-8
 	for i in range(8):
 		if Input.is_action_just_pressed("hotbar_%d" % (i + 1)):

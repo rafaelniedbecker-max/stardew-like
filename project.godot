@@ -59,6 +59,7 @@ FurnitureManager="res://scripts/core/furniture_manager.gd"
 MuseumUI="res://scripts/ui/museum_ui.gd"
 CommunityCenterUI="res://scripts/ui/community_center_ui.gd"
 MinecartUI="res://scripts/ui/minecart_ui.gd"
+CameraRide="res://scripts/core/camera_ride.gd"
 AudioManager="res://scripts/core/audio_manager.gd"
 CookingMenu="res://scripts/ui/cooking_menu.gd"
 TVChannelsUI="res://scripts/ui/tv_channels_ui.gd"
@@ -77,6 +78,7 @@ FurnitureManager="res://scripts/core/furniture_manager.gd"
 MuseumUI="res://scripts/ui/museum_ui.gd"
 CommunityCenterUI="res://scripts/ui/community_center_ui.gd"
 MinecartUI="res://scripts/ui/minecart_ui.gd"
+CameraRide="res://scripts/core/camera_ride.gd"
 
 [display]
 
@@ -224,6 +226,13 @@ actions=[{
 "type": "Key"
 }],
 "name": "hotbar_8"
+}, {
+"deadzone": 0.5,
+"events": [{
+"physical_keycode": "C",
+"type": "Key"
+}],
+"name": "camera_ride"
 }]
 
 [rendering]
