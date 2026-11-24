@@ -78,25 +78,18 @@ const FESTIVALS = {
 		"start_time": 900, "end_time": 1400,
 		"location": "Cindersap Forest",
 		"activities": ["ice_fishing", "shop"],
-		"rewards": {"ice_fishing": "prizes"}
+		"rewards": {"ice_fishing": "trophy"}
 	},
 	"Winter_25": {
 		"name": "Feast of the Winter Star",
-		"display_name": "Banquete da Estrela de Inverno",
+		"display_name": "Festival da Estrela de Inverno",
 		"season": 3, "day": 25,
 		"start_time": 900, "end_time": 1400,
-		"location": "Pelican Town",
+		"location": "Town Square",
 		"activities": ["gift_exchange", "shop"],
 		"rewards": {"secret_santa": "gift"}
 	}
 }
-
-## ==================== SINAIS ====================
-signal festival_started(festival_name: String)
-signal festival_ended(festival_name: String)
-signal festival_activity_started(activity: String)
-signal festival_reward_earned(reward: Dictionary)
-signal star_tokens_changed(amount: int)
 
 ## ==================== INICIALIZAÇÃO ====================
 func _ready() -> void:
@@ -120,6 +113,7 @@ func _check_today_festival() -> void:
 	if FESTIVALS.has(key):
 		festival_data = FESTIVALS[key]
 		GameManager.active_festival = festival_data.name
+		festival_day = GameManager.current_day
 	else:
 		festival_data = {}
 		GameManager.active_festival = ""
@@ -132,97 +126,48 @@ func _check_festival_time(hour: int) -> void:
 	var end = festival_data.get("end_time", 0)
 	var current = GameManager.current_time if GameManager else 0
 
-	# Inicia festival
-	if current == start and not active_festival:
-		_start_festival()
-	# Termina festival
-	elif current >= end and active_festival:
-		_end_festival()
+	if current >= start and current < end:
+		# Festival ativo
+		if not active_festival:
+			_start_festival()
+	else:
+		if active_festival:
+			_end_festival()
 
 func _start_festival() -> void:
 	active_festival = festival_data.name
-	festival_day = GameManager.current_day if GameManager else 0
+	HUD.show_notification("🎪 Festival Iniciado!", "%s começou em %s!" % [festival_data.display_name, festival_data.location], Color(1.0, 0.5, 0.8))
 
-	print("Festival: %s iniciado!" % festival_data.display_name)
+	if FestivalMinigames:
+		FestivalMinigames.start_festival(active_festival, self)
+
 	emit_signal("festival_started", active_festival)
 
-	# Abre UI do festival
-	_open_festival_ui()
-
 func _end_festival() -> void:
-	print("Festival: %s terminou!" % festival_data.display_name)
-	emit_signal("festival_ended", active_festival)
+	HUD.show_notification("🎪 Festival Encerrado", "%s terminou. Até o próximo ano!" % festival_data.display_name, Color(0.8, 0.8, 0.8))
 	active_festival = ""
 	festival_data = {}
-
-func _open_festival_ui() -> void:
-	var scene = festival_scenes.get(active_festival)
-	if scene:
-		var ui = scene.instantiate()
-		ui.initialize(festival_data)
-		get_tree().root.get_child(0).add_child(ui)
-	else:
-		# UI genérica
-		_show_generic_festival_ui()
-
-func _show_generic_festival_ui() -> void:
-	var panel = Panel.new()
-	panel.name = "FestivalUI"
-	panel.anchors_preset = 15
-	panel.offset_left = 100
-	panel.offset_top = 50
-	panel.offset_right = -100
-	panel.offset_bottom = -50
-
-	var vbox = VBoxContainer.new()
-	panel.add_child(vbox)
-
-	var title = Label.new()
-	title.text = festival_data.display_name
-	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	title.theme_override_font_size = 28
-	vbox.add_child(title)
-
-	var desc = Label.new()
-	desc.text = "Bem-vindo ao %s!\nLocal: %s\nHorário: %s - %s" % [
-		festival_data.display_name,
-		festival_data.location,
-		TimeManager.time_to_string(festival_data.start_time),
-		TimeManager.time_to_string(festival_data.end_time)
-	]
-	desc.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	vbox.add_child(desc)
-
-	# Botões de atividades
-	for activity in festival_data.get("activities", []):
-		var btn = Button.new()
-		btn.text = _get_activity_name(activity)
-		btn.custom_minimum_size = Vector2(0, 50)
-		btn.pressed.connect(_on_activity_selected.bind(activity))
-		vbox.add_child(btn)
-
-	var close_btn = Button.new()
-	close_btn.text = "Fechar"
-	close_btn.pressed.connect(panel.queue_free)
-	vbox.add_child(close_btn)
-
-	get_tree().root.get_child(0).add_child(panel)
+	emit_signal("festival_ended", active_festival)
 
 func _get_activity_name(activity: String) -> String:
 	var names = {
 		"egg_hunt": "Caça aos Ovos",
-		"pierre_shop": "Loja do Pierre",
-		"dance": "Dança das Flores",
-		"potluck": "Potluck (Comida Compartilhada)",
-		"shop": "Loja do Festival",
-		"viewing": "Observar Águas-Vivas",
 		"grange_display": "Exposição de Produtos",
 		"fishing_game": "Pesca Competitiva",
 		"slingshot_game": "Tiro ao Alvo",
 		"maze": "Labirinto Assombrado",
 		"ice_fishing": "Pesca no Gelo",
-		"gift_exchange": "Troca de Presentes"
+		"gift_exchange": "Troca de Presentes",
+		"potluck": "Sopa Comunitária (Luau)",
+		"dance": "Dança das Flores",
+		"viewing": "Observação de Águas-Vivas",
+		"shop": "Loja do Festival",
+		"pierre_shop": "Loja do Pierre",
+		"dance_partner": "Par de Dança",
+		"potluck_quality": "Qualidade da Sopa",
+		"star_tokens": "Fichas Estrela",
+		"trophy": "Trofeu",
+		"secret_santa": "Amigo Secreto"
 	}
 	return names.get(activity, activity.capitalize())
 
@@ -233,43 +178,27 @@ func _on_activity_selected(activity: String) -> void:
 		"egg_hunt":
 			if FestivalMinigames:
 				FestivalMinigames.start_egg_hunt(self)
-			else:
-				_start_egg_hunt()
 		"grange_display":
 			if FestivalMinigames:
 				FestivalMinigames.start_grange_display(self)
-			else:
-				_open_grange_ui()
 		"fishing_game":
 			if FestivalMinigames:
 				FestivalMinigames.start_fishing_contest(self)
-			else:
-				_start_fishing_contest()
 		"slingshot_game":
 			if FestivalMinigames:
 				FestivalMinigames.start_slingshot_game(self)
-			else:
-				_start_slingshot_game()
 		"maze":
 			if FestivalMinigames:
 				FestivalMinigames.start_maze(self)
-			else:
-				_start_maze()
 		"ice_fishing":
 			if FestivalMinigames:
 				FestivalMinigames.start_ice_fishing(self)
-			else:
-				_start_ice_fishing()
 		"gift_exchange":
 			if FestivalMinigames:
 				FestivalMinigames.start_gift_exchange(self)
-			else:
-				_start_gift_exchange()
 		"potluck":
 			if FestivalMinigames:
 				FestivalMinigames.start_potluck(self)
-			else:
-				_open_potluck_ui()
 		"dance":
 			_open_dance_ui()
 		"viewing":
@@ -284,312 +213,271 @@ func _on_activity_selected(activity: String) -> void:
 
 ## Caça aos Ovos (Spring 13)
 func _start_egg_hunt() -> void:
-	# Cria arena com ovos escondidos
-	var arena = Node2D.new()
-	arena.name = "EggHuntArena"
-
-	# Spawna ovos
-	for i in range(12):
-		var egg = Area2D.new()
-		egg.name = "Egg_%d" % i
-		var sprite = Sprite2D.new()
-		sprite.texture = load("res://resources/sprites/ui/egg.png")
-		egg.add_child(sprite)
-		var col = CollisionShape2D.new()
-		col.shape = CircleShape2D.new()
-		(col.shape as CircleShape2D).radius = 16
-		egg.add_child(col)
-		egg.global_position = Vector2(randi_range(100, 700), randi_range(100, 500))
-		egg.area_entered.connect(_on_egg_collected.bind(i))
-		arena.add_child(egg)
-
-	# Timer 50 segundos
-	var timer = Timer.new()
-	timer.wait_time = 50.0
-	timer.one_shot = true
-	timer.timeout.connect(_end_egg_hunt)
-	arena.add_child(timer)
-	timer.start()
-
-	get_tree().root.get_child(0).add_child(arena)
-
-	# UI de contador
-	var ui = _create_minigame_ui("Caça aos Ovos", "Colete 9 ovos em 50 segundos!", timer)
-	ui.name = "EggHuntUI"
-
-	# Armazena estado
-	arena.set("eggs_collected", 0)
-	arena.set("target", 9)
-
-func _on_egg_collected(index: int, area: Area2D) -> void:
-	if area.is_in_group("player"):
-		var arena = get_tree().root.get_child(0).get_node("EggHuntArena")
-		var collected = arena.get("eggs_collected", 0) + 1
-		arena.set("eggs_collected", collected)
-		area.queue_free()
-
-		# Atualiza UI
-		var ui = get_tree().root.get_child(0).get_node("EggHuntUI")
-		if ui:
-			ui.update_counter(collected, arena.get("target", 9))
-
-		if collected >= arena.get("target", 9):
-			_end_egg_hunt(true)
-
-func _end_egg_hunt(won: bool = false) -> void:
-	var arena = get_tree().root.get_child(0).get_node_or_null("EggHuntArena")
-	var ui = get_tree().root.get_child(0).get_node_or_null("EggHuntUI")
-	if arena:
-		arena.queue_free()
-	if ui:
-		ui.queue_free()
-
-	if won:
-		# Recompensa: Straw Hat
-		InventoryManager.add_item("(O)453", 1)
-		emit_signal("festival_reward_earned", {"item": "(O)453", "name": "Straw Hat"})
-		_show_message("Parabéns! Você ganhou o Chapéu de Palha!")
-	else:
-		# Recompensa de participação
-		InventoryManager.add_item("(O)454", 1)
-		_show_message("Tempo esgotado! Você recebeu um ovo de chocolate.")
+	if FestivalMinigames:
+		FestivalMinigames.start_egg_hunt(self)
 
 ## Feira do Vale (Fall 16) - Grange Display
 func _open_grange_ui() -> void:
+	if FestivalMinigames:
+		FestivalMinigames.start_grange_display(self)
+
+## Pesca Competitiva
+func _start_fishing_contest() -> void:
+	if FestivalMinigames:
+		FestivalMinigames.start_fishing_contest(self)
+
+## Tiro ao Alvo
+func _start_slingshot_game() -> void:
+	if FestivalMinigames:
+		FestivalMinigames.start_slingshot_game(self)
+
+## Labirinto (Spirit's Eve)
+func _start_maze() -> void:
+	if FestivalMinigames:
+		FestivalMinigames.start_maze(self)
+
+## Pesca no Gelo
+func _start_ice_fishing() -> void:
+	if FestivalMinigames:
+		FestivalMinigames.start_ice_fishing(self)
+
+## Troca de Presentes (Winter Star)
+func _start_gift_exchange() -> void:
+	if FestivalMinigames:
+		FestivalMinigames.start_gift_exchange(self)
+
+## Luau - Potluck
+func _start_potluck() -> void:
+	if FestivalMinigames:
+		FestivalMinigames.start_potluck(self)
+
+## Dança das Flores
+func _open_dance_ui() -> void:
 	var panel = Panel.new()
-	panel.name = "GrangeUI"
+	panel.name = "FlowerDanceUI"
 	panel.anchors_preset = 15
-	panel.offset_left = 50
-	panel.offset_top = 30
-	panel.offset_right = -50
-	panel.offset_bottom = -30
+	panel.offset_left = 200
+	panel.offset_top = 100
+	panel.offset_right = -200
+	panel.offset_bottom = -100
 
 	var vbox = VBoxContainer.new()
 	panel.add_child(vbox)
 
 	var title = Label.new()
-	title.text = "Exposição de Produtos - Grange Display"
+	title.text = "💃 Dança das Flores"
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	title.theme_override_font_size = 24
 	vbox.add_child(title)
 
 	var desc = Label.new()
-	desc.text = "Coloque até 9 itens para julgamento.\nCategorias: Vegetais, Frutas, Flores, Artisanais, Minerais, Peixes, Cozinhados, Forrageados, Outros"
+	desc.text = "Convide um habitante para dançar!\nPrecisa ter 4+ corações com alguém."
 	desc.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	desc.autowrap_mode = 1
+	desc.theme_override_font_size = 14
 	vbox.add_child(desc)
 
-	# Grid 3x3 para itens
+	# Lista NPCs disponíveis
+	var scroll = ScrollContainer.new()
 	var grid = GridContainer.new()
-	grid.columns = 3
+	grid.columns = 2
 	grid.theme_override_constants/h_separation = 10
 	grid.theme_override_constants/v_separation = 10
-	vbox.add_child(grid)
+	scroll.add_child(grid)
+	scroll.custom_minimum_size = Vector2(0, 200)
+	vbox.add_child(scroll)
 
-	for i in range(9):
-		var slot = _create_grange_slot(i)
-		grid.add_child(slot)
+	if GameManager:
+		for npc_name in GameManager.friendships:
+			var hearts = GameManager.friendships[npc_name] / 250
+			if hearts >= 4:
+				var npc = DataLoader.get_npc(npc_name)
+				if npc:
+					var btn = Button.new()
+					btn.custom_minimum_size = Vector2(0, 60)
 
-	# Pontuação atual
-	var score_label = Label.new()
-	score_label.name = "ScoreLabel"
-	score_label.text = "Pontuação: 0 / 100"
-	score_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	score_label.theme_override_font_size = 18
-	vbox.add_child(score_label)
+					var hbox = HBoxContainer.new()
+					btn.add_child(hbox)
 
-	# Botões
-	var hbox = HBoxContainer.new()
-	var submit_btn = Button.new()
-	submit_btn.text = "Submeter para Julgamento"
-	submit_btn.pressed.connect(_judge_grange)
-	hbox.add_child(submit_btn)
+					var icon = TextureRect.new()
+					icon.custom_minimum_size = Vector2(48, 48)
+					if npc.portrait_path != "" and ResourceLoader.exists(npc.portrait_path):
+						icon.texture = load(npc.portrait_path)
+					hbox.add_child(icon)
 
-	var clear_btn = Button.new()
-	clear_btn.text = "Limpar"
-	clear_btn.pressed.connect(_clear_grange)
-	hbox.add_child(clear_btn)
+					var info = VBoxContainer.new()
+					var name = Label.new()
+					name.text = npc.display_name
+					name.theme_override_font_size = 14
+					info.add_child(name)
+
+					var heart_info = Label.new()
+					heart_info.text = "%d corações" % hearts
+					heart_info.theme_override_font_size = 12
+					heart_info.add_theme_color_override("font_color", Color(1.0, 0.5, 0.5))
+					info.add_child(heart_info)
+
+					hbox.add_child(info)
+					btn.pressed.connect(_invite_to_dance.bind(npc_name, panel))
+					grid.add_child(btn)
 
 	var close_btn = Button.new()
-	close_btn.text = "Fechar"
-	close_btn.pressed.connect(panel.queue_free)
-	hbox.add_child(close_btn)
-	vbox.add_child(hbox)
+	close_btn.text = "Cancelar"
+	close_btn.custom_minimum_size = Vector2(0, 40)
+	close_btn.pressed.connect(panel.queue_free.bind())
+	vbox.add_child(close_btn)
 
 	get_tree().root.get_child(0).add_child(panel)
 
-func _create_grange_slot(index: int) -> Control:
-	var btn = Button.new()
-	btn.name = "Slot_%d" % index
-	btn.custom_minimum_size = Vector2(100, 100)
-	btn.tooltip_text = "Clique para adicionar item"
-	btn.pressed.connect(_on_grange_slot_clicked.bind(index))
-	return btn
-
-func _on_grange_slot_clicked(index: Int) -> void:
-	# Abre inventário para selecionar item
-	InventoryManager.emit_signal("inventory_opened")
-	# TODO: Callback para receber item selecionado
-	pass
-
-func _judge_grange() -> void:
-	# Calcula pontuação
-	var panel = get_tree().root.get_child(0).get_node("GrangeUI")
-	var grid = panel.get_node("VBoxContainer/GridContainer")
-	var items = []
-
-	for child in grid.get_children():
-		if child is Button and child.get("item_id", "") != "":
-			items.append({
-				"item_id": child.get("item_id"),
-				"quality": child.get("quality", 0)
-			})
-
-	if items.is_empty():
-		_show_message("Coloque itens primeiro!")
+func _invite_to_dance(npc_name: String, panel: Panel) -> void:
+	var hearts = GameManager.friendships[npc_name] / 250
+	if hearts < 4:
+		HUD.show_message("Precisa de 4+ corações!")
 		return
 
-	var score = _calculate_grange_score(items)
-	panel.get_node("VBoxContainer/ScoreLabel").text = "Pontuação: %d / 100" % score
+	# Chance de aceitar baseada na amizade
+	var accept_chance = 0.5 + (hearts - 4) * 0.1
+	if randf() < accept_chance:
+		# Aceitou!
+		HUD.show_notification("💃 Dança Aceita!", "%s aceitou dançar com você!" % npc_name, Color(1.0, 0.4, 0.7))
 
-	# Recompensas em Star Tokens
-	var tokens = max(0, score * 2)  # 2 tokens por ponto
-	GameManager.set("star_tokens", GameManager.get("star_tokens", 0) + tokens)
-	emit_signal("star_tokens_changed", tokens)
+		# Boost de amizade
+		if GameManager:
+			var current = GameManager.friendships.get(npc_name, 0)
+			GameManager.friendships[npc_name] = min(2749, current + 250)
+			GameManager.emit_signal("friendship_changed", npc_name, GameManager.friendships[npc_name])
 
-	if score >= 90:
-		_show_message("Primeiro lugar! %d Star Tokens!" % tokens)
-	elif score >= 70:
-		_show_message("Segundo lugar! %d Star Tokens!" % tokens)
-	elif score >= 50:
-		_show_message("Terceiro lugar! %d Star Tokens!" % tokens)
+		panel.queue_free()
 	else:
-		_show_message("Participação: %d Star Tokens" % tokens)
+		# Recusou
+		HUD.show_message("%s recusou... Talvez no próximo ano." % npc_name)
+		panel.queue_free()
 
-func _calculate_grange_score(items: Array) -> int:
-	var score = 0
-	var categories_used = []
+## ==================== LOJA DO FESTIVAL ====================
+func _open_festival_shop() -> void:
+	if ShopUI and ShopUI.shop_scene:
+		var shop = ShopUI.shop_scene.instantiate()
+		shop.initialize("festival_%s" % active_festival)
+		get_tree().root.get_child(0).add_child(shop)
+		shop.open_shop()
+	else:
+		_show_generic_festival_shop()
 
-	for item_data in items:
-		var item = DataLoader.get_item(item_data.item_id)
+func _show_generic_festival_shop() -> void:
+	var panel = Panel.new()
+	panel.name = "FestivalShopUI"
+	panel.anchors_preset = 15
+	panel.offset_left = 100
+	panel.offset_top = 50
+	panel.offset_right = -100
+	panel.offset_bottom = -50
+
+	var vbox = VBoxContainer.new()
+	panel.add_child(vbox)
+
+	var title = Label.new()
+	title.text = "🏪 Loja do %s" % festival_data.display_name
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.theme_override_font_size = 24
+	vbox.add_child(title)
+
+	var scroll = ScrollContainer.new()
+	var grid = GridContainer.new()
+	grid.columns = 4
+	grid.theme_override_constants/h_separation = 10
+	grid.theme_override_constants/v_separation = 10
+	scroll.add_child(grid)
+	scroll.custom_minimum_size = Vector2(0, 300)
+	vbox.add_child(scroll)
+
+	# Itens especiais do festival
+	var festival_items = _get_festival_shop_items()
+	for item_id in festival_items:
+		var item = DataLoader.get_item(item_id)
 		if not item:
 			continue
 
-		# Pontuação base por qualidade
-		var quality_mult = [1.0, 1.25, 1.5, 2.0][item_data.quality]
-		score += int(item.price * quality_mult * 0.1)
+		var btn = Button.new()
+		btn.custom_minimum_size = Vector2(120, 120)
+		btn.flat = true
 
-		# Bônus por categoria única
-		var cat = item.category
-		if cat not in categories_used:
-			categories_used.append(cat)
-			score += 5
+		var vbox = VBoxContainer.new()
+		vbox.anchors_preset = 15
+		btn.add_child(vbox)
 
-		# Bônus por variedade (categorias diferentes)
-		if categories_used.size() >= 5:
-			score += 10
-		elif categories_used.size() >= 3:
-			score += 5
+		var icon = TextureRect.new()
+		icon.custom_minimum_size = Vector2(48, 48)
+		if item.texture_path != "":
+			icon.texture = load(item.texture_path)
+		vbox.add_child(icon)
 
-	return min(100, score)
+		var name = Label.new()
+		name.text = item.display_name
+		name.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		name.theme_override_font_size = 12
+		name.autowrap_mode = 1
+		vbox.add_child(name)
 
-func _clear_grange() -> void:
-	var panel = get_tree().root.get_child(0).get_node("GrangeUI")
-	var grid = panel.get_node("VBoxContainer/GridContainer")
-	for child in grid.get_children():
-		if child is Button:
-			child.set("item_id", "")
-			child.set("quality", 0)
-			child.text = ""
-	panel.get_node("VBoxContainer/ScoreLabel").text = "Pontuação: 0 / 100"
+		var price = Label.new()
+		price.text = "%dg" % item.price
+		price.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		price.theme_override_font_size = 12
+		price.add_theme_color_override("font_color", Color(1.0, 0.9, 0.3))
+		vbox.add_child(price)
 
-## Pesca Competitiva (Fair)
-func _start_fishing_contest() -> void:
-	# Similar ao minigame normal mas com tempo limite e peixes específicos
-	_show_message("Pesca Competitiva iniciada! Pegue o maior peixe em 2 minutos!")
-	# TODO: Implementar lógica completa
-	pass
+		btn.pressed.connect(_buy_festival_item.bind(item_id, item.price))
+		grid.add_child(btn)
 
-## Tiro ao Alvo (Fair)
-func _start_slingshot_game() -> void:
-	_show_message("Tiro ao Alvo! Acertar os alvos móveis!")
-	# TODO: Implementar
-	pass
+	var close_btn = Button.new()
+	close_btn.text = "Fechar"
+	close_btn.custom_minimum_size = Vector2(0, 40)
+	close_btn.pressed.connect(panel.queue_free.bind())
+	vbox.add_child(close_btn)
 
-## Labirinto (Spirit's Eve)
-func _start_maze() -> void:
-	_show_message("Encontre a Abóbora Dourada no labirinto!")
-	# TODO: Gerar labirinto procedural
-	pass
+	get_tree().root.get_child(0).add_child(panel)
 
-## Pesca no Gelo (Festival of Ice)
-func _start_ice_fishing() -> void:
-	_show_message("Pesca no Gelo! Peixes de inverno disponíveis!")
-	# TODO: Implementar
-	pass
+func _get_festival_shop_items() -> Array[String]:
+	match active_festival:
+		"Egg Festival":
+			return ["(O)453", "(O)454", "(O)455", "(O)456"]  # Straw Hat, Chocolate Egg, etc.
+		"Flower Dance":
+			return ["(O)380", "(O)382", "(O)384", "(O)591", "(O)593"]  # Hats, flowers
+		"Luau":
+			return ["(O)216", "(O)218", "(O)220", "(O)222"]  # Ingredients
+		"Stardew Valley Fair":
+			return ["(O)453", "(O)454", "(O)455", "(O)456", "(O)457", "(O)458"]  # Rare items
+		"Spirit's Eve":
+			return ["(O)768", "(O)453", "(O)454", "(O)455"]  # Golden Pumpkin, hats
+		"Festival of Ice":
+			return ["(O)453", "(O)454", "(O)455", "(O)456", "(O)457"]  # Winter items
+		"Feast of the Winter Star":
+			return ["(O)453", "(O)454", "(O)455", "(O)456", "(O)457", "(O)458"]  # Gifts
+	return []
 
-## Troca de Presentes (Winter Star)
-func _start_gift_exchange() -> void:
-	# Secret Santa com NPC aleatório
-	var npcs = DataLoader.get_all_npcs()
-	var giver = npcs[randi() % npcs.size()]
-	_show_message("Você tirou %s no Amigo Secreto!" % giver.get_display_name())
-	# TODO: UI para dar presente
-	pass
-
-## Potluck (Luau)
-func _open_potluck_ui() -> void:
-	_show_message("Traga um prato para o Potluck! Qualidade afeta amizade dos aldeões.")
-	# TODO: UI para selecionar item de comida
-	pass
-
-## Dança das Flores
-func _open_dance_ui() -> void:
-	# Convida NPC para dançar (precisa 4+ corações)
-	var available = []
-	for npc in DataLoader.get_all_npcs():
-		if GameManager.friendships.get(npc.internal_name, 0) >= 1000:  # 4 corações
-			available.append(npc)
-
-	if available.is_empty():
-		_show_message("Ninguém quer dançar com você... (precisa 4+ corações)")
+func _buy_festival_item(item_id: String, price: int) -> void:
+	if GameManager.gold < price:
+		HUD.show_message("Ouro insuficiente!")
 		return
 
-	# Menu de seleção
-	var popup = PopupMenu.new()
-	for npc in available:
-		popup.add_item(npc.get_display_name(), popup.get_item_count())
-	popup.id_pressed.connect(_confirm_dance_partner.bind(available))
-	add_child(popup)
-	popup.popup_centered()
+	GameManager.gold -= price
+	GameManager.emit_signal("gold_changed", GameManager.gold)
 
-func _confirm_dance_partner(available: Array, id: int) -> void:
-	var partner = available[id]
-	GameManager.friendships[partner.internal_name] = GameManager.friendships.get(partner.internal_name, 0) + 250
-	_show_message("Você dançou com %s! (+1 coração)" % partner.get_display_name())
-	emit_signal("festival_reward_earned", {"type": "friendship", "npc": partner.internal_name, "amount": 250})
-
-## Loja do Festival
-func _open_festival_shop() -> void:
-	var shop_id = "FestivalShop_%s" % active_festival
-	var shop = DataLoader.get_shop(shop_id)
-	if shop:
-		ShopUI.open_shop(shop, {"Name": "Festival Vendor"})
+	if InventoryManager.add_item(item_id, 1):
+		HUD.show_message("Comprado: %s por %dg" % [DataLoader.get_item(item_id)?.display_name ?? item_id, price])
 	else:
-		# Loja genérica do festival
-		_show_message("Loja do festival aberta!")
-	pass
+		GameManager.gold += price
+		GameManager.emit_signal("gold_changed", GameManager.gold)
+		HUD.show_message("Inventário cheio!")
 
-## ==================== UTILIDADES ====================
+## ==================== PÚBLICO ====================
 func is_festival_today() -> bool:
-	return festival_data != {}
+	return active_festival != ""
 
 func get_current_festival() -> Dictionary:
 	return festival_data
 
 func get_festival_shop(festival_name: String) -> ShopData:
-	return DataLoader.get_shop("FestivalShop_%s" % festival_name)
-
-func _show_message(text: String) -> void:
-	print("Festival: %s" % text)
-	# TODO: Toast
+	var shop = ShopData.new()
+	shop.shop_name = "Festival: %s" % festival_name
+	shop.items = _get_festival_shop_items()
+	return shop

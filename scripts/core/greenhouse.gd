@@ -1,18 +1,17 @@
 class_name Greenhouse
 extends Node
 
-## Estufa: cultivo o ano todo, layout fixo 10x12, regadores funcionam
+## Estufa - cultivo o ano todo, 10x12 tiles
 
 @export var greenhouse_scene: PackedScene
 
 ## Estado
 var unlocked: bool = false
-var crop_plots: Dictionary = {}  # {position_key: GreenhousePlot}
-var sprinklers_active: Array = []
+var crop_plots: Dictionary = {}  # "x,y" -> crop data
 
-## Layout da estufa (10x12 tiles plantáveis no centro)
-const GREENHOUSE_SIZE = Vector2i(10, 12)
-const PLANTABLE_AREA = Rect2i(1, 1, 10, 12)  # Offset 1,1 para paredes
+## Área plantável (10x12)
+const PLANTABLE_AREA = {"position": Vector2i(1, 1), "size": Vector2i(10, 12)}
+const TILE_SIZE = 32
 
 ## ==================== SINAIS ====================
 signal greenhouse_unlocked()
@@ -24,6 +23,41 @@ func _ready() -> void:
 	unlocked = GameManager.get("cc_greenhouse_unlocked", false) or GameManager.get("greenhouse_unlocked", false)
 	if unlocked:
 		_initialize_plots()
+		_load_crops()
+
+	# Verifica desbloqueio via Community Center
+	if CommunityCenter:
+		CommunityCenter.room_completed.connect(_check_greenhouse_unlock)
+
+func _check_greenhouse_unlock(room: String) -> void:
+	if room == "Pantry" and not unlocked:
+		var bundles = CommunityCenter.get_room_bundles("Pantry")
+		var all_complete = true
+		for bundle in bundles:
+			if not bundle.completed:
+				all_complete = false
+				break
+		if all_complete:
+			unlock()
+
+func unlock() -> void:
+	if unlocked:
+		return
+
+	unlocked = true
+	GameManager.set("greenhouse_unlocked", true)
+	GameManager.set("cc_greenhouse_unlocked", true)
+
+	_initialize_plots()
+	emit_signal("greenhouse_unlocked")
+
+	HUD.show_notification("🏠 Estufa Desbloqueada!", "Agora você pode plantar o ano todo!", Color(0.5, 1.0, 0.5))
+
+	if ParticleManager:
+		ParticleManager.show_level_up(Vector2(320, 320), "Estufa!")
+
+	if AudioManager:
+		AudioManager.play_sfx("res://assets/sfx/greenhouse_unlock.ogg")
 
 func _initialize_plots() -> void:
 	# Cria plots 10x12
@@ -38,362 +72,334 @@ func _initialize_plots() -> void:
 				"watered": false,
 				"fertilizer": "",
 				"planted_day": 0,
-				"quality_boost": 0
+				"quality_boost": 0.0,
+				"speed_gro": 0,
+				"retaining_soil": 0
 			}
 
-## ==================== DESBLOQUEIO ====================
-func unlock() -> void:
-	if unlocked:
+func _load_crops() -> void:
+	if not GameManager:
 		return
 
-	unlocked = true
-	GameManager.set("greenhouse_unlocked", true)
-	_initialize_plots()
-	emit_signal("greenhouse_unlocked")
-	_show_message("Estufa reparada! Agora você pode plantar o ano todo.")
+	var saved = GameManager.get("greenhouse_crops", {})
+	for key in saved:
+		if crop_plots.has(key):
+			crop_plots[key] = saved[key]
 
-## ==================== PLANTIO ====================
-func can_plant_at(position: Vector2i) -> bool:
+func can_plant(position: Vector2i, crop_id: String) -> bool:
 	if not unlocked:
 		return false
 
 	var key = "%d,%d" % [position.x, position.y]
-	var plot = crop_plots.get(key)
-	return plot and plot.crop_id == ""
-
-func plant_crop(position: Vector2i, crop_id: String, fertilizer: String = "") -> bool:
-	if not can_plant_at(position):
+	if not crop_plots.has(key):
 		return false
 
-	var crop_data = DataLoader.get_crop(crop_id)
+	var plot = crop_plots[key]
+	return plot.crop_id == ""
+
+func plant_crop(position: Vector2i, crop_id: String, fertilizer: int = 0, retaining: int = 0, speed_gro: int = 0) -> bool:
+	if not can_plant(position, crop_id):
+		return false
+
+	var key = "%d,%d" % [position.x, position.y]
+	var crop_data = DataLoader.get_crop(crop_id.to_int())
 	if not crop_data:
 		return false
 
-	# Estufa ignora estação
-	var key = "%d,%d" % [position.x, position.y]
+	# Verifica estação (estufa ignora estação!)
+	# Mas verifica se é cultura válida
+
 	crop_plots[key] = {
 		"position": position,
 		"crop_id": crop_id,
 		"growth_day": 0,
 		"watered": false,
 		"fertilizer": fertilizer,
-		"planted_day": GameManager.current_day,
-		"quality_boost": _get_fertilizer_quality_boost(fertilizer)
+		"retaining_soil": retaining,
+		"speed_gro": speed_gro,
+		"planted_day": GameManager.current_day if GameManager else 1,
+		"quality_boost": _calculate_quality_boost(fertilizer),
+		"phase": 0,
+		"harvest_count": 0,
+		"is_fully_grown": false,
+		"is_dead": false
 	}
 
+	_save_crops()
 	emit_signal("crop_planted", position, crop_id)
+
+	# Spawna visual
+	_spawn_crop_visual(position, crop_id)
+
+	# Consome semente
+	if InventoryManager:
+		InventoryManager.remove_item(crop_id, 1)
+
 	return true
 
-func _get_fertilizer_quality_boost(fertilizer: String) -> int:
+func _calculate_quality_boost(fertilizer: int) -> float:
 	match fertilizer:
-		"Basic Fertilizer": return 1
-		"Quality Fertilizer": return 2
-		"Deluxe Fertilizer": return 3
-		"Speed-Gro": return 0
-		"Deluxe Speed-Gro": return 0
-		"Hyper Speed-Gro": return 0
-		_: return 0
+		1: return 0.1   # Basic Fertilizer
+		2: return 0.2   # Quality Fertilizer
+		3: return 0.3   # Deluxe Fertilizer
+	return 0.0
 
-## ==================== REGA ====================
-func water_position(position: Vector2i) -> bool:
+func water_crop(position: Vector2i) -> bool:
 	var key = "%d,%d" % [position.x, position.y]
-	var plot = crop_plots.get(key)
-	if not plot or plot.crop_id == "":
+	if not crop_plots.has(key):
+		return false
+
+	var plot = crop_plots[key]
+	if plot.crop_id == "" or plot.is_fully_grown or plot.is_dead:
 		return false
 
 	plot.watered = true
+	_save_crops()
+
+	# Efeito visual
+	_spawn_water_effect(position)
+
 	return true
 
-func water_area(center: Vector2i, radius: int) -> int:
-	var watered = 0
-	for x in range(-radius, radius + 1):
-		for y in range(-radius, radius + 1):
-			var pos = Vector2i(center.x + x, center.y + y)
-			if water_position(pos):
-				watered += 1
-	return watered
+func harvest_crop(position: Vector2i) -> Dictionary:
+	var key = "%d,%d" % [position.x, position.y]
+	if not crop_plots.has(key):
+		return {}
 
-## ==================== CRESCIMENTO DIÁRIO ====================
-func process_daily_growth() -> void:
+	var plot = crop_plots[key]
+	if not plot.is_fully_grown or plot.crop_id == "":
+		return {}
+
+	var crop_data = DataLoader.get_crop(plot.crop_id.to_int())
+	if not crop_data:
+		return {}
+
+	# Calcula qualidade e quantidade
+	var quality = _calculate_harvest_quality(plot)
+	var amount = _calculate_harvest_amount(crop_data, plot)
+	var harvest_item = crop_data.harvest_item_id
+	if harvest_item == "":
+		harvest_item = plot.crop_id
+
+	# Adiciona ao inventário
+	if InventoryManager:
+		InventoryManager.add_item(harvest_item, amount, quality)
+
+	# Estatísticas
+	if GameManager:
+		GameManager.stats.crops_harvested += amount
+		GameManager.emit_signal("crop_harvested", harvest_item, amount, quality)
+
+	# Partículas e som
+	if ParticleManager:
+		ParticleManager.spawn("harvest", Vector2(position.x * TILE_SIZE, position.y * TILE_SIZE) + Vector2(16, -16))
+
+	if AudioManager:
+		AudioManager.play_sfx_at_position("res://assets/sfx/harvest.ogg", Vector2(position.x * TILE_SIZE, position.y * TILE_SIZE))
+
+	# Verifica regrow
+	var result = {
+		"item_id": harvest_item,
+		"amount": amount,
+		"quality": quality,
+		"regrow": false
+	}
+
+	if crop_data.regrow_days > 0 and plot.harvest_count < crop_data.max_harvests:
+		# Regrow
+		plot.growth_day = crop_data.total_growth_days - crop_data.regrow_days
+		plot.is_fully_grown = false
+		plot.watered = false
+		plot.harvest_count += 1
+		plot.phase = crop_data.get_phase_at_day(plot.growth_day)
+		result.regrow = true
+
+		# Efeito visual de regrow
+		_show_regrow_effect(position)
+
+		_save_crops()
+	else:
+		# Remove cultura
+		plot.crop_id = ""
+		plot.growth_day = 0
+		plot.watered = false
+		plot.is_fully_grown = false
+		plot.is_dead = false
+		plot.harvest_count = 0
+		plot.phase = 0
+		_remove_crop_visual(position)
+
+	_save_crops()
+	emit_signal("crop_harvested", position, harvest_item, amount, quality)
+
+	return result
+
+func _calculate_harvest_quality(plot: Dictionary) -> int:
+	var base_chance = 0.0
+
+	# Fertilizante
+	base_chance += plot.quality_boost
+
+	# Nível de farming
+	var farming_level = GameManager.skill_levels[0] if GameManager else 0
+	base_chance += farming_level * 0.01
+
+	# Sorte diária
+	base_chance += (GameManager.daily_luck + 0.1) * 0.3 if GameManager else 0
+
+	# Profissão Artisan
+	if GameManager and GameManager.professions.get("Farming") == 1:
+		base_chance += 0.2
+
+	if base_chance > 0.9: return 3
+	elif base_chance > 0.6: return 2
+	elif base_chance > 0.3: return 1
+	return 0
+
+func _calculate_harvest_amount(crop_data: CropData, plot: Dictionary) -> int:
+	var min_stack = crop_data.harvest_min_stack
+	var max_stack = crop_data.harvest_max_stack
+
+	# Bonus por nível de farming
+	var farming_bonus = int(crop_data.harvest_max_increase_per_farming_level * (GameManager.skill_levels[0] if GameManager else 0))
+	max_stack += farming_bonus
+
+	# Chance extra
+	if randf() < crop_data.extra_harvest_chance:
+		max_stack += 1
+
+	return randi_range(min_stack, max_stack)
+
+func grow_day() -> void:
 	if not unlocked:
 		return
 
 	for key in crop_plots:
 		var plot = crop_plots[key]
-		if plot.crop_id == "":
+		if plot.crop_id == "" or plot.is_dead or plot.is_fully_grown:
 			continue
 
-		var crop_data = DataLoader.get_crop(plot.crop_id)
+		# Verifica água
+		var crop_data = DataLoader.get_crop(plot.crop_id.to_int())
 		if not crop_data:
 			continue
 
-		# Verifica rega (estufa não chove)
-		if not plot.watered and crop_data.needs_watering:
-			# Planta morre se não regada por 2 dias
-			plot.growth_day -= 1
-			if plot.growth_day < -1:
-				_clear_plot(key)
-				continue
+		if crop_data.needs_watering and not plot.watered and plot.retaining_soil == 0:
+			# Morre se não regada
+			plot.is_dead = true
+			plot.is_fully_grown = false
+			continue
 
-		plot.growth_day += 1
-		plot.watered = false  # Reseta para próximo dia
+		# Speed-Gro acelera
+		var speed_bonus = plot.speed_gro * 0.1
+		plot.growth_day += 1 + int(speed_bonus)
 
-		# Verifica colheita
-		var total_days = 0
-		for phase in crop_data.days_in_phase:
-			total_days += phase
+		# Verifica fase
+		var new_phase = crop_data.get_phase_at_day(plot.growth_day)
+		if new_phase != plot.phase:
+			plot.phase = new_phase
+			_update_crop_visual(plot.position, plot.phase)
 
-		# Aplica fertilizante de velocidade
-		var speed_mult = _get_fertilizer_speed_mult(plot.fertilizer)
-		var effective_days = int(total_days / speed_mult)
+		# Verifica se totalmente crescido
+		if plot.growth_day >= crop_data.total_growth_days:
+			plot.is_fully_grown = true
+			plot.watered = false  # Reseta água
 
-		if plot.growth_day >= effective_days:
-			# Pronto para colher
-			plot.growth_day = effective_days  # Cap
+		# Retaining soil mantém água
+		if plot.retaining_soil > 0:
+			plot.watered = true
 
-			# Verifica regeneração
-			if crop_data.regrow_days > 0:
-				plot.growth_day = effective_days - crop_data.regrow_days
+	# Salva
+	_save_crops()
 
-func _get_fertilizer_speed_mult(fertilizer: String) -> float:
-	match fertilizer:
-		"Speed-Gro": return 1.1
-		"Deluxe Speed-Gro": return 1.25
-		"Hyper Speed-Gro": return 1.33
-		_: return 1.0
+	# Processa estufa no ciclo diário do GameManager
+	# (chamado via signal day_changed)
 
-## ==================== COLHEITA ====================
-func harvest_at(position: Vector2i) -> Dictionary:
+func _spawn_crop_visual(position: Vector2i, crop_id: String) -> void:
+	# Spawna visual da cultura no mundo
+	var world_pos = Vector2(position.x * TILE_SIZE, position.y * TILE_SIZE) + Vector2(16, 16)
+
+	# Cria node visual
+	var crop_node = Node2D.new()
+	crop_node.name = "GreenhouseCrop_%d_%d" % [position.x, position.y]
+	crop_node.global_position = world_pos
+
+	var crop_data = DataLoader.get_crop(crop_id.to_int())
+	if crop_data and crop_data.texture_path != "":
+		var sprite = Sprite2D.new()
+		sprite.texture = load(crop_data.texture_path)
+		sprite.offset = Vector2(16, 32)
+		crop_node.add_child(sprite)
+
+	get_tree().root.get_child(0).add_child(crop_node)
+
+func _update_crop_visual(position: Vector2i, phase: int) -> void:
+	var node_name = "GreenhouseCrop_%d_%d" % [position.x, position.y]
+	var node = get_tree().root.get_child(0).get_node_or_null(node_name)
+	if node:
+		# Atualiza sprite para nova fase
+		pass
+
+func _remove_crop_visual(position: Vector2i) -> void:
+	var node_name = "GreenhouseCrop_%d_%d" % [position.x, position.y]
+	var node = get_tree().root.get_child(0).get_node_or_null(node_name)
+	if node:
+		node.queue_free()
+
+func _spawn_water_effect(position: Vector2i) -> void:
+	if ParticleManager:
+		ParticleManager.spawn("water", Vector2(position.x * TILE_SIZE, position.y * TILE_SIZE) + Vector2(16, -16))
+
+	if AudioManager:
+		AudioManager.play_sfx_at_position("res://assets/sfx/water.ogg", Vector2(position.x * TILE_SIZE, position.y * TILE_SIZE))
+
+func _show_regrow_effect(position: Vector2i) -> void:
+	if ParticleManager:
+		ParticleManager.spawn("seed", Vector2(position.x * TILE_SIZE, position.y * TILE_SIZE) + Vector2(16, -16))
+
+	var label = Label.new()
+	label.text = "🌱 Rebrotando!"
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.theme_override_font_size = 14
+	label.add_theme_color_override("font_color", Color(0.5, 1.0, 0.5))
+	label.add_theme_color_override("font_outline_color", Color.BLACK)
+	label.add_theme_constant_override("outline_size", 2)
+	label.global_position = Vector2(position.x * TILE_SIZE, position.y * TILE_SIZE) + Vector2(16, -32)
+	get_tree().root.get_child(0).add_child(label)
+
+	var tween = label.create_tween()
+	tween.tween_property(label, "global_position:y", label.global_position.y - 40, 2.0)
+	tween.tween_property(label, "modulate:a", 0.0, 2.0)
+	tween.finished.connect(label.queue_free.bind())
+
+func _save_crops() -> void:
+	if GameManager:
+		GameManager.set("greenhouse_crops", crop_plots)
+
+## ==================== UTILIDADES ====================
+func get_crop_at(position: Vector2i) -> Dictionary:
 	var key = "%d,%d" % [position.x, position.y]
-	var plot = crop_plots.get(key)
-	if not plot or plot.crop_id == "":
-		return {}
+	return crop_plots.get(key, {})
 
-	var crop_data = DataLoader.get_crop(plot.crop_id)
-	if not crop_data:
-		return {}
-
-	# Verifica se está pronto
-	var total_days = 0
-	for phase in crop_data.days_in_phase:
-		total_days += phase
-	var speed_mult = _get_fertilizer_speed_mult(plot.fertilizer)
-	var effective_days = int(total_days / speed_mult)
-
-	if plot.growth_day < effective_days:
-		return {}
-
-	# Calcula colheita
-	var amount = randi_range(crop_data.harvest_min_stack, crop_data.harvest_max_stack)
-	var farming_bonus = int(GameManager.get_skill_level("Farming") * crop_data.harvest_max_increase_per_farming_level)
-	amount += farming_bonus
-
-	# Chance de colheita extra
-	if randf() < crop_data.extra_harvest_chance:
-		amount += 1
-
-	# Qualidade
-	var quality = _calculate_harvest_quality(crop_data, plot)
-
-	var item_id = crop_data.harvest_item_id
-	var result = {
-		"item_id": item_id,
-		"amount": amount,
-		"quality": quality
-	}
-
-	# Adiciona ao inventário
-	for i in range(amount):
-		InventoryManager.add_item(item_id, 1, quality)
-
-	# XP Farming
-	GameManager.add_skill_xp(0, 7 * amount)
-	GameManager.increment_stat("crops_harvested", amount)
-
-	# Verifica regeneração
-	if crop_data.regrow_days > 0:
-		plot.growth_day = effective_days - crop_data.regrow_days
-		plot.watered = false
-	else:
-		_clear_plot(key)
-
-	emit_signal("crop_harvested", position, item_id, amount, quality)
+func get_all_crops() -> Array[Dictionary]:
+	var result = []
+	for key in crop_plots:
+		var plot = crop_plots[key]
+		if plot.crop_id != "":
+			plot.position = key.split(",").map(func(s): return s.to_int())
+			result.append(plot.duplicate())
 	return result
 
-func _calculate_harvest_quality(crop_data: CropData, plot: Dictionary) -> int:
-	var chance = 0.0
-
-	# Base: nível de farming
-	chance += GameManager.get_skill_level("Farming") * 0.02
-
-	# Fertilizante de qualidade
-	chance += plot.quality_boost * 0.15
-
-	# Sorte diária
-	chance += (GameManager.daily_luck + 0.1) * 0.2
-
-	# Profissão Agricultor (level 10 farming = 1)
-	if GameManager.professions.get("Farming") == 1:
-		chance += 0.2
-
-	# Mínimo de qualidade da cultura
-	var min_q = crop_data.harvest_min_quality
-	if min_q > 0:
-		chance = max(chance, min_q * 0.3)
-
-	if chance > 0.9:
-		return 3
-	elif chance > 0.6:
-		return 2
-	elif chance > 0.3:
-		return 1
-	return 0
-
-func _clear_plot(key: String) -> void:
-	if crop_plots.has(key):
-		crop_plots[key] = {
-			"position": crop_plots[key].position,
-			"crop_id": "",
-			"growth_day": 0,
-			"watered": false,
-			"fertilizer": "",
-			"planted_day": 0,
-			"quality_boost": 0
-		}
-
-## ==================== ASPERSORES ====================
-func register_sprinkler(position: Vector2i, pattern: Array[Vector2i]) -> void:
-	sprinklers_active.append({"position": position, "pattern": pattern})
-
-func process_sprinklers() -> void:
-	for sprinkler in sprinklers_active:
-		for offset in sprinkler.pattern:
-			var pos = sprinkler.position + offset
-			water_position(pos)
-
-## ==================== UI ====================
-func open_greenhouse() -> void:
-	if not unlocked:
-		_show_message("A estufa está em ruínas. Complete os bundles da Despensa no Centro Comunitário para repará-la.")
-		return
-
-	if greenhouse_scene:
-		var ui = greenhouse_scene.instantiate()
-		ui.initialize(crop_plots)
-		get_tree().root.get_child(0).add_child(ui)
-	else:
-		_show_generic_greenhouse_ui()
-
-func _show_generic_greenhouse_ui() -> void:
-	var panel = Panel.new()
-	panel.name = "GreenhouseUI"
-	panel.anchors_preset = 15
-	panel.offset_left = 50
-	panel.offset_top = 30
-	panel.offset_right = -50
-	panel.offset_bottom = -30
-
-	var vbox = VBoxContainer.new()
-	panel.add_child(vbox)
-
-	var title = Label.new()
-	title.text = "Estufa - Cultivo o Ano Todo"
-	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	title.theme_override_font_size = 24
-	vbox.add_child(title)
-
-	# Grid visual 10x12
-	var grid = GridContainer.new()
-	grid.columns = 10
-	grid.theme_override_constants/h_separation = 2
-	grid.theme_override_constants/v_separation = 2
-	vbox.add_child(grid)
-
-	for y in range(12):
-		for x in range(10):
-			var pos = Vector2i(x + 1, y + 1)
-			var key = "%d,%d" % [pos.x, pos.y]
-			var plot = crop_plots.get(key, {})
-
-			var btn = Button.new()
-			btn.custom_minimum_size = Vector2(40, 40)
-
-			if plot.crop_id != "":
-				var crop = DataLoader.get_crop(plot.crop_id)
-				var name = crop?.internal_name ?? plot.crop_id
-				var progress = plot.growth_day
-				var total = 0
-				if crop:
-					for phase in crop.days_in_phase:
-						total += phase
-					total = int(total / _get_fertilizer_speed_mult(plot.fertilizer))
-				btn.text = "%s\n%d/%d" % [name.left(4), progress, total]
-				btn.tooltip_text = "%s - Dia %d/%d%s" % [name, progress, total, plot.watered ? " 💧" : ""]
-			else:
-				btn.text = "🟫"
-				btn.tooltip_text = "Vazio - Clique para plantar"
-
-			btn.pressed.connect(_on_plot_clicked.bind(pos))
-			grid.add_child(btn)
-
-	var close_btn = Button.new()
-	close_btn.text = "Fechar"
-	close_btn.pressed.connect(panel.queue_free)
-	vbox.add_child(close_btn)
-
-	get_tree().root.get_child(0).add_child(panel)
-
-func _on_plot_clicked(position: Vector2i) -> void:
-	var key = "%d,%d" % [position.x, position.y]
-	var plot = crop_plots.get(key, {})
-
-	if plot.crop_id == "":
-		# Abre seleção de sementes
-		_show_seed_selection(position)
-	else:
-		# Tenta colher
-		var result = harvest_at(position)
-		if result:
-			_show_message("Colheu %d %s (Qualidade %d)" % [result.amount, result.item_id, result.quality])
-
-func _show_seed_selection(position: Vector2i) -> void:
-	var popup = PopupMenu.new()
-	var seeds = InventoryManager.get_items_by_category("Seeds")
-	for item_id in seeds:
-		var item = DataLoader.get_item(item_id)
-		if item:
-			popup.add_item("%s (x%d)" % [item.display_name, InventoryManager.get_item_count(item_id)], popup.get_item_count())
-			popup.set_item_metadata(popup.get_item_count() - 1, item_id)
-
-	popup.id_pressed.connect(_on_seed_selected.bind(position))
-	popup.popup_centered()
-
-func _on_seed_selected(position: Vector2i, idx: int) -> void:
-	var popup = get_tree().root.get_child(0).get_node_or_null("PopupMenu")
-	if not popup:
-		return
-
-	var item_id = popup.get_item_metadata(idx)
-	if plant_crop(position, item_id):
-		_show_message("Plantou %s na estufa!" % item_id)
-
-func _show_message(text: String) -> void:
-	print("Greenhouse: %s" % text)
-
-## ==================== SERIALIZAÇÃO ====================
 func get_save_data() -> Dictionary:
-	var plots_data = {}
-	for key, plot in crop_plots:
-		plots_data[key] = plot
 	return {
 		"unlocked": unlocked,
-		"crop_plots": plots_data
+		"crop_plots": crop_plots
 	}
 
 func load_save_data(data: Dictionary) -> void:
 	unlocked = data.get("unlocked", false)
+	crop_plots = data.get("crop_plots", {})
+
 	if unlocked:
 		_initialize_plots()
-		for key, plot in data.get("crop_plots", {}):
-			if crop_plots.has(key):
-				crop_plots[key] = plot
+		_load_crops()
