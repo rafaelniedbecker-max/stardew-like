@@ -4,12 +4,13 @@ extends Control
 ## Menu de pausa: save, load, configurações, sair
 
 @onready var panel: Panel = $Panel
-@onready var save_button: Button = $Panel/VBoxContainer/SaveButton
-@onready var load_button: Button = $Panel/VBoxContainer/LoadButton
-@onready var settings_button: Button = $Panel/VBoxContainer/SettingsButton
-@onready var quit_button: Button = $Panel/VBoxContainer/QuitButton
-@onready var resume_button: Button = $Panel/VBoxContainer/ResumeButton
-@onready var version_label: Label = $Panel/VBoxContainer/VersionLabel
+@onready var vbox: VBoxContainer = $Panel/VBoxContainer
+@onready var resume_button: Button
+@onready var save_button: Button
+@onready var load_button: Button
+@onready var settings_button: Button
+@onready var quit_button: Button
+@onready var version_label: Label
 
 ## ==================== SINAIS ====================
 signal resume_requested()
@@ -21,6 +22,9 @@ func _ready() -> void:
 	visible = false
 	panel.visible = false
 
+	# Cria botões via UIStyle se não existirem na cena
+	_setup_buttons()
+
 	resume_button.pressed.connect(_on_resume)
 	save_button.pressed.connect(_on_save)
 	load_button.pressed.connect(_on_load)
@@ -28,9 +32,63 @@ func _ready() -> void:
 	quit_button.pressed.connect(_on_quit_confirm)
 
 	version_label.text = "v0.1.0 - Stardew-Like"
+	UIStyle.apply_to_label(version_label, "caption")
+	version_label.add_theme_color_override("font_color", UIStyle.get_color("ink_muted"))
 
 	# Input para fechar
 	Input.set_process_unhandled_input(true)
+
+func _setup_buttons() -> void:
+	# Resume
+	resume_button = vbox.get_node_or_null("ResumeButton")
+	if not resume_button:
+		resume_button = UIStyle.create_button("▶ Continuar", "primary", "large", _on_resume.bind())
+		vbox.add_child(resume_button)
+		resume_button.move_child(resume_button, 0)
+	else:
+		UIStyle.apply_to_button(resume_button, "primary", "large")
+
+	# Save
+	save_button = vbox.get_node_or_null("SaveButton")
+	if not save_button:
+		save_button = UIStyle.create_button("💾 Salvar Jogo", "secondary", "medium", _on_save.bind())
+		vbox.add_child(save_button)
+	else:
+		UIStyle.apply_to_button(save_button, "secondary", "medium")
+
+	# Load
+	load_button = vbox.get_node_or_null("LoadButton")
+	if not load_button:
+		load_button = UIStyle.create_button("📂 Carregar Jogo", "secondary", "medium", _on_load.bind())
+		vbox.add_child(load_button)
+	else:
+		UIStyle.apply_to_button(load_button, "secondary", "medium")
+
+	# Settings
+	settings_button = vbox.get_node_or_null("SettingsButton")
+	if not settings_button:
+		settings_button = UIStyle.create_button("⚙ Configurações", "secondary", "medium", _on_settings.bind())
+		vbox.add_child(settings_button)
+	else:
+		UIStyle.apply_to_button(settings_button, "secondary", "medium")
+
+	# Quit
+	quit_button = vbox.get_node_or_null("QuitButton")
+	if not quit_button:
+		quit_button = UIStyle.create_button("🚪 Sair para Menu", "ghost", "medium", _on_quit_confirm.bind())
+		vbox.add_child(quit_button)
+	else:
+		UIStyle.apply_to_button(quit_button, "ghost", "medium")
+
+	# Espaçamento
+	vbox.theme_override_constants/separation = UIStyle.SPACING.lg
+	vbox.theme_override_constants/margin_left = UIStyle.SPACING.xl
+	vbox.theme_override_constants/margin_right = UIStyle.SPACING.xl
+	vbox.theme_override_constants/margin_top = UIStyle.SPACING.xl
+	vbox.theme_override_constants/margin_bottom = UIStyle.SPACING.xl
+
+	# Panel styling
+	UIStyle.apply_to_panel(panel, "default")
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("pause") and visible:
@@ -47,8 +105,8 @@ func show_menu() -> void:
 	# Atualiza info do save atual
 	if SaveManager:
 		var slot = SaveManager.active_slot
-		save_button.text = "Salvar Jogo (Slot %d)" % slot
-		load_button.text = "Carregar Jogo (Slot %d)" % slot
+		save_button.text = "💾 Salvar Jogo (Slot %d)" % slot
+		load_button.text = "📂 Carregar Jogo (Slot %d)" % slot
 
 func _on_resume() -> void:
 	visible = false
@@ -60,19 +118,20 @@ func _on_save() -> void:
 	if SaveManager:
 		var success = SaveManager.save_game()
 		if success:
-			HUD.show_message("Jogo salvo com sucesso!")
-			save_button.text = "Salvar Jogo (Slot %d)" % SaveManager.active_slot
+			UIStyle.show_toast("💾 Salvo", "Jogo salvo com sucesso!", "success")
+			if SaveManager:
+				save_button.text = "💾 Salvar Jogo (Slot %d)" % SaveManager.active_slot
 		else:
-			HUD.show_message("Erro ao salvar!")
+			UIStyle.show_toast("❌ Erro", "Erro ao salvar!", "danger")
 	_on_resume()
 
 func _on_load() -> void:
 	if SaveManager:
 		var success = SaveManager.load_game(SaveManager.active_slot)
 		if success:
-			HUD.show_message("Jogo carregado!")
+			UIStyle.show_toast("📂 Carregado", "Jogo carregado!", "success")
 		else:
-			HUD.show_message("Erro ao carregar!")
+			UIStyle.show_toast("❌ Erro", "Erro ao carregar!", "danger")
 	_on_resume()
 
 func _on_settings() -> void:
