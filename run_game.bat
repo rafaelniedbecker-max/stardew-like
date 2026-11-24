@@ -1,35 +1,23 @@
 @echo off
 chcp 65001 >nul
-title Stardew-Like Launcher
+title Stardew-Like (Meu PC)
 
-echo.
-echo ========================================
-echo   STARDEW-LIKE - Godot 4.7.2
-echo ========================================
-echo.
+echo Iniciando Stardew-Like...
 
-REM Verifica se Godot está no PATH
+REM Tenta Godot do PATH
 where godot >nul 2>&1
-if %errorlevel% neq 0 (
-    echo [ERRO] Godot não encontrado no PATH!
-    echo.
-    echo Opções:
-    echo  1. Adicione Godot ao PATH do Windows
-    echo 2. Edite este arquivo e defina GODOT_PATH abaixo
-    echo 3. Baixe em: https://godotengine.org/download
-    echo.
-    pause
-    exit /b 1
+if %errorlevel% equ 0 (
+    godot --path "%~dp0" --main-pack "%~dp0project.godot"
+    goto :end
 )
 
-echo [OK] Godot encontrado: %GODOT_PATH%
-echo.
-echo Iniciando jogo...
-echo.
+REM Fallback: Program Files padrão
+if exist "%ProgramFiles%\Godot\Godot_v4.7.2-stable_win64.exe" (
+    "%ProgramFiles%\Godot\Godot_v4.7.2-stable_win64.exe" --path "%~dp0" --main-pack "%~dp0project.godot"
+    goto :end
+)
 
-REM Executa o projeto
-godot --path "%~dp0" --main-pack "%~dp0project.godot"
-
-echo.
-echo Jogo finalizado.
+echo Godot nao encontrado! Instale em https://godotengine.org/download
 pause
+
+:end

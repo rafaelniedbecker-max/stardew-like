@@ -1,13 +1,11 @@
 <#
 .SYNOPSIS
-    Launcher for Stardew-Like Godot project
+    Launcher Stardew-Like personalizado para o PC do Administrador
 .DESCRIPTION
-    Finds Godot 4.x installation and launches the Stardew-Like project
-    Supports command line arguments for customization
+    Detecta Godot nos locais padrão do Windows e lança o projeto
 #>
 
 param(
-    [string]$GodotPath = "",
     [switch]$Debug,
     [switch]$Verbose,
     [string]$Resolution = "",
@@ -18,52 +16,10 @@ param(
 $ErrorActionPreference = "Stop"
 
 Write-Host "`n========================================" -ForegroundColor Cyan
-Write-Host "   STARDEW-LIKE LAUNCHER (PowerShell)" -ForegroundColor Cyan
+Write-Host "   STARDEW-LIKE - PC do Administrador" -ForegroundColor Cyan
 Write-Host "========================================`n" -ForegroundColor Cyan
 
-# Find Godot executable
-function Find-Godot {
-    # 1. Check if path provided
-    if ($GodotPath -and (Test-Path $GodotPath)) {
-        return $GodotPath
-    }
-
-    # 2. Check PATH
-    $pathGodot = Get-Command godot -ErrorAction SilentlyContinue
-    if ($pathGodot) {
-        return $pathGodot.Source
-    }
-
-    # 3. Common installation paths
-    $commonPaths = @(
-        "${env:ProgramFiles}\Godot\Godot_v4.7.2-stable_win64.exe",
-        "${env:ProgramFiles(x86)}\Godot\Godot_v4.7.2-stable_win64.exe",
-        "${env:LocalAppData}\Godot\Godot_v4.7.2-stable_win64.exe",
-        "${env:USERPROFILE}\Godot\Godot_v4.7.2-stable_win64.exe",
-        "${env:USERPROFILE}\Downloads\Godot_v4.7.2-stable_win64.exe",
-        "C:\Godot\Godot_v4.7.2-stable_win64.exe",
-        "D:\Godot\Godot_v4.7.2-stable_win64.exe"
-    )
-
-    foreach ($path in $commonPaths) {
-        if (Test-Path $path) {
-            return $path
-        }
-    }
-
-    # 4. Search Program Files for any Godot 4.x
-    $godotDirs = Get-ChildItem "${env:ProgramFiles}\Godot", "${env:ProgramFiles(x86)}\Godot" -ErrorAction SilentlyContinue | Where-Object { $_.PSIsContainer }
-    foreach ($dir in $godotDirs) {
-        $exe = Get-ChildItem $dir.FullName -Filter "Godot_v4*.exe" | Select-Object -First 1
-        if ($exe) {
-            return $exe.FullName
-        }
-    }
-
-    return $null
-}
-
-# Find project path (script directory)
+# Caminho do projeto (pasta onde este script está)
 $projectPath = Split-Path -Parent $MyInvocation.MyCommand.Definition
 $projectFile = Join-Path $projectPath "project.godot"
 
@@ -72,45 +28,104 @@ if (-not (Test-Path $projectFile)) {
     exit 1
 }
 
-# Find Godot
-Write-Host "Procurando Godot..." -ForegroundColor Yellow
-$godotExe = Find-Godot
+# Função para encontrar Godot no SEU PC
+function Find-MeuGodot {
+    Write-Host "Procurando Godot no seu PC..." -ForegroundColor Yellow
+
+    # 1. PATH do sistema
+    $pathGodot = Get-Command godot -ErrorAction SilentlyContinue
+    if ($pathGodot) {
+        Write-Host "[OK] Godot no PATH: $($pathGodot.Source)" -ForegroundColor Green
+        return $pathGodot.Source
+    }
+
+    # 2. Program Files (instalação padrão)
+    $pf = "${env:ProgramFiles}\Godot\Godot_v4.7.2-stable_win64.exe"
+    if (Test-Path $pf) {
+        Write-Host "[OK] Encontrado em Program Files" -ForegroundColor Green
+        return $pf
+    }
+
+    # 3. Qualquer Godot 4.x no Program Files
+    $godotDirs = Get-ChildItem "${env:ProgramFiles}\Godot", "${env:ProgramFiles(x86)}\Godot" -ErrorAction SilentlyContinue | Where-Object { $_.PSIsContainer }
+    foreach ($dir in $godotDirs) {
+        $exe = Get-ChildItem $dir.FullName -Filter "Godot_v4*.exe" | Select-Object -First 1
+        if ($exe) {
+            Write-Host "[OK] Encontrado: $($exe.FullName)" -ForegroundColor Green
+            return $exe.FullName
+        }
+    }
+
+    # 4. LocalAppData
+    $localApp = "${env:LocalAppData}\Godot\Godot_v4.7.2-stable_win64.exe"
+    if (Test-Path $localApp) {
+        Write-Host "[OK] Encontrado em LocalAppData" -ForegroundColor Green
+        return $localApp
+    }
+
+    # 5. Pastas do usuário
+    $userPaths = @(
+        "${env:USERPROFILE}\Downloads\Godot_v4.7.2-stable_win64.exe",
+        "${env:USERPROFILE}\Godot\Godot_v4.7.2-stable_win64.exe",
+        "C:\Godot\Godot_v4.7.2-stable_win64.exe",
+        "D:\Godot\Godot_v4.7.2-stable_win64.exe"
+    )
+
+    foreach ($p in $userPaths) {
+        if (Test-Path $p) {
+            Write-Host "[OK] Encontrado em: $p" -ForegroundColor Green
+            return $p
+        }
+    }
+
+    # Busca ampla em C:\Godot\* e D:\Godot\*
+    foreach ($drive in "C:\Godot", "D:\Godot") {
+        if (Test-Path $drive) {
+            $exe = Get-ChildItem $drive -Filter "Godot_v4*.exe" -Recurse | Select-Object -First 1
+            if ($exe) {
+                Write-Host "[OK] Encontrado em $drive: $($exe.FullName)" -ForegroundColor Green
+                return $exe.FullName
+            }
+        }
+    }
+
+    return $null
+}
+
+# Encontra Godot
+Write-Host "`nProcurando Godot no seu PC..." -ForegroundColor Yellow
+$godotExe = Find-MeuGodot
 
 if (-not $godotExe) {
     Write-Error @"
-Godot 4.x não encontrado!
+Godot 4.x não encontrado no seu PC!
 
 Opções:
 1. Instale Godot 4.7.2: https://godotengine.org/download
-2. Adicione ao PATH do Windows
-3. Passe o caminho via parâmetro: -GodotPath "C:\caminho\Godot.exe"
+2. Instale no local padrão: C:\Program Files\Godot\
+3. Ou adicione ao PATH do Windows
 "@
     Read-Host "Pressione Enter para sair"
     exit 1
 }
 
-Write-Host "[OK] Godot encontrado: $godotExe" -ForegroundColor Green
+Write-Host "`n[OK] Godot: $godotExe" -ForegroundColor Green
 
-# Build arguments
-$args = @(
-    "--path", $projectPath
-)
-
+# Argumentos
+$args = @("--path", $projectPath)
 if ($Debug) { $args += "--verbose" }
 if ($Verbose) { $args += "--verbose" }
 if ($Resolution) { $args += "--resolution", $Resolution }
 if ($Fullscreen) { $args += "--fullscreen" }
 if ($ExtraArgs) { $args += $ExtraArgs.Split(" ") }
 
-Write-Host "`nIniciando jogo..." -ForegroundColor Green
-Write-Host "Projeto: $projectPath" -ForegroundColor Gray
-Write-Host "Args: $($args -join ' ')`n" -ForegroundColor Gray
+Write-Host "`nIniciando Stardew-Like no seu PC..." -ForegroundColor Green
+Write-Host "Projeto: $projectPath`n" -ForegroundColor Gray
 
-# Launch
 try {
     & $godotExe @args
 } catch {
-    Write-Error "Erro ao iniciar: $_"
+    Write-Error "Erro: $_"
     exit 1
 }
 
