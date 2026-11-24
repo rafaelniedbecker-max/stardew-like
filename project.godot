@@ -79,6 +79,9 @@ MuseumUI="res://scripts/ui/museum_ui.gd"
 CommunityCenterUI="res://scripts/ui/community_center_ui.gd"
 MinecartUI="res://scripts/ui/minecart_ui.gd"
 CameraRide="res://scripts/core/camera_ride.gd"
+VisualManager="res://scripts/visuals/visual_manager.gd"
+SpriteGenerator="res://scripts/visuals/sprite_generator.gd"
+VisualEffects="res://scripts/visuals/visual_effects.gd"
 
 [display]
 

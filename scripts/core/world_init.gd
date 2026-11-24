@@ -49,6 +49,15 @@ func _initialize_systems() -> void:
 		# Aplica aparência salva ao player
 		CharacterCustomization._apply_to_player()
 
+	# Inicializa sistemas visuais
+	if VisualManager:
+		# VisualManager já inicializa no _ready via call_deferred
+		pass
+
+	if SpriteGenerator:
+		# SpriteGenerator disponível para uso
+		pass
+
 	if CollectionsMenu:
 		# Carrega coleções
 		pass
