@@ -125,7 +125,7 @@ func get_recent_logs(count: int = 50) -> Array[Dictionary]:
 	return _log_buffer.slice(start, _log_buffer.size())
 
 func get_errors_only() -> Array[Dictionary]:
-	var errors = []
+	var errors: Array[Dictionary] = []
 	for entry in _log_buffer:
 		if entry.level >= LEVEL_ERROR:
 			errors.append(entry)

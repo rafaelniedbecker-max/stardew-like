@@ -23,8 +23,8 @@ const SKULL_CAVERN_REWARDS = {
 }
 
 ## ==================== SINAIS ====================
-signal bus_repaired()
-signal skull_cavern_unlocked()
+signal bus_repaired_signal()
+signal skull_cavern_unlocked_signal()
 signal entered_skull_cavern(level: int)
 signal exited_skull_cavern(level: int, deepest: int)
 
@@ -52,7 +52,7 @@ func _repair_bus() -> void:
 	bus_repaired = true
 	bus_repair_progress = 100
 	_spawn_bus()
-	emit_signal("bus_repaired")
+	emit_signal("bus_repaired_signal")
 	HUD.show_notification("🚌 Ônibus Reparado!", "Agora você pode ir ao Deserto!", Color(0.5, 1.0, 0.5))
 	_save_state()
 

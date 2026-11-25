@@ -459,7 +459,8 @@ func load_save_data(data: Dictionary) -> void:
 
 	for qid in data.get("active_quests", {}):
 		var qdata = data.get("active_quests", {})[qid]
-		if quest_def:
+		var quest_def: Dictionary = DataLoader.get_quest(qid)
+		if not quest_def.is_empty():
 			var instance = QuestInstance.new()
 			instance.initialize(quest_def)
 			instance.load_save_data(qdata)

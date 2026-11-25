@@ -235,7 +235,7 @@ func send_quest_mail(quest_giver: String, quest_name: String, description: Strin
 		"reward": reward
 	})
 
-func send_secret_note(note_num: Int, text: String) -> void:
+func send_secret_note(note_num: int, text: String) -> void:
 	send_mail("secret_note", {"note_num": note_num, "secret_text": text})
 
 ## ==================== LER/REIVINDICAR ====================
@@ -358,7 +358,7 @@ func _show_generic_mail_ui() -> void:
 	content_box.add_child(close_btn)
 
 	# Mostra primeira carta não lida ou a primeira
-	var first_unread = mailbox.find(lambda m: not m.read)
+	var first_unread = mailbox.find(func(m): return not m.read)
 	var mail_to_show = mailbox[first_unread] if first_unread >= 0 else (mailbox[0] if mailbox else null)
 
 	if mail_to_show:

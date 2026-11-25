@@ -420,10 +420,9 @@ func _on_choice_selected(choice: Dictionary, panel: Panel) -> void:
 			GameManager.friendships[npc_name] = friendship
 			GameManager.emit_signal("friendship_changed", npc_name, friendship)
 
-	if choice.has("action") and choice.action == "gift":
-		# Abre inventário para dar presente
-		if InventoryManager:
-			InventoryManager.open_gift_mode(npc_name)
+	if choice.has("action") and choice.action == "gift" and InventoryManager:
+		InventoryManager.open_gift_mode(npc_name, panel)
+		return
 
 	panel.queue_free()
 

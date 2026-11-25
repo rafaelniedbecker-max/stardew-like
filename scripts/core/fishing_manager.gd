@@ -155,13 +155,15 @@ func _select_fish(spot: Node2D) -> Dictionary:
 	var season = GameManager.current_season if GameManager else 0
 	var time = GameManager.current_time if GameManager else 1200
 	var weather = GameManager.today_weather if GameManager else 0
-	var location = spot.get("location_type", "river")  # "river", "lake", "ocean", "pond", "submarine"
+	var location = spot.get("location_type")
+	if location == null:
+		location = "river"  # "river", "lake", "ocean", "pond", "submarine"
 
 	# Filtra peixes disponíveis
 	var available_fish = _get_available_fish(location, season, time, weather)
 
 	if available_fish.is_empty():
-		return null
+		return {}
 
 	# Calcula pesos baseados em isca/anzol
 	var weights = []

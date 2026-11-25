@@ -370,8 +370,8 @@ func _show_generic_cc_ui() -> void:
 
 func _create_bundle_ui(instance: BundleInstance) -> Control:
 	var panel = Panel.new()
-	panel.add_theme_constant_override("stylebox", StyleBoxFlat.new())
-	var style = panel.get_theme_stylebox("stylebox") as StyleBoxFlat
+	panel.add_theme_stylebox_override("panel", StyleBoxFlat.new())
+	var style = panel.get_theme_stylebox("panel") as StyleBoxFlat
 	style.bg_color = Color(0.15, 0.15, 0.2) if instance.is_completed else Color(0.1, 0.1, 0.15)
 
 	var vbox = VBoxContainer.new()

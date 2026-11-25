@@ -705,6 +705,16 @@ func start_maze(festival_mgr: FestivalManager) -> void:
 	if player:
 		player.global_position = Vector2(100, 100)
 
+func _end_maze(_festival_mgr: FestivalManager, maze: Node2D, won: bool) -> void:
+	var ui = get_tree().root.get_child(0).get_node_or_null("MazeUI")
+	if ui:
+		ui.queue_free()
+	if is_instance_valid(maze):
+		maze.queue_free()
+	if not won:
+		HUD.show_notification("⏰ Tempo!", "Você não encontrou a Abóbora Dourada a tempo.", Color(0.8, 0.8, 0.8))
+
+
 func _generate_maze(maze: Node2D) -> void:
 	# Labirinto simples baseado em grid
 	var cell_size = 64

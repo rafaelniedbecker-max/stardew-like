@@ -297,15 +297,15 @@ func unequip_clothing(slot: String) -> bool:
 
 func _get_clothing_slot(item: ItemData) -> String:
 	# Baseado no tipo/categoria do item
-	if item.category == "Hat":
+	if item.item_type == "Hat":
 		return "hat"
-	elif item.category == "Shirt":
+	elif item.item_type == "Shirt":
 		return "shirt"
-	elif item.category == "Pants":
+	elif item.item_type == "Pants":
 		return "pants"
-	elif item.category == "Boots":
+	elif item.item_type == "Boots":
 		return "boots"
-	elif item.category == "Ring":
+	elif item.item_type == "Ring":
 		# Tenta slot 1, depois slot 2
 		if equipped_ring == "":
 			return "ring"
@@ -703,14 +703,13 @@ func _on_equip_selected(slot: String, idx: int) -> void:
 	equip_clothing(item_id)
 	open_customization_menu()  # Refresh
 
-func _slot_to_category(slot: String) -> String:
+func _slot_to_category(slot: String) -> int:
 	match slot:
-		"hat": return "Hat"
-		"shirt": return "Shirt"
-		"pants": return "Pants"
-		"boots": return "Boots"
-		"ring", "ring2": return "Ring"
-	return ""
+		"hat": return -95
+		"shirt", "pants": return -100
+		"boots": return -97
+		"ring", "ring2": return -96
+	return -999
 
 func _create_colors_tab(tabs: TabContainer) -> void:
 	var tab = VBoxContainer.new()

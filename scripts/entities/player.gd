@@ -142,11 +142,18 @@ func _try_interact() -> void:
 	var areas = interaction_area.get_overlapping_areas()
 	var bodies = interaction_area.get_overlapping_bodies()
 
-	# Prioridade: NPCs > Objetos > Portas > Itens no chão
+	# Prioridade: NPCs > Farm Plots > Objetos > Portas > Itens no chão
 	for area in areas:
 		if area.is_in_group("npc"):
 			emit_signal("npc_interacted", area.get_parent().name)
 			return
+
+		# Interação com farm plots (plantio/colheita)
+		var parent = area.get_parent()
+		if parent is FarmPlot:
+			_interact_with_farm_plot(parent)
+			return
+
 		if area.is_in_group("door"):
 			emit_signal("door_interacted", area.name)
 			return
@@ -161,6 +168,34 @@ func _try_interact() -> void:
 		if body.is_in_group("npc"):
 			emit_signal("npc_interacted", body.name)
 			return
+
+func _interact_with_farm_plot(plot: FarmPlot) -> void:
+	"""Interage com farm plot: plantar semente ou colher cultivo."""
+	# Se já tem cultivo pronto, colhe
+	if plot.current_crop and plot.current_crop.is_fully_grown:
+		plot.current_crop.harvest()
+		return
+
+	# Se não tem cultivo e está arado, tenta plantar semente do hotbar
+	if not plot.current_crop and plot.is_tilled:
+		var selected_item = InventoryManager.get_selected_item()
+		if selected_item != "":
+			# Verifica se é semente
+			var item_data = DataLoader.get_item(selected_item)
+			if item_data and item_data.item_type == "Seed":
+				# Extrai crop_id da semente (ex: "(O)472" -> 472)
+				var crop_id = selected_item.replace("(O)", "").to_int()
+				var crop_data = DataLoader.get_crop(crop_id)
+				if crop_data:
+					# Consome semente
+					if InventoryManager.remove_item(selected_item, 1):
+						plot.plant_crop(crop_data)
+						return
+
+	# Se tem cultivo mas não está pronto, mostra status
+	if plot.current_crop:
+		var days_left = plot.current_crop.get_days_until_harvest()
+		HUD.show_message("Cultivo crescendo... %d dias restantes" % days_left)
 
 ## ==================== FERRAMENTAS ====================
 func _update_equipped_tool() -> void:
@@ -265,8 +300,36 @@ func _get_tool_energy_cost(tool: String) -> float:
 	return costs.get(tool, 2.0)
 
 func _play_tool_effect(tool: String, pos: Vector2, power: float) -> void:
-	# Partículas, som, etc.
-	pass
+	# Partículas baseadas na ferramenta
+	if ParticleManager:
+		match tool:
+			"Hoe":
+				ParticleManager.spawn_dirt_particles(pos, power)
+			"WateringCan":
+				ParticleManager.spawn_water_particles(pos, power)
+			"Pickaxe":
+				ParticleManager.spawn_rock_particles(pos, power)
+			"Axe":
+				ParticleManager.spawn_wood_particles(pos, power)
+			"Scythe":
+				ParticleManager.spawn_grass_particles(pos, power)
+
+	# Som
+	if AudioManager:
+		var sound_map = {
+			"Hoe": "hoe_dirt",
+			"WateringCan": "water_splash",
+			"Pickaxe": "pickaxe_stone",
+			"Axe": "axe_chop",
+			"Scythe": "scythe_cut"
+		}
+		var sound = sound_map.get(tool, "tool_use")
+		AudioManager.play_sfx("res://assets/sfx/%s.ogg" % sound)
+
+	# Screen shake leve para ferramentas pesadas
+	if tool in ["Pickaxe", "Axe"] and power > 0.5:
+		if CameraEffects:
+			CameraEffects.shake(2.0 * power, 0.2)
 
 ## ==================== ANIMAÇÕES ====================
 func _play_animation(base_name: String) -> void:
@@ -301,16 +364,23 @@ func _on_interaction_area_exited(area: Area2D) -> void:
 
 func _on_tool_area_entered(area: Area2D) -> void:
 	# Atingido pela ferramenta
+	var parent = area.get_parent()
+
+	# Farm plots (enxada, regador)
+	if parent is FarmPlot:
+		parent.on_tool_hit(current_tool, tool_power)
+		return
+
 	if area.is_in_group("crop"):
-		var crop = area.get_parent()
+		var crop = parent
 		if crop.has_method("on_tool_hit"):
 			crop.on_tool_hit(current_tool, tool_power)
 	elif area.is_in_group("terrain"):
-		var terrain = area.get_parent()
+		var terrain = parent
 		if terrain.has_method("on_tool_hit"):
 			terrain.on_tool_hit(current_tool, tool_power)
 	elif area.is_in_group("object"):
-		var obj = area.get_parent()
+		var obj = parent
 		if obj.has_method("on_tool_hit"):
 			obj.on_tool_hit(current_tool, tool_power)
 

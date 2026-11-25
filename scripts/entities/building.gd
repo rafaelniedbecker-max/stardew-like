@@ -169,7 +169,7 @@ func get_chest(chest_id: String) -> Dictionary:
 	for chest in chests:
 		if chest.id == chest_id:
 			return chest
-	return null
+	return {}
 
 func add_item_to_chest(chest_id: String, item_id: String, amount: int) -> bool:
 	var chest = get_chest(chest_id)

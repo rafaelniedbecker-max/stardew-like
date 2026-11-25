@@ -261,9 +261,9 @@ func play_with() -> void:
 	timer.start()
 
 func rename(new_name: String) -> void:
-	if new_name.strip() == "":
+	if new_name.strip_edges() == "":
 		return
-	pet_name = new_name.strip()
+	pet_name = new_name.strip_edges()
 	name = pet_name
 	GameManager.set_data("pet_name", pet_name)
 	emit_signal("pet_renamed", pet_name)

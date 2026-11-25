@@ -93,16 +93,16 @@ func get_available_items(item_database: Dictionary, player_data: Dictionary) -> 
 	return available
 
 ## Obtém preço do item
-func get_item_price(item: Dictionary, item_data: Dictionary) -> int:
+func get_item_price(item: Dictionary, item_data: Dictionary = {}) -> int:
 	var price = item.get("Price", -1)
-	if price == -1 and item_data != null:
-		price = item_data.price
+	if price == -1 and not item_data.is_empty():
+		price = item_data.get("price", 0)
 	return price
 
 ## Processa compra
-func process_purchase(item: Dictionary, quantity: int, player_gold: int, player_inventory: Dictionary) -> Dictionary:
+func process_purchase(item: Dictionary, quantity: int, player_gold: int, player_inventory: Dictionary, player_data: Dictionary = {}) -> Dictionary:
 	var item_id = item.get("ItemId", "")
-	var price = get_item_price(item, null)
+	var price = get_item_price(item)
 	var total_cost = price * quantity
 
 	if player_gold < total_cost:

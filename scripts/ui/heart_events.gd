@@ -19,7 +19,7 @@ var script_index: int = 0
 var is_playing: bool = false
 var auto_mode: bool = false
 var skip_pressed: bool = false
-var on_complete: Callable = null
+var on_complete: Callable = Callable()
 
 ## NPC atual
 var current_npc: String = ""
@@ -59,7 +59,7 @@ func _on_skip() -> void:
 	_advance_script(true)
 
 ## ==================== INICIAR EVENTO ====================
-func play_event(npc_name: String, event_id: String, npc_data: NPCData, callback: Callable = null) -> void:
+func play_event(npc_name: String, event_id: String, npc_data: NPCData, callback: Callable = Callable()) -> void:
 	current_npc = npc_name
 	current_npc_data = npc_data
 	on_complete = callback

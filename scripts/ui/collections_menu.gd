@@ -121,19 +121,19 @@ func _get_all_items_for_category(category: String) -> Array:
 		"shipped":
 			# Todos itens que podem ser enviados
 			for item in DataLoader.get_all_items():
-				if item.can_be_shipped and not item.exclude_from_shipping_collection:
+				if not item.exclude_from_shipping_collection:
 					result.append("(O)%d" % item.id)
 		"fish":
 			for item in DataLoader.get_all_items():
-				if item.category == "Fish" and not item.exclude_from_fishing_collection:
+				if item.item_type.to_lower() == "fish" and not item.exclude_from_fishing_collection:
 					result.append("(O)%d" % item.id)
 		"artifacts":
 			for item in DataLoader.get_all_items():
-				if item.category == "Artifacts":
+				if item.item_type.to_lower() in ["arch", "artifact", "artifacts"]:
 					result.append("(O)%d" % item.id)
 		"minerals":
 			for item in DataLoader.get_all_items():
-				if item.category == "Minerals":
+				if item.item_type.to_lower() in ["mineral", "minerals"]:
 					result.append("(O)%d" % item.id)
 		"recipes":
 			for recipe in DataLoader.get_all_recipes():
@@ -256,6 +256,7 @@ func open_collections() -> void:
 	_load_collections_data()
 	grab_focus()
 
+@warning_ignore("native_method_override")
 func hide() -> void:
 	visible = false
 

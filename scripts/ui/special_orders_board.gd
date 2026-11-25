@@ -426,19 +426,19 @@ class SpecialOrderInstance:
 		for i in objectives:
 			var obj = objectives[i]
 			if obj.type == obj_type:
-				var match = false
+				var matches = false
 				if obj.target == "" or obj.target == target:
-					match = true
+					matches = true
 				elif obj_type == "collect_category":
 					var item_data = DataLoader.get_item(target)
 					if item_data != null and item_data.category == obj.target:
-						match = true
+						matches = true
 				elif obj_type == "kill_monster_category":
 					var monster_data = DataLoader.get_monster(target)
 					if monster_data != null and monster_data.category == obj.target:
-						match = true
+						matches = true
 
-				if match:
+				if matches:
 					obj.current = min(obj.current + amount, obj.required)
 					emit_signal("objective_updated", order_data.id, i, obj.current, obj.required)
 

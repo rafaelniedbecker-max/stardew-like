@@ -101,7 +101,7 @@ func get_color(name: String) -> Color:
 	return COLORS.get(key, COLORS.get(name, Color.WHITE))
 
 ## ==================== COMPONENT FACTORIES ====================
-func create_button(text: String, variant: String = "primary", size: String = "medium", callback: Callable = null) -> Button:
+func create_button(text: String, variant: String = "primary", size: String = "medium", callback: Callable = Callable()) -> Button:
 	var btn = Button.new()
 	btn.text = text
 	btn.theme_type_variation = variant
@@ -287,36 +287,36 @@ func generate_theme_tres() -> Theme:
 	var brand_hover = COLORS.brand_hover_dark if dark else COLORS.brand_hover
 
 	# Default font
-	theme.set_font(pixel_font, "Label")
-	theme.set_font(pixel_font, "Button")
-	theme.set_font(body_font, "LineEdit")
-	theme.set_font(mono_font, "RichTextLabel")
+	theme.set_font("font", "Label", pixel_font)
+	theme.set_font("font", "Button", pixel_font)
+	theme.set_font("font", "LineEdit", body_font)
+	theme.set_font("font", "RichTextLabel", mono_font)
 
 	# Font sizes (via theme overrides no código, não no theme.tres)
 	# Colors
-	theme.set_color(surface, "Panel", "bg_color")
-	theme.set_color(surface_elevated, "Button", "bg_color")
-	theme.set_color(surface_hover, "Button", "bg_color_hover")
-	theme.set_color(ink, "Label", "font_color")
-	theme.set_color(ink_muted, "Label", "font_disabled_color")
-	theme.set_color(ink, "Button", "font_color")
-	theme.set_color(ink, "LineEdit", "font_color")
-	theme.set_color(ink_muted, "LineEdit", "font_placeholder_color")
-	theme.set_color(brand, "Button", "font_hover_color")
-	theme.set_color(Color(0,0,0,0), "Button", "border_color")
-	theme.set_color(Color(0.2,0.2,0.2,0.1), "Panel", "border_color")
+	theme.set_color("bg_color", "Panel", surface)
+	theme.set_color("bg_color", "Button", surface_elevated)
+	theme.set_color("bg_color_hover", "Button", surface_hover)
+	theme.set_color("font_color", "Label", ink)
+	theme.set_color("font_disabled_color", "Label", ink_muted)
+	theme.set_color("font_color", "Button", ink)
+	theme.set_color("font_color", "LineEdit", ink)
+	theme.set_color("font_placeholder_color", "LineEdit", ink_muted)
+	theme.set_color("font_hover_color", "Button", brand)
+	theme.set_color("border_color", "Button", Color(0,0,0,0))
+	theme.set_color("border_color", "Panel", Color(0.2,0.2,0.2,0.1))
 
 	# Constants
-	theme.set_constant(8, "Button", "corner_radius")
-	theme.set_constant(6, "Panel", "corner_radius")
-	theme.set_constant(6, "LineEdit", "corner_radius")
-	theme.set_constant(12, "Button", "h_padding")
-	theme.set_constant(10, "Button", "v_padding")
-	theme.set_constant(8, "BoxContainer", "separation")
-	theme.set_constant(16, "MarginContainer", "margin_left")
-	theme.set_constant(16, "MarginContainer", "margin_right")
-	theme.set_constant(16, "MarginContainer", "margin_top")
-	theme.set_constant(16, "MarginContainer", "margin_bottom")
+	theme.set_constant("corner_radius", "Button", 8)
+	theme.set_constant("corner_radius", "Panel", 6)
+	theme.set_constant("corner_radius", "LineEdit", 6)
+	theme.set_constant("h_padding", "Button", 12)
+	theme.set_constant("v_padding", "Button", 10)
+	theme.set_constant("separation", "BoxContainer", 8)
+	theme.set_constant("margin_left", "MarginContainer", 16)
+	theme.set_constant("margin_right", "MarginContainer", 16)
+	theme.set_constant("margin_top", "MarginContainer", 16)
+	theme.set_constant("margin_bottom", "MarginContainer", 16)
 
 	# Styleboxes
 	var btn_normal = StyleBoxFlat.new()
@@ -329,19 +329,19 @@ func generate_theme_tres() -> Theme:
 	btn_normal.content_margin_right = 12
 	btn_normal.content_margin_top = 10
 	btn_normal.content_margin_bottom = 10
-	theme.set_stylebox(btn_normal, "Button", "normal")
+	theme.set_stylebox("normal", "Button", btn_normal)
 
 	var btn_hover = btn_normal.duplicate() as StyleBoxFlat
 	btn_hover.bg_color = surface_hover
-	theme.set_stylebox(btn_hover, "Button", "hover")
+	theme.set_stylebox("hover", "Button", btn_hover)
 
 	var btn_pressed = btn_normal.duplicate() as StyleBoxFlat
 	btn_pressed.bg_color = surface_hover.darkened(0.1)
-	theme.set_stylebox(btn_pressed, "Button", "pressed")
+	theme.set_stylebox("pressed", "Button", btn_pressed)
 
 	var btn_disabled = btn_normal.duplicate() as StyleBoxFlat
 	btn_disabled.bg_color = surface_hover.darkened(0.2)
-	theme.set_stylebox(btn_disabled, "Button", "disabled")
+	theme.set_stylebox("disabled", "Button", btn_disabled)
 
 	var panel_sb = StyleBoxFlat.new()
 	panel_sb.bg_color = surface_elevated
@@ -358,7 +358,7 @@ func generate_theme_tres() -> Theme:
 	panel_sb.content_margin_right = 16
 	panel_sb.content_margin_top = 16
 	panel_sb.content_margin_bottom = 16
-	theme.set_stylebox(panel_sb, "Panel", "panel")
+	theme.set_stylebox("panel", "Panel", panel_sb)
 
 	var progress_sb = StyleBoxFlat.new()
 	progress_sb.bg_color = surface
@@ -366,7 +366,7 @@ func generate_theme_tres() -> Theme:
 	progress_sb.corner_radius_top_right = 4
 	progress_sb.corner_radius_bottom_left = 4
 	progress_sb.corner_radius_bottom_right = 4
-	theme.set_stylebox(progress_sb, "ProgressBar", "background")
+	theme.set_stylebox("background", "ProgressBar", progress_sb)
 
 	var progress_fill = StyleBoxFlat.new()
 	progress_fill.bg_color = brand
@@ -374,7 +374,7 @@ func generate_theme_tres() -> Theme:
 	progress_fill.corner_radius_top_right = 4
 	progress_fill.corner_radius_bottom_left = 4
 	progress_fill.corner_radius_bottom_right = 4
-	theme.set_stylebox(progress_fill, "ProgressBar", "fill")
+	theme.set_stylebox("fill", "ProgressBar", progress_fill)
 
 	return theme
 

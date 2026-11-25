@@ -47,11 +47,34 @@ func _ready() -> void:
 	_check_existing_crop()
 
 func _setup_textures() -> void:
-	# TODO: Carregar texturas reais do TileSheets
-	# Por enquanto usa cores
-	var dirt_tex = Texture2D.new()
-	# sprite.texture = dirt_tex
-	pass
+	# Carrega texturas PBR do tileset
+	var tileset = load("res://resources/tilesets/farm_tileset_real.tres")
+	if tileset:
+		# Extrai tiles do atlas
+		var atlas = load("res://resources/tilesets/farm_atlas_real.png")
+		if atlas:
+			# Dirt dry: tile ID 8-11 (row 0, cols 8-11)
+			var dry_atlas = AtlasTexture.new()
+			dry_atlas.atlas = atlas
+			dry_atlas.region = Rect2(8 * 16, 0, 16, 16)
+			dry_dirt_texture = dry_atlas
+
+			# Dirt wet: tile ID 12-15 (row 0, cols 12-15)
+			var wet_atlas = AtlasTexture.new()
+			wet_atlas.atlas = atlas
+			wet_atlas.region = Rect2(12 * 16, 0, 16, 16)
+			wet_dirt_texture = wet_atlas
+
+			# Dirt tilled: tile ID 16-19 (row 0, cols 16-19)
+			var tilled_atlas = AtlasTexture.new()
+			tilled_atlas.atlas = atlas
+			tilled_atlas.region = Rect2(16 * 16, 0, 16, 16)
+			hoe_dirt_texture = tilled_atlas
+	else:
+		# Fallback para texturas procedurais
+		dry_dirt_texture = null
+		wet_dirt_texture = null
+		hoe_dirt_texture = null
 
 func _check_existing_crop() -> void:
 	if GameManager and GameManager.farm_crops.has(position_key):
@@ -270,24 +293,36 @@ func _on_crop_fully_grown() -> void:
 
 ## ==================== VISUAL ====================
 func _update_visuals() -> void:
-	# Sprite do solo
+	# Sprite do solo com texturas PBR
 	if is_tilled:
 		if is_watered:
-			sprite.texture = wet_dirt_texture
-			sprite.modulate = Color.WHITE
+			if wet_dirt_texture:
+				sprite.texture = wet_dirt_texture
+			sprite.modulate = Color(0.8, 0.8, 1.0)  # Azulado para molhado
 		else:
-			sprite.texture = dry_dirt_texture
+			if dry_dirt_texture:
+				sprite.texture = dry_dirt_texture
 			sprite.modulate = Color.WHITE
+		sprite.visible = true
 	else:
 		sprite.texture = null  # Grama normal (gerenciado pelo TileMap)
+		sprite.visible = false
 
-	# Overlay de água
+	# Overlay de água com efeito visual
 	watered_overlay.visible = is_tilled and is_watered
+	if is_watered:
+		watered_overlay.modulate = Color(0.3, 0.5, 1.0, 0.3)
 
-	# Indicador de fertilizante
+	# Indicador de fertilizante com cores
 	if fertilizer_type > 0:
 		fertilizer_indicator.visible = true
-		# Muda cor/sprite baseado no tipo
+		match fertilizer_type:
+			1: # Basic
+				fertilizer_indicator.modulate = Color(0.8, 0.6, 0.2)
+			2: # Quality
+				fertilizer_indicator.modulate = Color(0.2, 0.8, 0.2)
+			3: # Deluxe
+				fertilizer_indicator.modulate = Color(0.8, 0.2, 0.8)
 	else:
 		fertilizer_indicator.visible = false
 
