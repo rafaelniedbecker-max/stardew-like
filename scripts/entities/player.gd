@@ -50,7 +50,9 @@ func _setup_areas() -> void:
 	interaction_area.monitoring = true
 	var interaction_shape = CircleShape2D.new()
 	interaction_shape.radius = interaction_range
-	interaction_area.get_node_or_null("CollisionShape2D")?.queue_free()
+	var old_interaction_collision = interaction_area.get_node_or_null("CollisionShape2D")
+	if old_interaction_collision != null:
+		old_interaction_collision.queue_free()
 	var col = CollisionShape2D.new()
 	col.shape = interaction_shape
 	interaction_area.add_child(col)
@@ -62,7 +64,9 @@ func _setup_areas() -> void:
 	tool_area.monitoring = false  # Ativa só durante uso
 	var tool_shape = CircleShape2D.new()
 	tool_shape.radius = tool_range
-	tool_area.get_node_or_null("CollisionShape2D")?.queue_free()
+	var old_tool_collision = tool_area.get_node_or_null("CollisionShape2D")
+	if old_tool_collision != null:
+		old_tool_collision.queue_free()
 	var col2 = CollisionShape2D.new()
 	col2.shape = tool_shape
 	tool_area.add_child(col2)

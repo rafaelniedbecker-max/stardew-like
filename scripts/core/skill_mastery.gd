@@ -70,9 +70,9 @@ func _ready() -> void:
 
 func _load_mastery_data() -> void:
 	if GameManager:
-		mastery_levels = GameManager.get("mastery_levels", {})
-		mastery_xp = GameManager.get("mastery_xp", {})
-		unlocked_masteries = GameManager.get("unlocked_masteries", {})
+		mastery_levels = GameManager.get_data("mastery_levels", {})
+		mastery_xp = GameManager.get_data("mastery_xp", {})
+		unlocked_masteries = GameManager.get_data("unlocked_masteries", {})
 
 func _on_skill_level_up(skill_index: int, new_level: int) -> void:
 	if new_level >= 10:
@@ -240,7 +240,7 @@ func _show_generic_mastery_ui() -> void:
 		hbox.add_child(icon)
 
 		var info = VBoxContainer.new()
-		info.theme_override_constants/separation = 5
+		info.add_theme_constant_override("separation", 5)
 		hbox.add_child(info)
 
 		var name = Label.new()
@@ -290,9 +290,9 @@ func _show_generic_mastery_ui() -> void:
 ## ==================== PERSISTÊNCIA ====================
 func _save_mastery_data() -> void:
 	if GameManager:
-		GameManager.set("mastery_levels", mastery_levels)
-		GameManager.set("mastery_xp", mastery_xp)
-		GameManager.set("unlocked_masteries", unlocked_masteries)
+		GameManager.set_data("mastery_levels", mastery_levels)
+		GameManager.set_data("mastery_xp", mastery_xp)
+		GameManager.set_data("unlocked_masteries", unlocked_masteries)
 
 func get_save_data() -> Dictionary:
 	return {

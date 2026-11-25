@@ -1,4 +1,3 @@
-class_name VisualManager
 extends Node
 
 ## Gerenciador Visual Principal: Aplica todos os assets gerados e efeitos visuais
@@ -42,7 +41,7 @@ func _ready() -> void:
 		GameManager.season_changed.connect(_on_season_changed)
 		GameManager.weather_changed.connect(_on_weather_changed)
 		GameManager.time_changed.connect(_on_time_changed)
-		GameManager.level_up.connect(_on_level_up)
+		GameManager.skill_level_up.connect(_on_level_up)
 
 	# Conecta sinais do TimeManager
 	if TimeManager:
@@ -275,9 +274,6 @@ func _on_level_up(skill_index: int, new_level: int) -> void:
 			ParticleSystemManager.level_up_effect(player.global_position, skill_name)
 
 ## ==================== CLIMA ====================
-
-func _on_weather_changed(weather: int) -> void:
-	_update_weather_effects(weather)
 
 func _update_weather_effects(weather: int) -> void:
 	# Remove clima anterior
@@ -527,7 +523,7 @@ func show_damage_number(position: Vector2, amount: int, type: String = "damage")
 	}
 
 	var label = Label.new()
-	label.text = "%s%d" % [type == "heal" ? "+" : "", amount]
+	label.text = "%s%d" % ["+" if type == "heal" else "", amount]
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	label.theme_override_font_size = 20
 	label.add_theme_color_override("font_color", colors.get(type, Color.WHITE))

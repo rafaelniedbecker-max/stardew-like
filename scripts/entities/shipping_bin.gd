@@ -52,13 +52,13 @@ func _reset_daily() -> void:
 
 func _load_data() -> void:
 	if GameManager:
-		var data = GameManager.get("shipping_bin_data", {})
+		var data = GameManager.get_data("shipping_bin_data", {})
 		total_gold_today = data.get("total_gold_today", 0)
 		_update_gold_label()
 
 func _save_data() -> void:
 	if GameManager:
-		GameManager.set("shipping_bin_data", {
+		GameManager.set_data("shipping_bin_data", {
 			"total_gold_today": total_gold_today
 		})
 
@@ -110,8 +110,8 @@ func _open_shipping_ui() -> void:
 	var scroll = ScrollContainer.new()
 	var grid = GridContainer.new()
 	grid.columns = 4
-	grid.theme_override_constants/h_separation = 8
-	grid.theme_override_constants/v_separation = 8
+	grid.add_theme_constant_override("h_separation", 8)
+	grid.add_theme_constant_override("v_separation", 8)
 	scroll.add_child(grid)
 	scroll.custom_minimum_size = Vector2(0, 300)
 	vbox.add_child(scroll)
@@ -178,7 +178,7 @@ func _open_shipping_ui() -> void:
 
 	# Botões de ação rápida
 	var action_hbox = HBoxContainer.new()
-	action_hbox.theme_override_constants/separation = 10
+	action_hbox.add_theme_constant_override("separation", 10)
 
 	var sell_all_btn = Button.new()
 	sell_all_btn.text = "💰 Vender Tudo"
@@ -368,16 +368,16 @@ func show_day_summary() -> void:
 	var scroll = ScrollContainer.new()
 	var grid = GridContainer.new()
 	grid.columns = 1
-	grid.theme_override_constants/v_separation = 5
+	grid.add_theme_constant_override("v_separation", 5)
 	scroll.add_child(grid)
 	scroll.custom_minimum_size = Vector2(0, 200)
 	vbox.add_child(scroll)
 
 	for sale in items_sold_today:
 		var item = DataLoader.get_item(sale.item_id)
-		var name = item?.display_name ?? sale.item_id
+		var name = item.display_name if item != null else sale.item_id
 		var hbox = HBoxContainer.new()
-		hbox.theme_override_constants/separation = 10
+		hbox.add_theme_constant_override("separation", 10)
 
 		var n = Label.new()
 		n.text = "%s x%d (%s)" % [name, sale.amount, ["Normal", "Prata", "Ouro", "Irídio"][sale.quality]]

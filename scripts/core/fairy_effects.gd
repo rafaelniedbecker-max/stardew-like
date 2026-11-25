@@ -1,4 +1,3 @@
-class_name FairyEffects
 extends Node
 
 ## Efeitos de fadas/Junimos: colheita mágica, bênção de colheita, etc.
@@ -163,7 +162,7 @@ func check_random_events() -> void:
 			fairy_blessing(player.global_position)
 
 	# Junimo harvest (se Community Center completo, 1% chance)
-	if GameManager.get("cc_completed", false) and randf() < 0.01:
+	if GameManager.get_data("cc_completed", false) and randf() < 0.01:
 		var player = get_tree().get_first_node_in_group("player")
 		if player:
 			junimo_harvest_all()

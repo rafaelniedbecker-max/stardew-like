@@ -1,4 +1,3 @@
-class_name FurnitureManager
 extends Node
 
 ## Sistema de Móveis: colocação, rotação, parede/chão, interior/exterior
@@ -430,13 +429,13 @@ func _save_furniture() -> void:
 				"rotation": f.rotation,
 				"layer": f.layer
 			}
-		GameManager.set("placed_furniture", data)
+		GameManager.set_data("placed_furniture", data)
 
 func _load_furniture() -> void:
 	if not GameManager:
 		return
 
-	var data = GameManager.get("placed_furniture", {})
+	var data = GameManager.get_data("placed_furniture", {})
 	for key in data:
 		var f = data[key]
 		var grid_pos = Vector2i(f.position.x, f.position.y)

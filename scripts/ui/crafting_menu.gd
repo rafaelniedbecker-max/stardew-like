@@ -82,7 +82,7 @@ func _setup_category_buttons() -> void:
 	# Craft categories
 	var craft_cats = HBoxContainer.new()
 	craft_cats.name = "CraftCategories"
-	craft_cats.theme_override_constants/separation = 3
+	craft_cats.add_theme_constant_override("separation", 3)
 
 	for cat in CRAFT_CATEGORIES:
 		var btn = Button.new()
@@ -98,7 +98,7 @@ func _setup_category_buttons() -> void:
 	# Cook categories (inicialmente escondido)
 	var cook_cats = HBoxContainer.new()
 	cook_cats.name = "CookCategories"
-	cook_cats.theme_override_constants/separation = 3
+	cook_cats.add_theme_constant_override("separation", 3)
 	cook_cats.visible = false
 
 	for cat in COOK_CATEGORIES:
@@ -118,11 +118,11 @@ func _setup_category_buttons() -> void:
 
 func _load_favorites() -> void:
 	if GameManager:
-		favorite_recipes = GameManager.get("favorite_recipes", [])
+		favorite_recipes = GameManager.get_data("favorite_recipes", [])
 
 func _save_favorites() -> void:
 	if GameManager:
-		GameManager.set("favorite_recipes", favorite_recipes)
+		GameManager.set_data("favorite_recipes", favorite_recipes)
 
 ## ==================== ABRIR MENU ====================
 func open_menu(start_mode: String = "craft") -> void:
@@ -170,7 +170,7 @@ func _on_tab_changed(tab_idx: int) -> void:
 	_refresh_categories()
 
 func _reset_category_buttons() -> void:
-	var cats = category_bar.get_node_or_null(mode == "craft" ? "CraftCategories" : "CookCategories")
+	var cats = category_bar.get_node_or_null("CraftCategories" if mode == "craft" else "CookCategories")
 	if cats:
 		for child in cats.get_children():
 			if child is Button:
@@ -179,7 +179,7 @@ func _reset_category_buttons() -> void:
 func _on_category_selected(category: String) -> void:
 	active_category = category
 	# Atualiza botões
-	var cats = category_bar.get_node_or_null(mode == "craft" ? "CraftCategories" : "CookCategories")
+	var cats = category_bar.get_node_or_null("CraftCategories" if mode == "craft" else "CookCategories")
 	if cats:
 		for child in cats.get_children():
 			if child is Button:
@@ -304,7 +304,7 @@ func _create_recipe_button(recipe: RecipeData) -> Button:
 	vbox.add_child(icon)
 
 	var name = Label.new()
-	name.text = result_item?.display_name ?? recipe.recipe_name
+	name.text = result_item.display_name if result_item != null else recipe.recipe_name
 	name.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	name.theme_override_font_size = 10
 	name.autowrap_mode = 1
@@ -319,7 +319,7 @@ func _create_recipe_button(recipe: RecipeData) -> Button:
 	for x in range(16):
 		for y in range(16):
 			if abs(x-8) + abs(y-8) < 8:
-				fav_img.set_pixel(x, y, is_fav ? Color(1.0, 0.85, 0.2) : Color(0.5, 0.5, 0.5))
+				fav_img.set_pixel(x, y, Color(1.0, 0.85, 0.2) if is_fav else Color(0.5, 0.5, 0.5))
 	fav_icon.texture = ImageTexture.create_from_image(fav_img)
 	fav_icon.custom_minimum_size = Vector2(16, 16)
 	vbox.add_child(fav_icon)
@@ -343,7 +343,7 @@ func _show_recipe_details(recipe: RecipeData) -> void:
 	detail_icon.visible = true
 
 	# Nome
-	detail_name.text = result_item?.display_name ?? recipe.recipe_name
+	detail_name.text = result_item.display_name if result_item != null else recipe.recipe_name
 
 	# Descrição
 	detail_desc.text = recipe.description
@@ -360,7 +360,7 @@ func _show_recipe_details(recipe: RecipeData) -> void:
 		var item = DataLoader.get_item(item_id)
 
 		var hbox = HBoxContainer.new()
-		hbox.theme_override_constants/separation = 10
+		hbox.add_theme_constant_override("separation", 10)
 
 		var icon = TextureRect.new()
 		icon.custom_minimum_size = Vector2(32, 32)
@@ -370,14 +370,14 @@ func _show_recipe_details(recipe: RecipeData) -> void:
 
 		var has = InventoryManager and InventoryManager.get_item_count(item_id) >= count
 		var name_lbl = Label.new()
-		name_lbl.text = "%s x%d" % [item?.display_name ?? item_id, count]
+		name_lbl.text = "%s x%d" % [item.display_name if item != null else item_id, count]
 		name_lbl.theme_override_font_size = 12
 		if not has:
 			name_lbl.add_theme_color_override("font_color", Color(1.0, 0.4, 0.4))
 		hbox.add_child(name_lbl)
 
 		var have_lbl = Label.new()
-		var have_count = InventoryManager ? InventoryManager.get_item_count(item_id) : 0
+		var have_count = InventoryManager.get_item_count(item_id) if InventoryManager else 0
 		have_lbl.text = "(%d)" % have_count
 		have_lbl.theme_override_font_size = 11
 		have_lbl.add_theme_color_override("font_color", Color(0.7, 0.7, 0.7))
@@ -391,7 +391,7 @@ func _show_recipe_details(recipe: RecipeData) -> void:
 
 	if result_item:
 		var hbox = HBoxContainer.new()
-		hbox.theme_override_constants/separation = 10
+		hbox.add_theme_constant_override("separation", 10)
 
 		var icon = TextureRect.new()
 		icon.custom_minimum_size = Vector2(32, 32)
@@ -467,7 +467,7 @@ func _on_craft_clicked() -> void:
 			GameManager.stats.items_cooked += 1
 
 	# Notificação
-	HUD.show_notification("%s!" % ("⚒ Crafted" if mode == "craft" else "🍳 Cooked"), "%s x%d" % [result_item?.display_name ?? selected_recipe.recipe_name, amount], Color(0.5, 1.0, 0.5))
+	HUD.show_notification("%s!" % ("⚒ Crafted" if mode == "craft" else "🍳 Cooked"), "%s x%d" % [result_item.display_name if result_item != null else selected_recipe.recipe_name, amount], Color(0.5, 1.0, 0.5))
 
 	# Partículas
 	if ParticleManager:

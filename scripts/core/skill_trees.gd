@@ -411,93 +411,93 @@ class SkillProgression:
 	func _apply_talent_effect(talent_id: String) -> void:
 		match talent_id:
 			"green_thumb":
-				GameManager.set("talent_green_thumb", true)
+				GameManager.set_data("talent_green_thumb", true)
 			"speed_grower":
-				GameManager.set("talent_speed_grower", true)
+				GameManager.set_data("talent_speed_grower", true)
 			"quality_soil":
-				GameManager.set("talent_quality_soil", true)
+				GameManager.set_data("talent_quality_soil", true)
 			"harvest_master":
-				GameManager.set("talent_harvest_master", true)
+				GameManager.set_data("talent_harvest_master", true)
 			"seasonal_master":
-				GameManager.set("talent_seasonal_master", true)
+				GameManager.set_data("talent_seasonal_master", true)
 			"ore_sense":
-				GameManager.set("talent_ore_sense", true)
+				GameManager.set_data("talent_ore_sense", true)
 			"gem_luck":
-				GameManager.set("talent_gem_luck", true)
+				GameManager.set_data("talent_gem_luck", true)
 			"coal_magnet":
-				GameManager.set("talent_coal_magnet", true)
+				GameManager.set_data("talent_coal_magnet", true)
 			"iridium_nose":
-				GameManager.set("talent_iridium_nose", true)
+				GameManager.set_data("talent_iridium_nose", true)
 			"core_driller":
-				GameManager.set("talent_core_driller", true)
+				GameManager.set_data("talent_core_driller", true)
 			"sharp_eyes":
-				GameManager.set("talent_sharp_eyes", true)
+				GameManager.set_data("talent_sharp_eyes", true)
 			"nature_gift":
-				GameManager.set("talent_nature_gift", true)
+				GameManager.set_data("talent_nature_gift", true)
 			"wood_walker":
-				GameManager.set("talent_wood_walker", true)
+				GameManager.set_data("talent_wood_walker", true)
 			"wild_crafter":
-				GameManager.set("talent_wild_crafter", true)
+				GameManager.set_data("talent_wild_crafter", true)
 			"forest_lord":
-				GameManager.set("talent_forest_lord", true)
+				GameManager.set_data("talent_forest_lord", true)
 			"fish_finder":
-				GameManager.set("talent_fish_finder", true)
+				GameManager.set_data("talent_fish_finder", true)
 			"perfect_cast":
-				GameManager.set("talent_perfect_cast", true)
+				GameManager.set_data("talent_perfect_cast", true)
 			"bait_master":
-				GameManager.set("talent_bait_master", true)
+				GameManager.set_data("talent_bait_master", true)
 			"legendary_lure":
-				GameManager.set("talent_legendary_lure", true)
+				GameManager.set_data("talent_legendary_lure", true)
 			"ocean_king":
-				GameManager.set("talent_ocean_king", true)
+				GameManager.set_data("talent_ocean_king", true)
 			"critical_strike":
-				GameManager.set("talent_critical_strike", true)
+				GameManager.set_data("talent_critical_strike", true)
 			"life_steal":
-				GameManager.set("talent_life_steal", true)
+				GameManager.set_data("talent_life_steal", true)
 			"combo_master":
-				GameManager.set("talent_combo_master", true)
+				GameManager.set_data("talent_combo_master", true)
 			"berserker":
-				GameManager.set("talent_berserker", true)
+				GameManager.set_data("talent_berserker", true)
 			"immortal":
-				GameManager.set("talent_immortal", true)
+				GameManager.set_data("talent_immortal", true)
 			"early_riser":
-				GameManager.set("talent_early_riser", true)
+				GameManager.set_data("talent_early_riser", true)
 			"night_owl":
-				GameManager.set("talent_night_owl", true)
+				GameManager.set_data("talent_night_owl", true)
 			"pack_mule":
 				InventoryManager.max_inventory_slots += 12
 			"quick_learner":
-				GameManager.set("talent_quick_learner", true)
+				GameManager.set_data("talent_quick_learner", true)
 			"lucky":
-				GameManager.set("talent_lucky", true)
+				GameManager.set_data("talent_lucky", true)
 			"hoarder":
-				GameManager.set("talent_hoarder", true)
+				GameManager.set_data("talent_hoarder", true)
 			"chef":
-				GameManager.set("talent_chef", true)
+				GameManager.set_data("talent_chef", true)
 			"miner_69":
-				GameManager.set("talent_miner_69", true)
+				GameManager.set_data("talent_miner_69", true)
 			"charmer":
-				GameManager.set("talent_charmer", true)
+				GameManager.set_data("talent_charmer", true)
 			"matchmaker":
-				GameManager.set("talent_matchmaker", true)
+				GameManager.set_data("talent_matchmaker", true)
 			"polyglot":
-				GameManager.set("talent_polyglot", true)
+				GameManager.set_data("talent_polyglot", true)
 			"fairy_friend":
-				GameManager.set("talent_fairy_friend", true)
+				GameManager.set_data("talent_fairy_friend", true)
 			"junimo_whisperer":
-				GameManager.set("talent_junimo_whisperer", true)
+				GameManager.set_data("talent_junimo_whisperer", true)
 			"witch_friend":
-				GameManager.set("talent_witch_friend", true)
+				GameManager.set_data("talent_witch_friend", true)
 			"dwarf_friend":
-				GameManager.set("talent_dwarf_friend", true)
+				GameManager.set_data("talent_dwarf_friend", true)
 			"krobus_friend":
-				GameManager.set("talent_krobus_friend", true)
+				GameManager.set_data("talent_krobus_friend", true)
 			"gilbert_friend":
-				GameManager.set("talent_gilbert_friend", true)
+				GameManager.set_data("talent_gilbert_friend", true)
 			"professor_snail":
-				GameManager.set("talent_professor_snail", true)
+				GameManager.set_data("talent_professor_snail", true)
 			"pirate_friend":
-				GameManager.set("talent_pirate_friend", true)
+				GameManager.set_data("talent_pirate_friend", true)
 
 		# Efeitos específicos
 		_apply_specific_effects(talent_id)

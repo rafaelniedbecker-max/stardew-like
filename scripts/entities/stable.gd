@@ -96,9 +96,10 @@ func _buy_horse_ui() -> void:
 	# Seleção de cor
 	var color_hbox = HBoxContainer.new()
 	color_hbox.alignment = HORIZONTAL_ALIGNMENT_CENTER
-	color_hbox.theme_override_constants/separation = 10
+	color_hbox.add_theme_constant_override("separation", 10)
 
-	for i, color_data in enumerate(HORSE_COLORS):
+	for i in range(HORSE_COLORS.size()):
+		var color_data = HORSE_COLORS[i]
 		if i > 0 and GameManager.gold < 100000 + color_data.price:
 			continue  # Só mostra se pode comprar
 
@@ -309,7 +310,7 @@ func _on_player_exited(area: Area2D) -> void:
 
 func _save_state() -> void:
 	if GameManager:
-		GameManager.set("stable_%s" % [name], {
+		GameManager.set_data("stable_%s" % [name], {
 			"has_horse": has_horse,
 			"horse_name": horse_name,
 			"horse_color": horse_color,
@@ -318,7 +319,7 @@ func _save_state() -> void:
 
 func _load_state() -> void:
 	if GameManager:
-		var data = GameManager.get("stable_%s" % [name], {})
+		var data = GameManager.get_data("stable_%s" % [name], {})
 		if data:
 			has_horse = data.get("has_horse", false)
 			horse_name = data.get("horse_name", "")

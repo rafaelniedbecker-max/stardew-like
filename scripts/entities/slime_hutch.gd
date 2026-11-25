@@ -70,7 +70,8 @@ func _on_player_exited(area: Area2D) -> void:
 func _on_egg_press_entered(area: Area2D) -> void:
 	if area.is_in_group("player"):
 		if egg_press_ready:
-			HUD.show_interaction_prompt("E: Coletar %s" % DataLoader.get_item(egg_press_item)?.display_name, global_position + Vector2(0, -50))
+			var egg_data = DataLoader.get_item(egg_press_item)
+			HUD.show_interaction_prompt("E: Coletar %s" % (egg_data.display_name if egg_data != null else egg_press_item), global_position + Vector2(0, -50))
 		else:
 			HUD.show_interaction_prompt("E: Colocar Ovo de Slime", global_position + Vector2(0, -50))
 
@@ -128,7 +129,7 @@ func _open_ui() -> void:
 	# Info geral
 	var info_hbox = HBoxContainer.new()
 	info_hbox.alignment = HORIZONTAL_ALIGNMENT_CENTER
-	info_hbox.theme_override_constants/separation = 20
+	info_hbox.add_theme_constant_override("separation", 20)
 
 	var slime_info = Label.new()
 	slime_info.text = "Slimes: %d/%d" % [slimes.size(), max_slimes]
@@ -152,8 +153,8 @@ func _open_ui() -> void:
 	var scroll = ScrollContainer.new()
 	var grid = GridContainer.new()
 	grid.columns = 5
-	grid.theme_override_constants/h_separation = 10
-	grid.theme_override_constants/v_separation = 10
+	grid.add_theme_constant_override("h_separation", 10)
+	grid.add_theme_constant_override("v_separation", 10)
 	scroll.add_child(grid)
 	scroll.custom_minimum_size = Vector2(0, 200)
 	vbox.add_child(scroll)
@@ -165,7 +166,7 @@ func _open_ui() -> void:
 	# Egg Press
 	var press_box = HBoxContainer.new()
 	press_box.alignment = HORIZONTAL_ALIGNMENT_CENTER
-	press_box.theme_override_constants/separation = 20
+	press_box.add_theme_constant_override("separation", 20)
 
 	var press_title = Label.new()
 	press_title.text = "🥚 Prensa de Ovos:"
@@ -175,7 +176,7 @@ func _open_ui() -> void:
 	if egg_press_ready:
 		var item = DataLoader.get_item(egg_press_item)
 		var press_btn = Button.new()
-		press_btn.text = "Coletar: %s" % (item?.display_name ?? egg_press_item)
+		press_btn.text = "Coletar: %s" % (item.display_name if item != null else egg_press_item)
 		press_btn.custom_minimum_size = Vector2(200, 50)
 		press_btn.theme_override_font_size = 16
 		press_btn.add_theme_color_override("font_color", Color(0.5, 1.0, 0.5))
@@ -200,7 +201,7 @@ func _open_ui() -> void:
 
 		var inc_grid = GridContainer.new()
 		inc_grid.columns = 4
-		inc_grid.theme_override_constants/h_separation = 10
+		inc_grid.add_theme_constant_override("h_separation", 10)
 		vbox.add_child(inc_grid)
 
 		for egg in incubating_eggs:
@@ -248,7 +249,7 @@ func _create_slime_button(slime: Dictionary) -> Button:
 	vbox.add_child(name)
 
 	var gender = Label.new()
-	gender.text = slime.gender == 0 ? "♂" : "♀"
+	gender.text = "♂" if slime.gender == 0 else "♀"
 	gender.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	gender.theme_override_font_size = 12
 	vbox.add_child(gender)
@@ -301,13 +302,14 @@ func _show_slime_info(slime: Dictionary) -> void:
 	vbox.add_child(title)
 
 	var gender = Label.new()
-	gender.text = "Gênero: %s" % (slime.gender == 0 ? "Macho" : "Fêmea")
+	gender.text = "Gênero: %s" % ("Macho" if slime.gender == 0 else "Fêmea")
 	gender.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	gender.theme_override_font_size = 14
 	vbox.add_child(gender)
 
 	var drops = Label.new()
-	drops.text = "Produz: %s" % [DataLoader.get_item(type_data.drops[0])?.display_name ?? type_data.drops[0]]
+	var drop_data = DataLoader.get_item(type_data.drops[0])
+	drops.text = "Produz: %s" % [drop_data.display_name if drop_data != null else type_data.drops[0]]
 	drops.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	drops.theme_override_font_size = 13
 	vbox.add_child(drops)
@@ -335,7 +337,8 @@ func _collect_egg_press() -> void:
 		egg_press_ready = false
 		egg_press_item = ""
 		_save_state()
-		HUD.show_message("Coletado: %s" % DataLoader.get_item(egg_press_item)?.display_name)
+		var egg_data = DataLoader.get_item(egg_press_item)
+		HUD.show_message("Coletado: %s" % (egg_data.display_name if egg_data != null else egg_press_item))
 
 		if ParticleManager:
 			ParticleManager.spawn("harvest", egg_press.global_position)
@@ -575,7 +578,7 @@ func _slime_wander(slime_node: Area2D) -> void:
 ## ==================== PERSISTÊNCIA ====================
 func _save_state() -> void:
 	if GameManager:
-		GameManager.set("slime_hutch_%s" % [name], {
+		GameManager.set_data("slime_hutch_%s" % [name], {
 			"slimes": slimes,
 			"water_level": water_level,
 			"egg_press_ready": egg_press_ready,
@@ -585,7 +588,7 @@ func _save_state() -> void:
 
 func _load_state() -> void:
 	if GameManager:
-		var data = GameManager.get("slime_hutch_%s" % [name], {})
+		var data = GameManager.get_data("slime_hutch_%s" % [name], {})
 		if data:
 			slimes = data.get("slimes", [])
 			water_level = data.get("water_level", 0)

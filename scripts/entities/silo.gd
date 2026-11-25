@@ -119,7 +119,7 @@ func _open_ui() -> void:
 			consumption.add_theme_color_override("font_color", Color(1.0, 0.8, 0.3))
 			vbox.add_child(consumption)
 
-			var days_left = total_animals > 0 ? hay_stored / total_animals : 999
+			var days_left = hay_stored / total_animals if total_animals > 0 else 999
 			var days_label = Label.new()
 			days_label.text = "Duração estimada: %d dias" % days_left
 			days_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -147,14 +147,14 @@ func _update_ui() -> void:
 
 func _save_state() -> void:
 	if GameManager:
-		GameManager.set("silo_%s" % [name], {
+		GameManager.set_data("silo_%s" % [name], {
 			"hay_stored": hay_stored,
 			"hay_capacity": hay_capacity
 		})
 
 func _load_state() -> void:
 	if GameManager:
-		var data = GameManager.get("silo_%s" % [name], {})
+		var data = GameManager.get_data("silo_%s" % [name], {})
 		if data:
 			hay_stored = data.get("hay_stored", 0)
 			hay_capacity = data.get("hay_capacity", 240)

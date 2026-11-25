@@ -85,7 +85,7 @@ func till() -> void:
 			"tilled": true
 		}
 
-func until() -> void:
+func until_soil() -> void:
 	# Enxada em solo arado remove cultivo e desarada
 	if current_crop:
 		current_crop.queue_free()
@@ -196,10 +196,10 @@ func on_tool_hit(tool: String, power: float) -> void:
 				# Remove cultivo morto
 				current_crop.queue_free()
 				current_crop = null
-				until()
+				until_soil()
 			elif not current_crop:
 				# Solo arado vazio -> desarada
-				until()
+				until_soil()
 		"WateringCan":
 			if is_tilled and not is_watered:
 				water()
@@ -208,7 +208,7 @@ func on_tool_hit(tool: String, power: float) -> void:
 			if current_crop:
 				current_crop.queue_free()
 				current_crop = null
-			until()
+			until_soil()
 		"Scythe":
 			if current_crop and current_crop.is_fully_grown:
 				current_crop.harvest()
@@ -233,9 +233,10 @@ func new_day() -> void:
 
 	_update_visuals()
 
-	# Cresce cultivo
+	# A água aplicada ontem conta para o crescimento desta noite; a retenção
+	# de umidade também pode manter o solo regado para o novo dia.
 	if current_crop:
-		current_crop.grow_day(is_watered)
+		current_crop.grow_day(was_watered or is_watered)
 
 	# Atualiza GameManager
 	if GameManager:

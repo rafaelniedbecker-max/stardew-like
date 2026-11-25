@@ -1,4 +1,3 @@
-class_name TVChannelsUI
 extends Control
 
 ## UI dos Canais de TV: Adivinha, Tempo, Queen of Sauce, Vivendo da Terra
@@ -158,7 +157,7 @@ func _update_weather() -> void:
 
 	# Detalhes extras
 	var details = VBoxContainer.new()
-	details.theme_override_constants/separation = 5
+	details.add_theme_constant_override("separation", 5)
 
 	var detail_items = [
 		"Umidade: %d%%" % randi_range(40, 90),
@@ -213,16 +212,16 @@ func _update_cooking() -> void:
 
 		var ing_grid = GridContainer.new()
 		ing_grid.columns = 3
-		ing_grid.theme_override_constants/h_separation = 10
-		ing_grid.theme_override_constants/v_separation = 10
+		ing_grid.add_theme_constant_override("h_separation", 10)
+		ing_grid.add_theme_constant_override("v_separation", 10)
 
 		for ing_id in ingredients:
 			var item = DataLoader.get_item(ing_id)
-			var name = item?.display_name ?? ing_id
+			var name = item.display_name if item != null else ing_id
 			var has = InventoryManager and InventoryManager.get_item_count(ing_id) > 0
 
 			var hbox = VBoxContainer.new()
-			hbox.theme_override_constants/separation = 3
+			hbox.add_theme_constant_override("separation", 3)
 
 			var icon = TextureRect.new()
 			icon.custom_minimum_size = Vector2(48, 48)
@@ -313,7 +312,7 @@ func _update_tips() -> void:
 
 		for r in related:
 			var r_item = DataLoader.get_item(r)
-			var r_name = r_item?.display_name ?? r
+			var r_name = r_item.display_name if r_item != null else r
 			var lbl = Label.new()
 			lbl.text = "• %s" % r_name
 			lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -328,10 +327,11 @@ func _get_season_name(season: int) -> String:
 func open() -> void:
 	visible = true
 	panel.visible = true
-	popup_centered()
-	_get_tree().paused = true
+	panel.position = (get_viewport_rect().size - panel.size) * 0.5
+	get_tree().paused = true
 
+@warning_ignore("native_method_override")
 func hide() -> void:
 	visible = false
 	panel.visible = false
-	_get_tree().paused = false
+	get_tree().paused = false

@@ -80,7 +80,7 @@ func _setup_sprites() -> void:
 
 func _create_placeholder_sprites(type: String) -> SpriteFrames:
 	var frames = SpriteFrames.new()
-	var color = type == "Cat" ? Color(0.6, 0.4, 0.3) : Color(0.5, 0.35, 0.2)
+	var color = Color(0.6, 0.4, 0.3) if type == "Cat" else Color(0.5, 0.35, 0.2)
 
 	# Cria animações simples coloridas
 	for anim in ["idle", "walk", "sleep", "pet"]:
@@ -113,14 +113,14 @@ func _load_pet_data() -> void:
 	if not GameManager:
 		return
 
-	friendship = GameManager.get("pet_friendship", 0)
-	pet_name = GameManager.get("pet_name", "")
-	last_pet_day = GameManager.get("pet_last_pet_day", -1)
-	pet_type = GameManager.get("pet_type", pet_type)
+	friendship = GameManager.get_data("pet_friendship", 0)
+	pet_name = GameManager.get_data("pet_name", "")
+	last_pet_day = GameManager.get_data("pet_last_pet_day", -1)
+	pet_type = GameManager.get_data("pet_type", pet_type)
 
 	if pet_name == "":
 		pet_name = DEFAULT_NAMES[pet_type].pick_random()
-		GameManager.set("pet_name", pet_name)
+		GameManager.set_data("pet_name", pet_name)
 
 	name = pet_name  # Node name
 
@@ -198,8 +198,8 @@ func pet() -> bool:
 	last_pet_day = GameManager.current_day
 	friendship = min(MAX_FRIENDSHIP, friendship + FRIENDSHIP_PER_PET)
 
-	GameManager.set("pet_friendship", friendship)
-	GameManager.set("pet_last_pet_day", last_pet_day)
+	GameManager.set_data("pet_friendship", friendship)
+	GameManager.set_data("pet_last_pet_day", last_pet_day)
 
 	emit_signal("friendship_changed", friendship)
 	emit_signal("pet_petted")
@@ -235,7 +235,7 @@ func feed() -> void:
 
 	state = "eat"
 	friendship = min(MAX_FRIENDSHIP, friendship + 6)
-	GameManager.set("pet_friendship", friendship)
+	GameManager.set_data("pet_friendship", friendship)
 	emit_signal("friendship_changed", friendship)
 	_show_message("%s come feliz." % pet_name)
 
@@ -249,7 +249,7 @@ func feed() -> void:
 func play_with() -> void:
 	state = "play"
 	friendship = min(MAX_FRIENDSHIP, friendship + 10)
-	GameManager.set("pet_friendship", friendship)
+	GameManager.set_data("pet_friendship", friendship)
 	emit_signal("friendship_changed", friendship)
 	_show_message("Você brinca com %s!" % pet_name)
 
@@ -265,7 +265,7 @@ func rename(new_name: String) -> void:
 		return
 	pet_name = new_name.strip()
 	name = pet_name
-	GameManager.set("pet_name", pet_name)
+	GameManager.set_data("pet_name", pet_name)
 	emit_signal("pet_renamed", pet_name)
 	_show_message("Nome alterado para %s!" % pet_name)
 
@@ -275,7 +275,7 @@ func process_daily() -> void:
 	var days_since_pet = GameManager.current_day - last_pet_day
 	if days_since_pet > 2:
 		friendship = max(0, friendship - FRIENDSHIP_PER_DAY * (days_since_pet - 2))
-		GameManager.set("pet_friendship", friendship)
+		GameManager.set_data("pet_friendship", friendship)
 		emit_signal("friendship_changed", friendship)
 
 	# Mensagem matinal

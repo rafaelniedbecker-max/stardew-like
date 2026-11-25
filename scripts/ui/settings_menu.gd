@@ -1,4 +1,3 @@
-class_name SettingsMenu
 extends Control
 
 ## Menu de configurações: áudio, vídeo, controles, gameplay
@@ -71,7 +70,7 @@ func _applies_settings() -> void:
 
 	# Vídeo
 	DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN if settings.video.fullscreen else DisplayServer.WINDOW_MODE_WINDOWED)
-	RenderingServer.set_vsync(settings.video.vsync)
+	DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_ENABLED if settings.video.vsync else DisplayServer.VSYNC_DISABLED)
 
 	# Gameplay
 	if GameManager:
@@ -97,7 +96,7 @@ func _populate_controls() -> void:
 func _create_audio_tab() -> ScrollContainer:
 	var scroll = ScrollContainer.new()
 	var vbox = VBoxContainer.new()
-	vbox.theme_override_constants/separation = 15
+	vbox.add_theme_constant_override("separation", 15)
 	scroll.add_child(vbox)
 
 	# Master Volume
@@ -129,7 +128,7 @@ func _create_audio_tab() -> ScrollContainer:
 func _create_video_tab() -> ScrollContainer:
 	var scroll = ScrollContainer.new()
 	var vbox = VBoxContainer.new()
-	vbox.theme_override_constants/separation = 15
+	vbox.add_theme_constant_override("separation", 15)
 	scroll.add_child(vbox)
 
 	# Fullscreen
@@ -154,7 +153,7 @@ func _create_video_tab() -> ScrollContainer:
 func _create_controls_tab() -> ScrollContainer:
 	var scroll = ScrollContainer.new()
 	var vbox = VBoxContainer.new()
-	vbox.theme_override_constants/separation = 15
+	vbox.add_theme_constant_override("separation", 15)
 	scroll.add_child(vbox)
 
 	# Layout teclado
@@ -182,7 +181,7 @@ func _create_controls_tab() -> ScrollContainer:
 func _create_gameplay_tab() -> ScrollContainer:
 	var scroll = ScrollContainer.new()
 	var vbox = VBoxContainer.new()
-	vbox.theme_override_constants/separation = 15
+	vbox.add_theme_constant_override("separation", 15)
 	scroll.add_child(vbox)
 
 	# Auto-save
@@ -206,7 +205,7 @@ func _create_gameplay_tab() -> ScrollContainer:
 ## ==================== HELPERS UI ====================
 func _create_slider_row(label_text: String, category: String, key: String, min_val: float, max_val: float, step: float) -> HBoxContainer:
 	var hbox = HBoxContainer.new()
-	hbox.theme_override_constants/separation = 10
+	hbox.add_theme_constant_override("separation", 10)
 
 	var label = Label.new()
 	label.text = label_text
@@ -235,7 +234,7 @@ func _create_slider_row(label_text: String, category: String, key: String, min_v
 
 func _create_check_row(label_text: String, category: String, key: String) -> HBoxContainer:
 	var hbox = HBoxContainer.new()
-	hbox.theme_override_constants/separation = 10
+	hbox.add_theme_constant_override("separation", 10)
 
 	var label = Label.new()
 	label.text = label_text
@@ -252,7 +251,7 @@ func _create_check_row(label_text: String, category: String, key: String) -> HBo
 
 func _create_option_row(label_text: String, category: String, key: String, options: Array[String]) -> HBoxContainer:
 	var hbox = HBoxContainer.new()
-	hbox.theme_override_constants/separation = 10
+	hbox.add_theme_constant_override("separation", 10)
 
 	var label = Label.new()
 	label.text = label_text
@@ -310,10 +309,11 @@ func _open_remap_dialog() -> void:
 func open() -> void:
 	visible = true
 	panel.visible = true
-	popup_centered()
-	_get_tree().paused = true
+	panel.position = (get_viewport_rect().size - panel.size) * 0.5
+	get_tree().paused = true
 
+@warning_ignore("native_method_override")
 func hide() -> void:
 	visible = false
 	panel.visible = false
-	_get_tree().paused = false
+	get_tree().paused = false

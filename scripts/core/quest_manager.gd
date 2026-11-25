@@ -1,4 +1,3 @@
-class_name QuestManager
 extends Node
 
 ## Gerencia quests, missões especiais, checklists de progresso
@@ -124,10 +123,10 @@ func complete_quest(quest_id: String) -> void:
 
 	# Salva progresso
 	if GameManager:
-		var completed = GameManager.get("completed_quests", [])
+		var completed = GameManager.get_data("completed_quests", [])
 		if quest_id not in completed:
 			completed.append(quest_id)
-		GameManager.set("completed_quests", completed)
+		GameManager.set_data("completed_quests", completed)
 
 	# Verifica quests em cadeia
 	_check_chain_quests(quest_id)
@@ -197,7 +196,8 @@ func _on_day_changed() -> void:
 
 func _expire_daily_quests() -> void:
 	var to_remove = []
-	for qid, instance in active_quests:
+	for qid in active_quests:
+		var instance = active_quests[qid]
 		if instance.is_daily and instance.start_day != GameManager.current_day:
 			instance.cleanup()
 			to_remove.append(qid)
@@ -235,7 +235,8 @@ func _add_special_order(order: Dictionary) -> void:
 
 func _on_item_obtained(item_id: String, amount: int, quality: int) -> void:
 	_update_quest_objectives("collect_item", item_id, amount)
-	_update_quest_objectives("collect_category", DataLoader.get_item(item_id)?.category ?? "", amount)
+	var item_data = DataLoader.get_item(item_id)
+	_update_quest_objectives("collect_category", item_data.category if item_data != null else "", amount)
 
 func _on_monster_killed(monster_type: String, level: int) -> void:
 	_update_quest_objectives("kill_monster", monster_type, 1)
@@ -248,7 +249,8 @@ func _on_fish_caught(fish_id: String, size: float, quality: int, location: Strin
 
 func _on_crop_harvested(crop_id: String, amount: int, quality: int) -> void:
 	_update_quest_objectives("harvest_crop", crop_id, amount)
-	_update_quest_objectives("harvest_category", DataLoader.get_crop(crop_id)?.category ?? "", amount)
+	var crop_data = DataLoader.get_crop(crop_id)
+	_update_quest_objectives("harvest_category", crop_data.category if crop_data != null else "", amount)
 
 func _on_recipe_learned(recipe_id: String) -> void:
 	_update_quest_objectives("learn_recipe", recipe_id, 1)
@@ -264,18 +266,21 @@ func _on_skill_level_up(skill: String, level: int) -> void:
 
 func _on_crafting_done(recipe_id: String, amount: int) -> void:
 	_update_quest_objectives("craft_recipe", recipe_id, amount)
-	_update_quest_objectives("craft_category", DataLoader.get_recipe(recipe_id)?.category ?? "", amount)
+	var recipe_data = DataLoader.get_recipe(recipe_id)
+	_update_quest_objectives("craft_category", recipe_data.category if recipe_data != null else "", amount)
 
 func _on_building_built(building_type: String, pos: Vector2i) -> void:
 	_update_quest_objectives("build_building", building_type, 1)
 
 func _update_quest_objectives(objective_type: String, target: String, amount: int) -> void:
-	for qid, instance in active_quests:
+	for qid in active_quests:
+		var instance = active_quests[qid]
 		instance.update_objective(objective_type, target, amount)
 
 func _count_max_hearts() -> int:
 	var count = 0
-	for npc_id, friendship in GameManager.friendships:
+	for npc_id in GameManager.friendships:
+		var friendship = GameManager.friendships[npc_id]
 		if friendship >= 1000:
 			count += 1
 	return count
@@ -288,16 +293,16 @@ func check_story_triggers() -> void:
 		total_friendship += f
 
 	# Community Center bundles
-	if GameManager.get("cc_boiler_repaired", false) and not completed_quests.has("cc_boiler"):
+	if GameManager.get_data("cc_boiler_repaired", false) and not completed_quests.has("cc_boiler"):
 		add_quest("cc_boiler")
 
-	if GameManager.get("cc_crafts_room_repaired", false) and not completed_quests.has("cc_crafts"):
+	if GameManager.get_data("cc_crafts_room_repaired", false) and not completed_quests.has("cc_crafts"):
 		add_quest("cc_crafts")
 
 	# ... outros bundles
 
 	# Joja Mart
-	if GameManager.get("joja_member", false) and not completed_quests.has("joja_route"):
+	if GameManager.get_data("joja_member", false) and not completed_quests.has("joja_route"):
 		add_quest("joja_route")
 
 	# Grandpa's Evaluation (Ano 3, Spring 1)
@@ -341,7 +346,8 @@ func _show_generic_quest_log() -> void:
 	tabs.add_child(active_box)
 	tabs.set_tab_title(tabs.get_child_count() - 1, "Ativas")
 
-	for qid, instance in active_quests:
+	for qid in active_quests:
+		var instance = active_quests[qid]
 		var quest_item = _create_quest_item(instance)
 		active_box.add_child(quest_item)
 
@@ -388,7 +394,8 @@ func _create_quest_item(instance: QuestInstance) -> Control:
 	info.add_child(type_lbl)
 
 	# Progresso objetivos
-	for i, obj in instance.objectives:
+	for i in range(instance.objectives.size()):
+		var obj = instance.objectives[i]
 		var prog = HBoxContainer.new()
 		var obj_lbl = Label.new()
 		obj_lbl.text = "%s: %d/%d" % [obj.description, obj.current, obj.required]
@@ -407,7 +414,8 @@ func _create_quest_item(instance: QuestInstance) -> Control:
 
 func get_active_quests() -> Array[Dictionary]:
 	var result = []
-	for qid, instance in active_quests:
+	for qid in active_quests:
+		var instance = active_quests[qid]
 		var data = {
 			"id": qid,
 			"title": instance.quest_data.title,
@@ -429,12 +437,11 @@ func get_active_quests() -> Array[Dictionary]:
 		result.append(data)
 	return result
 
-signal quest_updated(quest_id: String)
-
 ## ==================== SERIALIZAÇÃO ====================
 func get_save_data() -> Dictionary:
 	var active = {}
-	for qid, instance in active_quests:
+	for qid in active_quests:
+		var instance = active_quests[qid]
 		active[qid] = instance.get_save_data()
 
 	return {
@@ -450,8 +457,8 @@ func load_save_data(data: Dictionary) -> void:
 
 	special_orders = data.get("special_orders", [])
 
-	for qid, qdata in data.get("active_quests", {}):
-		var quest_def = DataLoader.get_quest(qid)
+	for qid in data.get("active_quests", {}):
+		var qdata = data.get("active_quests", {})[qid]
 		if quest_def:
 			var instance = QuestInstance.new()
 			instance.initialize(quest_def)
@@ -488,17 +495,22 @@ class QuestInstance:
 			})
 
 	func update_objective(obj_type: String, target: String, amount: int) -> void:
-		for i, obj in objectives:
+		for i in range(objectives.size()):
+			var obj = objectives[i]
 			if obj.type == obj_type:
-				var match = false
+				var matches_target = false
 				if obj.target == "" or obj.target == target:
-					match = true
-				elif obj_type == "collect_category" and DataLoader.get_item(target)?.category == obj.target:
-					match = true
-				elif obj_type == "harvest_category" and DataLoader.get_crop(target)?.category == obj.target:
-					match = true
+					matches_target = true
+				elif obj_type == "collect_category":
+					var item_data = DataLoader.get_item(target)
+					if item_data != null and str(item_data.category) == obj.target:
+						matches_target = true
+				elif obj_type == "harvest_category":
+					var crop_data = DataLoader.get_crop(target)
+					if crop_data != null and crop_data.internal_name == obj.target:
+						matches_target = true
 
-				if match:
+				if matches_target:
 					obj.current = min(obj.current + amount, obj.required)
 					emit_signal("objective_updated", quest_data.id, i, obj.current, obj.required)
 
@@ -535,7 +547,9 @@ class QuestInstance:
 
 	func load_save_data(data: Dictionary) -> void:
 		start_day = data.get("start_day", 1)
-		for i, saved_obj in enumerate(data.get("objectives", [])):
+		var saved_objectives: Array = data.get("objectives", [])
+		for i in range(saved_objectives.size()):
+			var saved_obj: Dictionary = saved_objectives[i]
 			if i < objectives.size():
 				objectives[i].current = saved_obj.get("current", 0)
 

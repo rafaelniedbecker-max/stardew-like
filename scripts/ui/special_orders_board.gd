@@ -1,4 +1,3 @@
-class_name SpecialOrdersBoard
 extends Control
 
 ## Quadro de Pedidos Especiais (Qi's Walnut Room, Wizard, etc.)
@@ -122,10 +121,10 @@ func _update_currency() -> void:
 	var currency_amount = 0
 	match board_type:
 		"qi":
-			currency_amount = GameManager.get("qi_gems", 0)
+			currency_amount = GameManager.get_data("qi_gems", 0)
 			qi_gems_label.text = "%s %d" % [board.icon, currency_amount]
 		"wizard":
-			currency_amount = GameManager.get("wizard_reputation", 0)
+			currency_amount = GameManager.get_data("wizard_reputation", 0)
 			qi_gems_label.text = "Rep: %d" % currency_amount
 		"krobus":
 			currency_amount = InventoryManager.get_item_count("(O)769")
@@ -175,7 +174,10 @@ func _format_reward(reward: Dictionary) -> String:
 	match reward.type:
 		"gold": return "%dg" % reward.amount
 		"qi_gems": return "%d Qi Gems" % reward.amount
-		"item": return "%s x%d" % [DataLoader.get_item(reward.item_id)?.display_name ?? reward.item_id, reward.amount]
+		"item":
+				var item_data = DataLoader.get_item(reward.item_id)
+				var item_name = item_data.display_name if item_data != null else reward.item_id
+				return "%s x%d" % [item_name, reward.amount]
 		"xp": return "%d XP %s" % [reward.amount, reward.skill]
 		"friendship": return "%d amizade com %s" % [reward.amount, reward.npc]
 		"recipe": return "Receita: %s" % reward.recipe_id
@@ -197,14 +199,17 @@ func _can_accept_order(oid: String) -> bool:
 
 	# Verifica pré-requisitos
 	var prereqs = order.get("Prerequisites", {})
-	for key, value in prereqs:
+	for key in prereqs:
+		var value = prereqs[key]
 		match key:
 			"skill_level":
-				for skill, level in value:
+				for skill in value:
+					var level = value[skill]
 					if GameManager.get_skill_level(skill) < level:
 						return false
 			"friendship":
-				for npc, level in value:
+				for npc in value:
+					var level = value[npc]
 					if GameManager.friendships.get(npc, 0) < level:
 						return false
 			"quest_completed":
@@ -280,10 +285,10 @@ func _on_order_completed(oid: String) -> void:
 
 	# Salva
 	if GameManager:
-		var completed = GameManager.get("special_orders_completed", [])
+		var completed = GameManager.get_data("special_orders_completed", [])
 		if oid not in completed:
 			completed.append(oid)
-		GameManager.set("special_orders_completed", completed)
+		GameManager.set_data("special_orders_completed", completed)
 
 	emit_signal("order_completed", oid, rewards)
 	_populate_list()
@@ -304,7 +309,7 @@ func _apply_rewards(rewards: Array) -> void:
 			"gold":
 				GameManager.gold += reward.amount
 			"qi_gems":
-				GameManager.set("qi_gems", GameManager.get("qi_gems", 0) + reward.amount)
+				GameManager.set_data("qi_gems", GameManager.get_data("qi_gems", 0) + reward.amount)
 			"item":
 				InventoryManager.add_item(reward.item_id, reward.amount, reward.quality)
 			"xp":
@@ -323,7 +328,8 @@ func _show_message(text: String) -> void:
 func on_day_changed() -> void:
 	# Atualiza pedidos ativos
 	var to_check = []
-	for oid, instance in active_orders:
+	for oid in active_orders:
+		var instance = active_orders[oid]
 		to_check.append(oid)
 
 	for oid in to_check:
@@ -355,7 +361,8 @@ func _generate_weekly_orders() -> void:
 ## ==================== SERIALIZAÇÃO ====================
 func get_save_data() -> Dictionary:
 	var active = {}
-	for oid, instance in active_orders:
+	for oid in active_orders:
+		var instance = active_orders[oid]
 		active[oid] = instance.get_save_data()
 
 	return {
@@ -370,7 +377,8 @@ func load_save_data(data: Dictionary) -> void:
 	for oid in data.get("completed_orders", []):
 		completed_orders[oid] = true
 
-	for oid, odata in data.get("active_orders", {}):
+	for oid in data.get("active_orders", {}):
+		var odata = data.get("active_orders", {})[oid]
 		var order_def = _find_order(oid)
 		if order_def:
 			var instance = SpecialOrderInstance.new()
@@ -415,15 +423,20 @@ class SpecialOrderInstance:
 			emit_signal("order_failed", order_data.id)
 
 	func update_objective(obj_type: String, target: String, amount: int) -> void:
-		for i, obj in objectives:
+		for i in objectives:
+			var obj = objectives[i]
 			if obj.type == obj_type:
 				var match = false
 				if obj.target == "" or obj.target == target:
 					match = true
-				elif obj_type == "collect_category" and DataLoader.get_item(target)?.category == obj.target:
-					match = true
-				elif obj_type == "kill_monster_category" and DataLoader.get_monster(target)?.category == obj.target:
-					match = true
+				elif obj_type == "collect_category":
+					var item_data = DataLoader.get_item(target)
+					if item_data != null and item_data.category == obj.target:
+						match = true
+				elif obj_type == "kill_monster_category":
+					var monster_data = DataLoader.get_monster(target)
+					if monster_data != null and monster_data.category == obj.target:
+						match = true
 
 				if match:
 					obj.current = min(obj.current + amount, obj.required)
@@ -458,7 +471,9 @@ class SpecialOrderInstance:
 	func load_save_data(data: Dictionary) -> void:
 		days_remaining = data.get("days_remaining", 7)
 		start_day = data.get("start_day", 1)
-		for i, saved in enumerate(data.get("objectives", [])):
+		var saved_objectives = data.get("objectives", [])
+		for i in range(saved_objectives.size()):
+			var saved = saved_objectives[i]
 			if i < objectives.size():
 				objectives[i].current = saved.get("current", 0)
 

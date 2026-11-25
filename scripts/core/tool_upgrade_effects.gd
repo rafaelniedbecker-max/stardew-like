@@ -1,4 +1,3 @@
-class_name ToolUpgradeEffects
 extends Node
 
 ## Efeitos visuais de upgrade de ferramentas

@@ -460,7 +460,7 @@ func _clear_decorations() -> void:
 ## ==================== PERSISTÊNCIA ====================
 func _load_decorations() -> void:
 	if GameManager:
-		var data = GameManager.get("seasonal_decorations", {})
+		var data = GameManager.get_data("seasonal_decorations", {})
 		# Restaura decorações colocadas pelo player
 		pass
 

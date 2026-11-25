@@ -1,4 +1,3 @@
-class_name DesertManager
 extends Node
 
 ## Gerencia a área do deserto: Skull Cavern, Oasis, Sandy's shop, bus
@@ -190,7 +189,7 @@ func _get_oasis_stock() -> Array[Dictionary]:
 ## ==================== PERSISTÊNCIA ====================
 func _save_state() -> void:
 	if GameManager:
-		GameManager.set("desert_data", {
+		GameManager.set_data("desert_data", {
 			"bus_repaired": bus_repaired,
 			"bus_repair_progress": bus_repair_progress,
 			"skull_cavern_unlocked": skull_cavern_unlocked,
@@ -199,7 +198,7 @@ func _save_state() -> void:
 
 func _load_state() -> void:
 	if GameManager:
-		var data = GameManager.get("desert_data", {})
+		var data = GameManager.get_data("desert_data", {})
 		if data:
 			bus_repaired = data.get("bus_repaired", false)
 			bus_repair_progress = data.get("bus_repair_progress", 0)

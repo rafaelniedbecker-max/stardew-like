@@ -1,4 +1,3 @@
-class_name WeatherEffects
 extends Node
 
 ## Sistema de Efeitos Climáticos Visuais: chuva, neve, tempestade, pétalas, folhas

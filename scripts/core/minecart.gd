@@ -1,4 +1,3 @@
-class_name MineCart
 extends Node
 
 ## Sistema de Vagonetas (Minecarts): viagem rápida entre locais
@@ -63,8 +62,8 @@ func _load_progress() -> void:
 	if not GameManager:
 		return
 
-	unlocked_locations = GameManager.get("minecart_unlocked", [])
-	minecart_connected = GameManager.get("minecart_connected", {})
+	unlocked_locations = GameManager.get_data("minecart_unlocked", [])
+	minecart_connected = GameManager.get_data("minecart_connected", {})
 
 	# Garante que localizações desbloqueadas estão conectadas
 	for loc in unlocked_locations:
@@ -73,7 +72,8 @@ func _load_progress() -> void:
 func _check_unlocks() -> void:
 	# Verifica condições de desbloqueio baseadas no Centro Comunitário
 	if CommunityCenter:
-		for loc_id, data in LOCATIONS:
+		for loc_id in LOCATIONS:
+			var data = LOCATIONS[loc_id]
 			if loc_id not in unlocked_locations:
 				var condition = data.unlock_condition
 				if _check_condition(condition):
@@ -105,8 +105,8 @@ func unlock_location(location: String) -> void:
 
 	unlocked_locations.append(location)
 	minecart_connected[location] = true
-	GameManager.set("minecart_unlocked", unlocked_locations)
-	GameManager.set("minecart_connected", minecart_connected)
+	GameManager.set_data("minecart_unlocked", unlocked_locations)
+	GameManager.set_data("minecart_connected", minecart_connected)
 
 	emit_signal("location_unlocked", location)
 	_show_message("Vagoneta para %s reparada!" % LOCATIONS[location].display_name)
@@ -159,7 +159,9 @@ func _change_scene(scene_path: String, spawn_pos: Vector2) -> void:
 	var player = current_world.get_node_or_null("Player")
 	if player:
 		player.global_position = spawn_pos
-		Camera2D.make_current()  # Atualiza câmera
+		var camera: Camera2D = player.get_node_or_null("Camera2D")
+		if camera != null:
+			camera.make_current()
 
 ## ==================== UI ====================
 func open_minecart_menu(current_location: String) -> void:

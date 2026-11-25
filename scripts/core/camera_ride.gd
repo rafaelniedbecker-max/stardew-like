@@ -1,4 +1,3 @@
-class_name CameraRide
 extends Node
 
 ## Passeio de Câmera Cinematográfico: tour automático pela fazenda/mundo

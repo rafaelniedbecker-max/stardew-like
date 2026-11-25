@@ -1,4 +1,3 @@
-class_name ParticleManager
 extends Node
 
 ## Gerenciador centralizado de partículas: ferramentas, clima, efeitos visuais

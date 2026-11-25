@@ -1,4 +1,3 @@
-class_name HUD
 extends CanvasLayer
 
 ## HUD principal: hora, energia, ouro, hotbar, tooltips
@@ -305,7 +304,8 @@ func _update_quest_tracker() -> void:
 	_clear_quest_tracker()
 
 	var active_quests = QuestManager.get_active_quests()
-	for i, quest in enumerate(active_quests):
+	for i in range(active_quests.size()):
+		var quest = active_quests[i]
 		if i >= 3:  # Máximo 3 quests rastreadas
 			break
 
@@ -314,7 +314,7 @@ func _update_quest_tracker() -> void:
 
 func _create_quest_entry(quest: Dictionary) -> HBoxContainer:
 	var hbox = HBoxContainer.new()
-	hbox.theme_override_constants/separation = 5
+	hbox.add_theme_constant_override("separation", 5)
 
 	# Ícone da quest
 	var icon = Label.new()
@@ -326,7 +326,7 @@ func _create_quest_entry(quest: Dictionary) -> HBoxContainer:
 	hbox.add_child(icon)
 
 	var vbox = VBoxContainer.new()
-	vbox.theme_override_constants/separation = 2
+	vbox.add_theme_constant_override("separation", 2)
 
 	var title = Label.new()
 	title.text = quest.get("title", "Missão")
@@ -381,7 +381,7 @@ func show_notification(title: String, message: String, color: Color = Color.WHIT
 	panel.add_theme_stylebox_override("panel", _create_notification_stylebox(color))
 
 	var vbox = VBoxContainer.new()
-	vbox.theme_override_constants/separation = 4
+	vbox.add_theme_constant_override("separation", 4)
 	panel.add_child(vbox)
 
 	var title_label = Label.new()
@@ -457,7 +457,7 @@ func _on_skill_level_up(skill_index: int, new_level: int) -> void:
 	vbox.offset_top = 20
 	vbox.offset_right = -20
 	vbox.offset_bottom = -20
-	vbox.theme_override_constants/separation = 10
+	vbox.add_theme_constant_override("separation", 10)
 	panel.add_child(vbox)
 
 	var icon_label = Label.new()

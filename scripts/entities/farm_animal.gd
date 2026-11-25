@@ -281,9 +281,7 @@ func collect_produce() -> Dictionary:
 	if not produce_ready:
 		return {}
 
-	var item_id = produce_type == "deluxe" ?
-		animal_data.get("DeluxeProduceItemIds", [{}])[0].get("ItemId", "") :
-		animal_data.get("ProduceItemIds", [{}])[0].get("ItemId", "")
+	var item_id = animal_data.get("DeluxeProduceItemIds", [{}])[0].get("ItemId", "") if produce_type == "deluxe" else animal_data.get("ProduceItemIds", [{}])[0].get("ItemId", "")
 
 	var result = {
 		"item_id": item_id,

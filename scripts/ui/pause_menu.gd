@@ -1,4 +1,3 @@
-class_name PauseMenu
 extends Control
 
 ## Menu de pausa: save, load, configurações, sair
@@ -36,7 +35,7 @@ func _ready() -> void:
 	version_label.add_theme_color_override("font_color", UIStyle.get_color("ink_muted"))
 
 	# Input para fechar
-	Input.set_process_unhandled_input(true)
+	set_process_unhandled_input(true)
 
 func _setup_buttons() -> void:
 	# Resume
@@ -81,11 +80,11 @@ func _setup_buttons() -> void:
 		UIStyle.apply_to_button(quit_button, "ghost", "medium")
 
 	# Espaçamento
-	vbox.theme_override_constants/separation = UIStyle.SPACING.lg
-	vbox.theme_override_constants/margin_left = UIStyle.SPACING.xl
-	vbox.theme_override_constants/margin_right = UIStyle.SPACING.xl
-	vbox.theme_override_constants/margin_top = UIStyle.SPACING.xl
-	vbox.theme_override_constants/margin_bottom = UIStyle.SPACING.xl
+	vbox.add_theme_constant_override("separation", UIStyle.SPACING.lg)
+	vbox.add_theme_constant_override("margin_left", UIStyle.SPACING.xl)
+	vbox.add_theme_constant_override("margin_right", UIStyle.SPACING.xl)
+	vbox.add_theme_constant_override("margin_top", UIStyle.SPACING.xl)
+	vbox.add_theme_constant_override("margin_bottom", UIStyle.SPACING.xl)
 
 	# Panel styling
 	UIStyle.apply_to_panel(panel, "default")
@@ -99,8 +98,8 @@ func _unhandled_input(event: InputEvent) -> void:
 func show_menu() -> void:
 	visible = true
 	panel.visible = true
-	popup_centered()
-	_get_tree().paused = true
+	panel.position = (get_viewport_rect().size - panel.size) * 0.5
+	get_tree().paused = true
 
 	# Atualiza info do save atual
 	if SaveManager:
@@ -111,7 +110,7 @@ func show_menu() -> void:
 func _on_resume() -> void:
 	visible = false
 	panel.visible = false
-	_get_tree().paused = false
+	get_tree().paused = false
 	emit_signal("resume_requested")
 
 func _on_save() -> void:
@@ -154,8 +153,8 @@ func _quit_save_menu() -> void:
 	if SaveManager:
 		SaveManager.save_game()
 	emit_signal("quit_to_main_menu")
-	_get_tree().paused = false
+	get_tree().paused = false
 
 func _quit_no_save() -> void:
 	emit_signal("quit_to_desktop")
-	_get_tree().paused = false
+	get_tree().paused = false

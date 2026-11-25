@@ -326,7 +326,7 @@ func get_expected_daily_income(animal_type: String, count: int, avg_friendship: 
 
 	var avg_quality = calculate_product_quality(animal_type, 0, factors)
 	var base_item_data = DataLoader.get_item(base_item)
-	var base_price = base_item_data?.price ?? 0
+	var base_price = base_item_data.price if base_item_data != null else 0
 
 	var quality_mult = [1.0, 1.25, 1.5, 2.0][avg_quality] if avg_quality < 4 else 1.0
 

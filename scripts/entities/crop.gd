@@ -397,8 +397,9 @@ func harvest() -> void:
 		GameManager.emit_signal("crop_harvested", harvest_item, amount, quality)
 
 	# Notificação visual
+	var harvest_data = DataLoader.get_item(harvest_item)
 	HUD.show_notification("🌾 Colhido!", "%s x%d (%s)" % [
-		DataLoader.get_item(harvest_item)?.display_name ?? harvest_item,
+		harvest_data.display_name if harvest_data != null else harvest_item,
 		amount,
 		["Normal", "Prata", "Ouro", "Irídio"][quality]
 	], QUALITY_COLORS[quality])

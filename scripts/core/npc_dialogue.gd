@@ -301,7 +301,7 @@ static func get_choice_dialogue(npc_name: String, situation: String) -> Dictiona
 static func get_gift_reaction(npc_name: String, item_id: String, taste: String, player_name: String) -> String:
 	# taste: "love", "like", "neutral", "dislike", "hate"
 	var item = DataLoader.get_item(item_id)
-	var item_name = item?.display_name ?? item_id
+	var item_name = item.display_name if item != null else item_id
 
 	var specific = DIALOGUE_TEMPLATES.npc_specific.get(npc_name, {})
 	var reactions = specific.get("gift_" + taste, [])

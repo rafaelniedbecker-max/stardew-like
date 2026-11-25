@@ -1,4 +1,3 @@
-class_name FestivalMinigames
 extends Node
 
 ## Minigames de Festival com UIs Aprimoradas
@@ -13,7 +12,7 @@ class MinigameUIBase:
 	var arena: Node2D
 	var on_finish: Callable
 
-	func create(title: String, description: String, duration: float, on_complete: Callable) -> Panel:
+	static func create(title: String, description: String, duration: float, on_complete: Callable) -> Panel:
 		var p = Panel.new()
 		p.name = "MinigameUI_%s" % title
 		p.anchors_preset = 15
@@ -106,6 +105,17 @@ class MinigameUIBase:
 			panel.queue_free()
 		if on_finish:
 			on_finish.call(won)
+
+
+func _get_or_default(source: Object, property_name: StringName, fallback: Variant) -> Variant:
+	var value = source.get(property_name)
+	return fallback if value == null else value
+
+
+func _create_grass_texture() -> Texture2D:
+	var image = Image.create(16, 16, false, Image.FORMAT_RGBA8)
+	image.fill(Color(0.25, 0.45, 0.18))
+	return ImageTexture.create_from_image(image)
 
 
 ## ==================== EGG HUNT ====================
@@ -209,7 +219,7 @@ func _on_egg_collected(area: Area2D, index: int, arena: Node2D, festival_mgr: Fe
 	if not area.is_in_group("player"):
 		return
 
-	var collected = arena.get("eggs_collected", 0) + 1
+	var collected = _get_or_default(arena, "eggs_collected", 0) + 1
 	arena.set("eggs_collected", collected)
 
 	# Partícula
@@ -228,9 +238,9 @@ func _on_egg_collected(area: Area2D, index: int, arena: Node2D, festival_mgr: Fe
 	if ui:
 		var counter = ui.get_node_or_null("VBoxContainer/Label[2]")
 		if counter:
-			counter.text = "Ovos: %d / %d" % [collected, arena.get("target", 9)]
+			counter.text = "Ovos: %d / %d" % [collected, _get_or_default(arena, "target", 9)]
 
-	if collected >= arena.get("target", 9):
+	if collected >= _get_or_default(arena, "target", 9):
 		_end_egg_hunt(festival_mgr, arena, true)
 
 func _end_egg_hunt(festival_mgr: FestivalManager, arena: Node2D, won: bool) -> void:
@@ -285,8 +295,8 @@ func start_grange_display(festival_mgr: FestivalManager) -> void:
 	# Grid 3x3
 	var grid = GridContainer.new()
 	grid.columns = 3
-	grid.theme_override_constants/h_separation = 10
-	grid.theme_override_constants/v_separation = 10
+	grid.add_theme_constant_override("h_separation", 10)
+	grid.add_theme_constant_override("v_separation", 10)
 	grid.custom_minimum_size = Vector2(360, 360)
 
 	var slots = []
@@ -302,7 +312,7 @@ func start_grange_display(festival_mgr: FestivalManager) -> void:
 
 	# Info de pontuação
 	var score_panel = HBoxContainer.new()
-	score_panel.theme_override_constants/separation = 20
+	score_panel.add_theme_constant_override("separation", 20)
 
 	var score_label = Label.new()
 	score_label.text = "Pontuação: 0"
@@ -311,7 +321,7 @@ func start_grange_display(festival_mgr: FestivalManager) -> void:
 	score_panel.add_child(score_label)
 
 	var star_tokens = Label.new()
-	star_tokens.text = "⭐ Fichas: %d" % (GameManager.get("star_tokens", 0) if GameManager else 0)
+	star_tokens.text = "⭐ Fichas: %d" % (GameManager.get_data("star_tokens", 0) if GameManager else 0)
 	star_tokens.theme_override_font_size = 16
 	star_tokens.add_theme_color_override("font_color", Color(0.5, 1.0, 1.0))
 	score_panel.add_child(star_tokens)
@@ -320,7 +330,7 @@ func start_grange_display(festival_mgr: FestivalManager) -> void:
 
 	# Botões
 	var btn_hbox = HBoxContainer.new()
-	btn_hbox.theme_override_constants/separation = 10
+	btn_hbox.add_theme_constant_override("separation", 10)
 
 	var auto_btn = Button.new()
 	auto_btn.text = "🎲 Preencher Auto"
@@ -449,17 +459,19 @@ func _set_grange_slot(slot: Button, item_data: Dictionary) -> void:
 func _update_grange_score(slots: Array, score_label: Label) -> void:
 	var score = 0
 	for slot in slots:
-		var item_id = slot.get("item_id", "")
+		var item_id = _get_or_default(slot, "item_id", "")
 		if item_id != "":
-			var quality = slot.get("quality", 0)
-			var amount = slot.get("amount", 1)
+			var quality = _get_or_default(slot, "quality", 0)
+			var amount = _get_or_default(slot, "amount", 1)
 			score += (quality + 1) * 10 * amount  # Base score
 	score_label.text = "Pontuação: %d" % score
 
 func _compare_grange_value(a: Dictionary, b: Dictionary) -> int:
 	# Ordena por valor de grange (qualidade * raridade)
-	var score_a = (a.quality + 1) * (DataLoader.get_item(a.item_id)?.price ?? 10)
-	var score_b = (b.quality + 1) * (DataLoader.get_item(b.item_id)?.price ?? 10)
+	var item_a = DataLoader.get_item(a.item_id)
+	var item_b = DataLoader.get_item(b.item_id)
+	var score_a = (a.quality + 1) * (item_a.price if item_a != null else 10)
+	var score_b = (b.quality + 1) * (item_b.price if item_b != null else 10)
 	return score_b - score_a
 
 func _judge_grange(slots: Array, festival_mgr: FestivalManager, panel: Panel) -> void:
@@ -467,10 +479,10 @@ func _judge_grange(slots: Array, festival_mgr: FestivalManager, panel: Panel) ->
 	var items = []
 
 	for slot in slots:
-		var item_id = slot.get("item_id", "")
+		var item_id = _get_or_default(slot, "item_id", "")
 		if item_id != "":
-			var quality = slot.get("quality", 0)
-			var amount = slot.get("amount", 1)
+			var quality = _get_or_default(slot, "quality", 0)
+			var amount = _get_or_default(slot, "amount", 1)
 			items.append({"id": item_id, "quality": quality, "amount": amount})
 			score += (quality + 1) * 10 * amount
 
@@ -486,8 +498,8 @@ func _judge_grange(slots: Array, festival_mgr: FestivalManager, panel: Panel) ->
 	# Recompensa em Star Tokens
 	var tokens = max(1, score / 10)
 	if GameManager:
-		var current = GameManager.get("star_tokens", 0)
-		GameManager.set("star_tokens", current + tokens)
+		var current = GameManager.get_data("star_tokens", 0)
+		GameManager.set_data("star_tokens", current + tokens)
 
 	# Mensagem
 	var place = "Participação"
@@ -536,14 +548,14 @@ func _end_fishing_contest(festival_mgr: FestivalManager) -> void:
 		ui.queue_free()
 
 	# Verifica maior peixe pego (simplificado)
-	var caught_fish = GameManager.get("contest_fish", {})
+	var caught_fish = GameManager.get_data("contest_fish", {})
 	var best_size = caught_fish.get("size", 0.0)
 	var best_quality = caught_fish.get("quality", 0)
 
 	var tokens = int(best_size * 10) + best_quality * 5 + 10
 	if GameManager:
-		var current = GameManager.get("star_tokens", 0)
-		GameManager.set("star_tokens", current + tokens)
+		var current = GameManager.get_data("star_tokens", 0)
+		GameManager.set_data("star_tokens", current + tokens)
 
 	HUD.show_notification("🏁 Concurso Terminou!", "Seu melhor: %.2fm (Qualidade: %s)\n+%d ⭐" % [
 		best_size, ["Normal", "Prata", "Ouro", "Irídio"][best_quality], tokens
@@ -562,7 +574,7 @@ func start_slingshot_game(festival_mgr: FestivalManager) -> void:
 
 	# Alvos
 	for i in range(10):
-		var target = _create_moving_target(i, arena)
+		var target = _create_moving_target(i, arena, festival_mgr)
 		arena.add_child(target)
 
 	# UI
@@ -580,7 +592,7 @@ func start_slingshot_game(festival_mgr: FestivalManager) -> void:
 	get_tree().root.get_child(0).add_child(arena)
 	get_tree().root.get_child(0).add_child(ui)
 
-func _create_moving_target(index: int, arena: Node2D) -> Area2D:
+func _create_moving_target(index: int, arena: Node2D, festival_mgr: FestivalManager) -> Area2D:
 	var target = Area2D.new()
 	target.name = "Target_%d" % index
 
@@ -613,15 +625,15 @@ func _create_moving_target(index: int, arena: Node2D) -> Area2D:
 	tween.tween_property(target, "global_position:x", randi_range(100, 700), randf_range(2, 5))
 	tween.tween_property(target, "global_position:y", randi_range(100, 500), randf_range(2, 5))
 
-	target.area_entered.connect(func(area: Area2D): _on_target_hit(area, target, arena))
+	target.area_entered.connect(func(area: Area2D): _on_target_hit(area, target, arena, festival_mgr))
 
 	return target
 
-func _on_target_hit(area: Area2D, target: Area2D, arena: Node2D) -> void:
+func _on_target_hit(area: Area2D, target: Area2D, arena: Node2D, festival_mgr: FestivalManager) -> void:
 	if not area.is_in_group("player_tool"):
 		return
 
-	var hit = arena.get("targets_hit", 0) + 1
+	var hit = _get_or_default(arena, "targets_hit", 0) + 1
 	arena.set("targets_hit", hit)
 
 	# Partícula
@@ -634,7 +646,7 @@ func _on_target_hit(area: Area2D, target: Area2D, arena: Node2D) -> void:
 
 	# Remove alvo e cria novo
 	target.queue_free()
-	var new_target = _create_moving_target(randi(), arena)
+	var new_target = _create_moving_target(randi(), arena, festival_mgr)
 	arena.add_child(new_target)
 
 	# Atualiza UI
@@ -652,15 +664,15 @@ func _end_slingshot_game(festival_mgr: FestivalManager, arena: Node2D, won: bool
 	if ui: ui.queue_free()
 	arena.queue_free()
 
-	var tokens = won ? 50 : (arena.get("targets_hit", 0) * 3)
+	var tokens = 50 if won else (_get_or_default(arena, "targets_hit", 0) * 3)
 	if GameManager:
-		var current = GameManager.get("star_tokens", 0)
-		GameManager.set("star_tokens", current + tokens)
+		var current = GameManager.get_data("star_tokens", 0)
+		GameManager.set_data("star_tokens", current + tokens)
 
 	if won:
 		HUD.show_notification("🎯 Perfeito!", "Todos os alvos acertados!\n+%d ⭐" % tokens, Color(1.0, 0.9, 0.3))
 	else:
-		HUD.show_notification("🎯 Fim de Jogo", "Acertos: %d\n+%d ⭐" % [arena.get("targets_hit", 0), tokens], Color(0.8, 0.8, 0.8))
+		HUD.show_notification("🎯 Fim de Jogo", "Acertos: %d\n+%d ⭐" % [_get_or_default(arena, "targets_hit", 0), tokens], Color(0.8, 0.8, 0.8))
 
 	if festival_mgr:
 		festival_mgr.emit_signal("festival_reward_earned", {"star_tokens": tokens})
@@ -801,7 +813,7 @@ func start_gift_exchange(festival_mgr: FestivalManager) -> void:
 
 	# Gosto do NPC
 	var prefs = VBoxContainer.new()
-	prefs.theme_override_constants/separation = 5
+	prefs.add_theme_constant_override("separation", 5)
 
 	var love_label = Label.new()
 	love_label.text = "❤️ Ama: %s" % recipient.loved_gifts.slice(0, 3).join(", ")
@@ -871,8 +883,8 @@ func start_potluck(festival_mgr: FestivalManager) -> void:
 	var scroll = ScrollContainer.new()
 	var grid = GridContainer.new()
 	grid.columns = 2
-	grid.theme_override_constants/h_separation = 10
-	grid.theme_override_constants/v_separation = 5
+	grid.add_theme_constant_override("h_separation", 10)
+	grid.add_theme_constant_override("v_separation", 5)
 	scroll.add_child(grid)
 	scroll.custom_minimum_size = Vector2(400, 300)
 	vbox.add_child(scroll)

@@ -1,4 +1,3 @@
-class_name MuseumUI
 extends Control
 
 ## UI do Museu: doação, coleções, recompensas
@@ -46,8 +45,8 @@ func _create_tabs() -> void:
 		var scroll = ScrollContainer.new()
 		var grid = GridContainer.new()
 		grid.columns = 10
-		grid.theme_override_constants/h_separation = 5
-		grid.theme_override_constants/v_separation = 5
+		grid.add_theme_constant_override("h_separation", 5)
+		grid.add_theme_constant_override("v_separation", 5)
 		scroll.add_child(grid)
 		tabs.add_child(scroll)
 		tabs.set_tab_title(tabs.get_child_count() - 1, "%s %s" % [cat.icon, cat.name])
@@ -61,7 +60,8 @@ func _load_museum_data() -> void:
 	_update_progress_label()
 
 func _populate_all_grids() -> void:
-	for i, cat in enumerate(CATEGORIES):
+	for i in range(CATEGORIES.size()):
+		var cat = CATEGORIES[i]
 		var grid = tabs.get_child(i).get_node("GridContainer")
 		for child in grid.get_children():
 			child.queue_free()
@@ -151,7 +151,7 @@ func _on_item_selected(item_id: String, category: String) -> void:
 	donate_button.disabled = false
 	donate_button.text = "🎁 Doar %s" % item.display_name
 	donate_button.tooltip_text = item.description
-	donate_button.pressed.connect(_confirm_donate.bind(item_id).unbind_all())
+	donate_button.pressed.connect(_confirm_donate.bind(item_id))
 
 func _confirm_donate(item_id: String) -> void:
 	if not InventoryManager:
@@ -159,7 +159,8 @@ func _confirm_donate(item_id: String) -> void:
 
 	if InventoryManager.remove_item(item_id, 1):
 		if Museum.donate_item(item_id):
-			HUD.show_notification("🏛️ Doado!", "%s adicionado ao museu!" % DataLoader.get_item(item_id)?.display_name, Color(0.5, 1.0, 0.5))
+			var item_data = DataLoader.get_item(item_id)
+			HUD.show_notification("🏛️ Doado!", "%s adicionado ao museu!" % (item_data.display_name if item_data != null else item_id), Color(0.5, 1.0, 0.5))
 
 			if ParticleManager:
 				ParticleManager.show_level_up(get_tree().root.get_child(0).global_position, "Doado!")
@@ -193,18 +194,19 @@ func _update_progress_label() -> void:
 	if Museum:
 		var total = Museum.get_total_items()
 		var donated = Museum.get_donated_count()
-		var pct = total > 0 ? (donated / total * 100) : 0
+		var pct = (donated / total * 100) if total > 0 else 0
 		progress_label.text = "Progresso: %d/%d (%.1f%%)" % [donated, total, pct]
 
 ## ==================== PÚBLICO ====================
 func open() -> void:
 	visible = true
 	panel.visible = true
-	popup_centered()
+	panel.position = (get_viewport_rect().size - panel.size) * 0.5
 	_load_museum_data()
-	_get_tree().paused = true
+	get_tree().paused = true
 
+@warning_ignore("native_method_override")
 func hide() -> void:
 	visible = false
 	panel.visible = false
-	_get_tree().paused = false
+	get_tree().paused = false

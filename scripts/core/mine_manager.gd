@@ -1,4 +1,3 @@
-class_name MineManager
 extends Node
 
 ## Gerencia a mina: andares, minérios, monstros, elevador, escadas
@@ -47,7 +46,7 @@ signal level_generated(level: int, theme: String)
 signal monster_spawned(monster: Node)
 signal ore_spawned(ore: Node)
 signal ladder_found(level: int, position: Vector2)
-signal elevator_unlocked()
+signal elevator_unlocked_signal()
 signal mine_entered()
 signal mine_exited()
 
@@ -58,14 +57,14 @@ func _ready() -> void:
 
 func _load_mine_progress() -> void:
 	if GameManager:
-		deepest_level_reached = GameManager.get("deepest_mine_level", 0)
-		elevator_unlocked = GameManager.get("mine_elevator_unlocked", false)
-		levels_cleared = GameManager.get("mine_levels_cleared", {})
+		deepest_level_reached = GameManager.get_data("deepest_mine_level", 0)
+		elevator_unlocked = GameManager.get_data("mine_elevator_unlocked", false)
+		levels_cleared = GameManager.get_data("mine_levels_cleared", {})
 
 		# Desbloqueia elevador a cada 5 andares
 		if deepest_level_reached >= 5:
 			elevator_unlocked = true
-			GameManager.set("mine_elevator_unlocked", true)
+			GameManager.set_data("mine_elevator_unlocked", true)
 
 ## ==================== ENTRAR NA MINA ====================
 func enter_mine(target_level: int = -1) -> void:
@@ -132,11 +131,11 @@ func _generate_level(level: int) -> void:
 	if level > deepest_level_reached:
 		deepest_level_reached = level
 		if GameManager:
-			GameManager.set("deepest_mine_level", level)
+			GameManager.set_data("deepest_mine_level", level)
 			if level % 5 == 0:
 				elevator_unlocked = true
-				GameManager.set("mine_elevator_unlocked", true)
-				emit_signal("elevator_unlocked")
+				GameManager.set_data("mine_elevator_unlocked", true)
+				emit_signal("elevator_unlocked_signal")
 
 	emit_signal("level_generated", level, theme)
 	emit_signal("level_changed", level)
@@ -267,15 +266,16 @@ func on_monster_killed(monster: Node) -> void:
 		InventoryManager.add_item(drop.item_id, drop.amount)
 
 	# XP de combate
-	GameManager.add_skill_xp(4, monster.get("xp_reward", 10))
+	var xp_reward = monster.get("xp_reward")
+	GameManager.add_skill_xp(4, int(10 if xp_reward == null else xp_reward))
 
 	# Verifica se limpou o andar
 	if level_monsters.is_empty() and not levels_cleared.get(current_level, false):
 		levels_cleared[current_level] = true
 		if GameManager:
-			var cleared = GameManager.get("mine_levels_cleared", {})
+			var cleared = GameManager.get_data("mine_levels_cleared", {})
 			cleared[str(current_level)] = true
-			GameManager.set("mine_levels_cleared", cleared)
+			GameManager.set_data("mine_levels_cleared", cleared)
 
 		# Chance de baú aparecer
 		if randf() < 0.3:
@@ -283,7 +283,9 @@ func on_monster_killed(monster: Node) -> void:
 
 func _get_monster_drops(monster: Node) -> Array:
 	# Baseado no tipo do monstro
-	var monster_type = monster.get("monster_type", "")
+	var monster_type = monster.get("monster_type")
+	if monster_type == null:
+		monster_type = ""
 	var drops = []
 
 	# Loot table simplificado
@@ -346,7 +348,8 @@ func on_ore_mined(ore: Node, item_id: String, amount: int) -> void:
 	InventoryManager.add_item(item_id, amount)
 
 	# XP de mineração
-	var xp = {"(O)378": 3, "(O)380": 5, "(O)384": 8, "(O)386": 10, "(O)388": 12}[item_id] ?? 3
+	var xp_table = {"(O)378": 3, "(O)380": 5, "(O)384": 8, "(O)386": 10, "(O)388": 12}
+	var xp = xp_table.get(item_id, 3)
 	GameManager.add_skill_xp(1, xp)
 
 	# Chance de geoda

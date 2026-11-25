@@ -1,0 +1,29 @@
+[gd_resource type="StandardMaterial3D" load_steps="6" format=3]
+
+[sub_resource type="Texture2D" id="Texture2D_0"]
+resource_path = "res://assets/textures/pbr_ready/concrete_floor_worn_001/concrete_floor_worn_001_albedo_texture.png"
+
+[sub_resource type="Texture2D" id="Texture2D_1"]
+resource_path = "res://assets/textures/pbr_ready/concrete_floor_worn_001/concrete_floor_worn_001_heightmap_texture.png"
+
+[sub_resource type="Texture2D" id="Texture2D_2"]
+resource_path = "res://assets/textures/pbr_ready/concrete_floor_worn_001/concrete_floor_worn_001_normal_texture.png"
+
+[sub_resource type="Texture2D" id="Texture2D_3"]
+resource_path = "res://assets/textures/pbr_ready/concrete_floor_worn_001/concrete_floor_worn_001_roughness_texture.png"
+
+[resource]
+shader = ExtResource("res://shaders/pbr_material.gdshader")
+albedo_texture = SubResource("Texture2D_0")
+heightmap_texture = SubResource("Texture2D_1")
+normal_texture = SubResource("Texture2D_2")
+roughness_texture = SubResource("Texture2D_3")
+
+# PBR Settings
+transparency = 0
+cull_mode = 2
+diffuse_mode = 0
+specular_mode = 0
+roughness = 1.0
+metallic = 0.0
+specular = 0.5

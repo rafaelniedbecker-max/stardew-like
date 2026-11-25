@@ -1,12 +1,11 @@
-class_name DayNightCycle
 extends Node
 
 ## Ciclo Dia/Noite com iluminação dinâmica, sombras, cores
 
 @export var light_canvas: CanvasModulate = null
-@export var shadow_canvas: CanvasModulate = nil
-@export var sun_light: DirectionalLight2D = nil
-@export var ambient_light: WorldEnvironment = nil
+@export var shadow_canvas: CanvasModulate = null
+@export var sun_light: DirectionalLight2D = null
+@export var ambient_light: WorldEnvironment = null
 
 ## Configuração de cores por hora
 const TIME_COLORS = {
@@ -88,7 +87,7 @@ func _ready() -> void:
 	_setup_lighting_nodes()
 
 	if TimeManager:
-		TimeManager.minute_changed.connect(_on_minute_changed)
+		TimeManager.minute_ticked.connect(_on_minute_changed)
 		TimeManager.hour_changed.connect(_on_hour_changed)
 
 	# Aplica iluminação inicial
@@ -120,7 +119,7 @@ func _setup_lighting_nodes() -> void:
 		ambient_light = WorldEnvironment.new()
 		ambient_light.name = "WorldEnv"
 		ambient_light.environment = Environment.new()
-		ambient_light.environment.background_mode = Environment.BACKGROUND_CANVAS
+		ambient_light.environment.background_mode = Environment.BG_CANVAS
 		ambient_light.environment.ambient_light_color = Color(0.3, 0.3, 0.4)
 		ambient_light.environment.ambient_light_energy = 0.5
 		get_tree().root.get_child(0).add_child(ambient_light)

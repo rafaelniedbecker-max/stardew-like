@@ -1,4 +1,3 @@
-class_name BuildingManager
 extends Node
 
 ## Gerencia colocação, construção, upgrade e demolição de edifícios
@@ -172,7 +171,9 @@ func _can_place_at(grid_pos: Vector2i, area: Area2D) -> bool:
 	var farm_plots = get_tree().get_first_node_in_group("farm_plots")
 	if farm_plots:
 		# Verifica se tiles estão dentro da fazenda
-		var bd = DataLoader.get_building(preview_building.get_node("PreviewSprite").texture?.get_path().get_file().replace(".png", "").replace("Buildings/", ""))
+		var preview_tex = preview_building.get_node("PreviewSprite").texture
+		var bd_path = preview_tex.get_path().get_file().replace(".png", "").replace("Buildings/", "") if preview_tex != null else ""
+		var bd = DataLoader.get_building(bd_path)
 		if bd:
 			for x in range(bd.size.x):
 				for y in range(bd.size.y):
@@ -200,7 +201,9 @@ func _unhandled_input(event: InputEvent) -> void:
 			_cancel_relocation()
 
 func _confirm_placement() -> void:
-	var bd = DataLoader.get_building(preview_building.get_node("PreviewSprite").texture?.get_path().get_file().replace(".png", "").replace("Buildings/", ""))
+	var preview_tex = preview_building.get_node("PreviewSprite").texture
+	var bd_path = preview_tex.get_path().get_file().replace(".png", "").replace("Buildings/", "") if preview_tex != null else ""
+	var bd = DataLoader.get_building(bd_path)
 	if not bd:
 		return
 
@@ -232,7 +235,7 @@ func _spend_building_cost(building_data: BuildingData) -> void:
 		var amount = material.get("Amount", 0)
 		InventoryManager.remove_item(item_id, amount)
 
-func _place_building_internal(building_data: BuildingData, grid_pos: Vector2i, skin: int, save_data: Dictionary = null) -> Building:
+func _place_building_internal(building_data: BuildingData, grid_pos: Vector2i, skin: int, save_data: Dictionary = {}) -> Building:
 	var building = building_scene.instantiate()
 	building.initialize(building_data, grid_pos, skin)
 	building.name = building_data.internal_name + "_" + str(grid_pos.x) + "_" + str(grid_pos.y)

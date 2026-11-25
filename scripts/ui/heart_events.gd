@@ -1,4 +1,3 @@
-class_name HeartEventsUI
 extends Control
 
 ## UI de Eventos de Coração (Heart Events) - cenas cinematográficas
@@ -34,7 +33,7 @@ func _ready() -> void:
 	auto_button.pressed.connect(_toggle_auto)
 
 	# Input para avançar
-	Input.set_process_unhandled_input(true)
+	set_process_unhandled_input(true)
 
 func _unhandled_input(event: InputEvent) -> void:
 	if not is_playing:
@@ -57,7 +56,7 @@ func _toggle_auto() -> void:
 
 func _on_skip() -> void:
 	skip_pressed = true
-	_advance_script(force=true)
+	_advance_script(true)
 
 ## ==================== INICIAR EVENTO ====================
 func play_event(npc_name: String, event_id: String, npc_data: NPCData, callback: Callable = null) -> void:
@@ -78,8 +77,8 @@ func play_event(npc_name: String, event_id: String, npc_data: NPCData, callback:
 
 	visible = true
 	panel.visible = true
-	popup_centered()
-	_get_tree().paused = true
+	panel.position = (get_viewport_rect().size - panel.size) * 0.5
+	get_tree().paused = true
 
 	# Configura retrato
 	if npc_data.portrait_path != "" and ResourceLoader.exists(npc_data.portrait_path):
@@ -194,7 +193,7 @@ func _show_dialogue(speaker: String, text: String) -> void:
 			timer.stop()
 			timer.queue_free()
 			_on_dialogue_complete()
-	))
+	)
 	add_child(timer)
 	timer.start()
 
@@ -271,7 +270,7 @@ func _end_event() -> void:
 	is_playing = false
 	visible = false
 	panel.visible = false
-	_get_tree().paused = false
+	get_tree().paused = false
 
 	if on_complete:
 		on_complete.call()

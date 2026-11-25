@@ -1,9 +1,7 @@
-[gd_scene load_steps=9 format=3 uid://bkqrxw9w9x8oa]
+[gd_scene load_steps=8 format=3 uid://bkqrxw9w9x8oa]
 
-[ext_resource type="Script" path="res://scripts/core/game_manager.gd" id="1"]
 [ext_resource type="PackedScene" path="res://scenes/entities/player.tscn" id="2"]
 [ext_resource type="PackedScene" path="res://scenes/entities/farm_plot.tscn" id="3"]
-[ext_resource type="PackedScene" path="res://scenes/ui/hud.tscn" id="4"]
 [ext_resource type="Script" path="res://scripts/core/world_init.gd" id="5"]
 [ext_resource type="PackedScene" path="res://scenes/entities/npc.tscn" id="6"]
 [ext_resource type="PackedScene" path="res://scenes/entities/crop.tscn" id="7"]
@@ -11,9 +9,6 @@
 [ext_resource type="PackedScene" path="res://scenes/entities/shipping_bin.tscn" id="9"]
 
 [node name="World" type="Node2D"]
-
-[node name="GameManager" type="Node"]
-script = ExtResource("1")
 
 [node name="WorldInit" type="Node"]
 script = ExtResource("5")
@@ -28,24 +23,26 @@ farm_origin = Vector2i(0, 0)
 
 [node name="TileMap" type="TileMapLayer" parent="."]
 name = "Ground"
+scale = Vector2(2, 2)
 z_index = -10
 
 [node name="TileMap" type="TileMapLayer" parent="."]
 name = "Buildings"
+scale = Vector2(2, 2)
 z_index = 0
 
 [node name="TileMap" type="TileMapLayer" parent="."]
 name = "Paths"
+scale = Vector2(2, 2)
 z_index = -5
 
-[node name="FarmPlots" type="Node2D" parent="."]
+[node name="FarmPlots" type="Node2D" parent="." groups=["farm_plots"]]
 name = "FarmPlots"
-add_to_group = ["farm_plots"]
 
 [node name="NPCs" type="Node2D" parent="."]
 name = "NPCs"
 
-[node name="Buildings" type="Node2D" parent="."]
+[node name="Buildings" type="Node2D" parent="." groups=["buildings_container"]]
 name = "Buildings"
 
 [node name="Player" type="Node2D" parent="."]
@@ -53,15 +50,13 @@ instance = ExtResource("2")
 position = Vector2(320, 240)
 groups = ["player"]
 
-[node name="HUD" type="Node2D" parent="."]
-instance = ExtResource("4")
 
 [node name="Camera2D" type="Camera2D" parent="Player"]
 enabled = true
 zoom = Vector2(2, 2)
 limit_left = 0
 limit_top = 0
-limit_right = 1920
-limit_bottom = 1080
+limit_right = 2048
+limit_bottom = 2048
 position_smoothing_enabled = true
 position_smoothing_speed = 10.0

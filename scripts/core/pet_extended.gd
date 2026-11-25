@@ -303,8 +303,10 @@ static func feed(pet: PetData, item_id: String = "") -> Dictionary:
 
 	# Verifica se tem o item
 	var treat = item_id if item_id != "" else pet.favorite_treat
+	var treat_data = DataLoader.get_item(treat)
+	var treat_name = treat_data.display_name if treat_data != null else treat
 	if not InventoryManager.has_item(treat):
-		result.message = "Você não tem %s!" % DataLoader.get_item(treat)?.display_name
+		result.message = "Você não tem %s!" % treat_name
 		return result
 
 	if InventoryManager.remove_item(treat, 1):
@@ -326,7 +328,7 @@ static func feed(pet: PetData, item_id: String = "") -> Dictionary:
 
 		result.success = true
 		result.friendship_gain = gain
-		result.message = "%s comeu %s feliz! (+%d ❤️)" % [pet.pet_name, DataLoader.get_item(treat)?.display_name, gain]
+		result.message = "%s comeu %s feliz! (+%d ❤️)" % [pet.pet_name, treat_name, gain]
 
 		# Som e partículas
 		if AudioManager:
@@ -347,8 +349,10 @@ static func play(pet: PetData, toy_id: String = "") -> Dictionary:
 	pet.last_play_day = GameManager.current_day
 
 	var toy = toy_id if toy_id != "" else pet.favorite_toy
+	var toy_data = DataLoader.get_item(toy)
+	var toy_name = toy_data.display_name if toy_data != null else toy
 	if not InventoryManager.has_item(toy):
-		result.message = "Você não tem %s!" % DataLoader.get_item(toy)?.display_name
+		result.message = "Você não tem %s!" % toy_name
 		return result
 
 	if InventoryManager.remove_item(toy, 1):
@@ -372,7 +376,7 @@ static func play(pet: PetData, toy_id: String = "") -> Dictionary:
 
 		result.success = true
 		result.friendship_gain = gain
-		result.message = "Você brincou com %s usando %s! (+%d ❤️)" % [pet.pet_name, DataLoader.get_item(toy)?.display_name, gain]
+		result.message = "Você brincou com %s usando %s! (+%d ❤️)" % [pet.pet_name, toy_name, gain]
 
 		# Som e partículas
 		if AudioManager:
@@ -397,7 +401,8 @@ static func walk(pet: PetData) -> Dictionary:
 	# Chance de encontrar algo
 	if randf() < 0.3:
 		var loot = _find_walk_loot(pet)
-		result.message = "%s encontrou %s durante o passeio!" % [pet.pet_name, DataLoader.get_item(loot)?.display_name]
+		var loot_data = DataLoader.get_item(loot)
+		result.message = "%s encontrou %s durante o passeio!" % [pet.pet_name, loot_data.display_name if loot_data != null else loot]
 		InventoryManager.add_item(loot, 1)
 	else:
 		result.message = "%s gostou do passeio!" % pet.pet_name
@@ -440,8 +445,9 @@ static func process_daily(pet: PetData) -> void:
 	var pet_type_data = PET_TYPES.get(pet.pet_type, {})
 	if pet_type_data.get("hunt_chance", 0) > 0 and randf() < pet_type_data.hunt_chance:
 		var loot = _find_walk_loot(PetData.new())  # Simplificado
+		var loot_data = DataLoader.get_item(loot)
 		pet.gifts_brought += 1
-		HUD.show_notification("🎁 Presente de %s!" % pet.pet_name, "Trouxe %s!" % DataLoader.get_item(loot)?.display_name, Color(1.0, 0.8, 0.3))
+		HUD.show_notification("🎁 Presente de %s!" % pet.pet_name, "Trouxe %s!" % (loot_data.display_name if loot_data != null else loot), Color(1.0, 0.8, 0.3))
 		InventoryManager.add_item(loot, 1)
 
 	# Presentes de personalidade
@@ -456,12 +462,14 @@ static func _grant_personality_gifts(pet: PetData) -> void:
 	var personality = pet.personality
 	if personality == "Hunter" and randf() < 0.1:
 		var loot = _find_walk_loot(PetData.new())
+		var loot_data = DataLoader.get_item(loot)
 		InventoryManager.add_item(loot, 1)
-		HUD.show_message("%s trouxe %s da caça!" % [pet.pet_name, DataLoader.get_item(loot)?.display_name])
+		HUD.show_message("%s trouxe %s da caça!" % [pet.pet_name, loot_data.display_name if loot_data != null else loot])
 	elif personality == "Curious" and randf() < 0.05:
 		var item = ["(O)388", "(O)390", "(O)114", "(O)107"].pick_random()
+		var item_data = DataLoader.get_item(item)
 		InventoryManager.add_item(item, 1)
-		HUD.show_message("%s encontrou %s explorando!" % [pet.pet_name, DataLoader.get_item(item)?.display_name])
+		HUD.show_message("%s encontrou %s explorando!" % [pet.pet_name, item_data.display_name if item_data != null else item])
 	elif personality == "Musical" and randf() < 0.2:
 		HUD.show_message("%s cantou uma bela melodia! 🎵" % pet.pet_name)
 		if AudioManager:

@@ -1,4 +1,3 @@
-class_name InventoryManager
 extends Node
 
 ## Gerencia inventário, hotbar, crafting e ferramentas
@@ -33,7 +32,8 @@ func _sync_with_game_manager() -> void:
 		if GameManager.inventory == null:
 			GameManager.inventory = {}
 		if GameManager.hotbar.size() == 0:
-			GameManager.hotbar = Array(hotbar_size).fill("")
+			GameManager.hotbar.resize(hotbar_size)
+			GameManager.hotbar.fill("")
 
 ## ==================== INVENTÁRIO PRINCIPAL ====================
 
@@ -43,7 +43,7 @@ func get_item_count(item_id: String) -> int:
 
 ## Adiciona item ao inventário
 ## Retorna quantidade efetivamente adicionada
-func add_item(item_id: String, amount: int = 1) -> int:
+func add_item(item_id: String, amount: int = 1, _quality: int = 0) -> int:
 	var max_stack = _get_max_stack(item_id)
 	var current = GameManager.inventory.get(item_id, 0)
 	var can_add = max_stack - current
@@ -169,7 +169,8 @@ func move_to_hotbar(item_id: String, slot: int) -> bool:
 		return false
 
 	# Remove 1 do inventário (ou move stack inteiro se for ferramenta)
-	var is_tool = DataLoader.get_item(item_id)?.is_tool() ?? false
+	var item_data = DataLoader.get_item(item_id)
+	var is_tool = item_data.is_tool() if item_data != null else false
 	var amount = 1 if is_tool else GameManager.inventory[item_id]
 
 	if remove_item(item_id, amount):
@@ -183,7 +184,8 @@ func move_from_hotbar(slot: int) -> bool:
 	if item_id == "":
 		return false
 
-	var is_tool = DataLoader.get_item(item_id)?.is_tool() ?? false
+	var item_data = DataLoader.get_item(item_id)
+	var is_tool = item_data.is_tool() if item_data != null else false
 	var amount = 1 if is_tool else GameManager.inventory.get(item_id, 0)
 
 	# Se stack cheio no inventário, não move
@@ -218,8 +220,10 @@ func can_use_tool(tool_name: String, required_level: int) -> bool:
 ## Obtém ferramenta equipada atualmente (baseado no hotbar)
 func get_equipped_tool() -> String:
 	var item_id = get_selected_item()
-	if item_id != "" and DataLoader.get_item(item_id)?.is_tool():
-		return item_id
+	if item_id != "":
+		var item_data = DataLoader.get_item(item_id)
+		if item_data != null and item_data.is_tool():
+			return item_id
 	return ""
 
 ## ==================== CRAFTING ====================
@@ -357,8 +361,8 @@ func auto_organize() -> void:
 			items.append({
 				"item_id": item_id,
 				"amount": stack_size,
-				"category": item?.category ?? -1,
-				"sort_key": item?.internal_name ?? item_id
+				"category": item.category if item != null else -1,
+				"sort_key": item.internal_name if item != null else item_id
 			})
 			remaining -= stack_size
 
@@ -395,7 +399,7 @@ func _sort_alphabetical() -> void:
 	var items = []
 	for item_id in GameManager.inventory:
 		var item = DataLoader.get_item(item_id)
-		items.append({"id": item_id, "name": item?.display_name ?? item_id, "amount": GameManager.inventory[item_id]})
+		items.append({"id": item_id, "name": item.display_name if item != null else item_id, "amount": GameManager.inventory[item_id]})
 	items.sort_custom(func(a, b): return a.name < b.name)
 
 	GameManager.inventory.clear()
@@ -418,7 +422,7 @@ func _sort_by_value() -> void:
 	var items = []
 	for item_id in GameManager.inventory:
 		var item = DataLoader.get_item(item_id)
-		var value = (item?.price ?? 0) * GameManager.inventory[item_id]
+		var value = (item.price if item != null else 0) * GameManager.inventory[item_id]
 		items.append({"id": item_id, "value": value})
 	items.sort_custom(func(a, b): return b.value < a.value)
 
@@ -486,15 +490,15 @@ func try_store_in_nearby_chest(item_id: String, amount: int, player_pos: Vector2
 					chest.items[item_id] = current + can_add
 					stored += can_add
 					remaining -= can_add
-					changed = true
 
 					if remaining <= 0:
 						break
 
-	if stored > 0 and InventoryManager:
-		InventoryManager.remove_item(item_id, stored)
+	if stored > 0:
+		remove_item(item_id, stored)
 		emit_signal("inventory_changed")
-		HUD.show_message("Guardado %d %s no baú próximo" % [stored, DataLoader.get_item(item_id)?.display_name ?? item_id])
+		var item_data = DataLoader.get_item(item_id)
+		HUD.show_message("Guardado %d %s no baú próximo" % [stored, item_data.display_name if item_data != null else item_id])
 
 	return stored
 
@@ -647,19 +651,19 @@ func _open_item_selector(parent: Node, mode: String, callback: Callable) -> void
 	}
 	title.text = titles.get(mode, "Escolher Item")
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	title.theme_override_font_size = 20
+	title.add_theme_font_size_override("font_size", 20)
 	vbox.add_child(title)
 
+	var grid = GridContainer.new()
 	var search = LineEdit.new()
 	search.placeholder_text = "Buscar..."
 	search.text_changed.connect(func(text): _filter_selector_grid(grid, text))
 	vbox.add_child(search)
 
 	var scroll = ScrollContainer.new()
-	var grid = GridContainer.new()
 	grid.columns = 8
-	grid.theme_override_constants/h_separation = 5
-	grid.theme_override_constants/v_separation = 5
+	grid.add_theme_constant_override("h_separation", 5)
+	grid.add_theme_constant_override("v_separation", 5)
 	scroll.add_child(grid)
 	scroll.custom_minimum_size = Vector2(0, 300)
 	vbox.add_child(scroll)

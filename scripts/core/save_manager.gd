@@ -1,4 +1,3 @@
-class_name SaveManager
 extends Node
 
 ## Sistema de save/load usando JSON
@@ -75,7 +74,7 @@ func save_game(slot: int = -1) -> bool:
 func auto_save() -> void:
 	var save_data = _collect_save_data()
 	save_data["is_autosave"] = true
-	save_data["timestamp"] = Time.get_unix_time_from_datetime(Time.get_datetime_now())
+	save_data["timestamp"] = Time.get_unix_time_from_system()
 
 	var file_path = save_folder + "autosave.json"
 	var file = FileAccess.open(file_path, FileAccess.WRITE)
@@ -90,7 +89,7 @@ func _collect_save_data() -> Dictionary:
 
 	# Metadados
 	data["version"] = 1
-	data["timestamp"] = Time.get_unix_time_from_datetime(Time.get_datetime_now())
+	data["timestamp"] = Time.get_unix_time_from_system()
 	data["slot"] = active_slot
 
 	# GameManager state
@@ -137,63 +136,63 @@ func _collect_save_data() -> Dictionary:
 			"gold_lost_fainting": GameManager.gold_lost_fainting,
 			"items_lost_on_death": GameManager.items_lost_on_death,
 			"stats": GameManager.stats,
-			"deepest_mine_level": GameManager.get("deepest_mine_level", 0),
-			"mine_elevator_unlocked": GameManager.get("mine_elevator_unlocked", false),
-			"mine_levels_cleared": GameManager.get("mine_levels_cleared", {}),
-			"dating_npc": GameManager.get("dating_npc", ""),
-			"spouse": GameManager.get("spouse", ""),
-			"spouse_room_unlocked": GameManager.get("spouse_room_unlocked", false),
-			"children": GameManager.get("children", []),
-			"divorced_npcs": GameManager.get("divorced_npcs", []),
-			"qi_gems": GameManager.get("qi_gems", 0),
-			"wizard_reputation": GameManager.get("wizard_reputation", 0),
-			"house_upgrade_2": GameManager.get("house_upgrade_2", false),
-			"next_item_quality_boost": GameManager.get("next_item_quality_boost", 0),
-			"instant_grow_next": GameManager.get("instant_grow_next", false),
-			"star_tokens": GameManager.get("star_tokens", 0),
-			"completed_special_orders": GameManager.get("special_orders_completed", []),
-			"collection_shipped": GameManager.get("collection_shipped", {}),
-			"collection_fish": GameManager.get("collection_fish", {}),
-			"collection_artifacts": GameManager.get("collection_artifacts", {}),
-			"collection_minerals": GameManager.get("collection_minerals", {}),
-			"collection_recipes": GameManager.get("collection_recipes", {}),
-			"known_recipes": GameManager.get("known_recipes", []),
-			"museum_donated": GameManager.get("museum_donated", {}),
-			"museum_counts": GameManager.get("museum_counts", {}),
-			"museum_rewards_claimed": GameManager.get("museum_rewards_claimed", []),
-			"cc_greenhouse_unlocked": GameManager.get("cc_greenhouse_unlocked", false),
-			"greenhouse_unlocked": GameManager.get("greenhouse_unlocked", false),
-			"minecart_unlocked": GameManager.get("minecart_unlocked", []),
-			"minecart_connected": GameManager.get("minecart_connected", {}),
-			"pet_friendship": GameManager.get("pet_friendship", 0),
-			"pet_name": GameManager.get("pet_name", ""),
-			"pet_type": GameManager.get("pet_type", "Cat"),
-			"pet_last_pet_day": GameManager.get("pet_last_pet_day", -1),
-			"tv_last_watched_day": GameManager.get("tv_last_watched_day", -1),
-			"tv_watched_shows": GameManager.get("tv_watched_shows", {}),
-			"mailbox": GameManager.get("mailbox", []),
-			"read_mails": GameManager.get("read_mails", []),
-			"next_mail_id": GameManager.get("next_mail_id", 1),
-			"welcome_mail_sent": GameManager.get("welcome_mail_sent", false),
-			"player_skin": GameManager.get("player_skin", 0),
-			"player_hair": GameManager.get("player_hair", 0),
-			"player_hair_color": GameManager.get("player_hair_color", 0),
-			"player_eyes": GameManager.get("player_eyes", 0),
-			"player_pants": GameManager.get("player_pants", 0),
-			"player_pants_color": GameManager.get("player_pants_color", 0),
-			"player_shirt": GameManager.get("player_shirt", 0),
-			"player_shirt_color": GameManager.get("player_shirt_color", 0),
-			"player_shoes": GameManager.get("player_shoes", 0),
-			"player_accessory": GameManager.get("player_accessory", 0),
-			"player_hat": GameManager.get("player_hat", -1),
-			"player_gender": GameManager.get("player_gender", 0),
-			"equipped_hat": GameManager.get("equipped_hat", ""),
-			"equipped_shirt": GameManager.get("equipped_shirt", ""),
-			"equipped_pants": GameManager.get("equipped_pants", ""),
-			"equipped_boots": GameManager.get("equipped_boots", ""),
-			"equipped_ring": GameManager.get("equipped_ring", ""),
-			"equipped_ring2": GameManager.get("equipped_ring2", ""),
-			"pet_data": GameManager.get("pet_data", {})
+			"deepest_mine_level": GameManager.get_data("deepest_mine_level", 0),
+			"mine_elevator_unlocked": GameManager.get_data("mine_elevator_unlocked", false),
+			"mine_levels_cleared": GameManager.get_data("mine_levels_cleared", {}),
+			"dating_npc": GameManager.get_data("dating_npc", ""),
+			"spouse": GameManager.get_data("spouse", ""),
+			"spouse_room_unlocked": GameManager.get_data("spouse_room_unlocked", false),
+			"children": GameManager.get_data("children", []),
+			"divorced_npcs": GameManager.get_data("divorced_npcs", []),
+			"qi_gems": GameManager.get_data("qi_gems", 0),
+			"wizard_reputation": GameManager.get_data("wizard_reputation", 0),
+			"house_upgrade_2": GameManager.get_data("house_upgrade_2", false),
+			"next_item_quality_boost": GameManager.get_data("next_item_quality_boost", 0),
+			"instant_grow_next": GameManager.get_data("instant_grow_next", false),
+			"star_tokens": GameManager.get_data("star_tokens", 0),
+			"completed_special_orders": GameManager.get_data("special_orders_completed", []),
+			"collection_shipped": GameManager.get_data("collection_shipped", {}),
+			"collection_fish": GameManager.get_data("collection_fish", {}),
+			"collection_artifacts": GameManager.get_data("collection_artifacts", {}),
+			"collection_minerals": GameManager.get_data("collection_minerals", {}),
+			"collection_recipes": GameManager.get_data("collection_recipes", {}),
+			"known_recipes": GameManager.get_data("known_recipes", []),
+			"museum_donated": GameManager.get_data("museum_donated", {}),
+			"museum_counts": GameManager.get_data("museum_counts", {}),
+			"museum_rewards_claimed": GameManager.get_data("museum_rewards_claimed", []),
+			"cc_greenhouse_unlocked": GameManager.get_data("cc_greenhouse_unlocked", false),
+			"greenhouse_unlocked": GameManager.get_data("greenhouse_unlocked", false),
+			"minecart_unlocked": GameManager.get_data("minecart_unlocked", []),
+			"minecart_connected": GameManager.get_data("minecart_connected", {}),
+			"pet_friendship": GameManager.get_data("pet_friendship", 0),
+			"pet_name": GameManager.get_data("pet_name", ""),
+			"pet_type": GameManager.get_data("pet_type", "Cat"),
+			"pet_last_pet_day": GameManager.get_data("pet_last_pet_day", -1),
+			"tv_last_watched_day": GameManager.get_data("tv_last_watched_day", -1),
+			"tv_watched_shows": GameManager.get_data("tv_watched_shows", {}),
+			"mailbox": GameManager.get_data("mailbox", []),
+			"read_mails": GameManager.get_data("read_mails", []),
+			"next_mail_id": GameManager.get_data("next_mail_id", 1),
+			"welcome_mail_sent": GameManager.get_data("welcome_mail_sent", false),
+			"player_skin": GameManager.get_data("player_skin", 0),
+			"player_hair": GameManager.get_data("player_hair", 0),
+			"player_hair_color": GameManager.get_data("player_hair_color", 0),
+			"player_eyes": GameManager.get_data("player_eyes", 0),
+			"player_pants": GameManager.get_data("player_pants", 0),
+			"player_pants_color": GameManager.get_data("player_pants_color", 0),
+			"player_shirt": GameManager.get_data("player_shirt", 0),
+			"player_shirt_color": GameManager.get_data("player_shirt_color", 0),
+			"player_shoes": GameManager.get_data("player_shoes", 0),
+			"player_accessory": GameManager.get_data("player_accessory", 0),
+			"player_hat": GameManager.get_data("player_hat", -1),
+			"player_gender": GameManager.get_data("player_gender", 0),
+			"equipped_hat": GameManager.get_data("equipped_hat", ""),
+			"equipped_shirt": GameManager.get_data("equipped_shirt", ""),
+			"equipped_pants": GameManager.get_data("equipped_pants", ""),
+			"equipped_boots": GameManager.get_data("equipped_boots", ""),
+			"equipped_ring": GameManager.get_data("equipped_ring", ""),
+			"equipped_ring2": GameManager.get_data("equipped_ring2", ""),
+			"pet_data": GameManager.get_data("pet_data", {})
 		}
 
 	# Player position (precisa ser capturado da cena)
@@ -240,8 +239,8 @@ func load_game(slot: int = -1) -> bool:
 	file.close()
 
 	var parse_result = JSON.parse_string(json_str)
-	if parse_result is Dictionary and parse_result.get("error", "") != "":
-		emit_signal("load_failed", "Erro ao parsear JSON: " + parse_result["error"])
+	if not parse_result is Dictionary:
+		emit_signal("load_failed", "O arquivo de save não contém um JSON válido: " + file_path)
 		return false
 
 	var save_data = parse_result
@@ -263,6 +262,8 @@ func load_autosave() -> bool:
 	file.close()
 
 	var save_data = JSON.parse_string(json_str)
+	if not save_data is Dictionary:
+		return false
 	_apply_save_data(save_data)
 	print("SaveManager: Auto-save carregado")
 	return true
@@ -289,7 +290,11 @@ func _apply_save_data(data: Dictionary) -> void:
 	GameManager.skill_xp = game_data.get("skill_xp", [0,0,0,0,0])
 	GameManager.professions = game_data.get("professions", {})
 	GameManager.inventory = game_data.get("inventory", {})
-	GameManager.hotbar = game_data.get("hotbar", Array(12).fill(""))
+	var saved_hotbar: Array = game_data.get("hotbar", [])
+	GameManager.hotbar.clear()
+	GameManager.hotbar.assign(saved_hotbar)
+	while GameManager.hotbar.size() < 12:
+		GameManager.hotbar.append("")
 	GameManager.selected_hotbar_slot = game_data.get("selected_hotbar_slot", 0)
 	GameManager.tools = game_data.get("tools", {})
 	GameManager.unlocked_recipes = game_data.get("unlocked_recipes", [])
@@ -301,7 +306,12 @@ func _apply_save_data(data: Dictionary) -> void:
 	GameManager.active_quests = game_data.get("active_quests", [])
 	GameManager.completed_quests = game_data.get("completed_quests", [])
 	GameManager.active_special_orders = game_data.get("active_special_orders", [])
-	GameManager.achievements = game_data.get("achievements", {})
+	var saved_achievements = game_data.get("achievements", [])
+	GameManager.achievements.clear()
+	if saved_achievements is Dictionary:
+		GameManager.achievements.assign(saved_achievements.keys())
+	elif saved_achievements is Array:
+		GameManager.achievements.assign(saved_achievements)
 	GameManager.farm_buildings = game_data.get("farm_buildings", [])
 	GameManager.farm_crops = game_data.get("farm_crops", {})
 	GameManager.farm_animals = game_data.get("farm_animals", [])
@@ -318,65 +328,65 @@ func _apply_save_data(data: Dictionary) -> void:
 	GameManager.stats = game_data.get("stats", {})
 
 	# Dados extras
-	GameManager.set("deepest_mine_level", game_data.get("deepest_mine_level", 0))
-	GameManager.set("mine_elevator_unlocked", game_data.get("mine_elevator_unlocked", false))
-	GameManager.set("mine_levels_cleared", game_data.get("mine_levels_cleared", {}))
-	GameManager.set("dating_npc", game_data.get("dating_npc", ""))
-	GameManager.set("spouse", game_data.get("spouse", ""))
-	GameManager.set("spouse_room_unlocked", game_data.get("spouse_room_unlocked", false))
-	GameManager.set("children", game_data.get("children", []))
-	GameManager.set("divorced_npcs", game_data.get("divorced_npcs", []))
-	GameManager.set("qi_gems", game_data.get("qi_gems", 0))
-	GameManager.set("wizard_reputation", game_data.get("wizard_reputation", 0))
-	GameManager.set("house_upgrade_2", game_data.get("house_upgrade_2", false))
-	GameManager.set("next_item_quality_boost", game_data.get("next_item_quality_boost", 0))
-	GameManager.set("instant_grow_next", game_data.get("instant_grow_next", false))
-	GameManager.set("star_tokens", game_data.get("star_tokens", 0))
-	GameManager.set("special_orders_completed", game_data.get("completed_special_orders", []))
+	GameManager.set_data("deepest_mine_level", game_data.get("deepest_mine_level", 0))
+	GameManager.set_data("mine_elevator_unlocked", game_data.get("mine_elevator_unlocked", false))
+	GameManager.set_data("mine_levels_cleared", game_data.get("mine_levels_cleared", {}))
+	GameManager.set_data("dating_npc", game_data.get("dating_npc", ""))
+	GameManager.set_data("spouse", game_data.get("spouse", ""))
+	GameManager.set_data("spouse_room_unlocked", game_data.get("spouse_room_unlocked", false))
+	GameManager.set_data("children", game_data.get("children", []))
+	GameManager.set_data("divorced_npcs", game_data.get("divorced_npcs", []))
+	GameManager.set_data("qi_gems", game_data.get("qi_gems", 0))
+	GameManager.set_data("wizard_reputation", game_data.get("wizard_reputation", 0))
+	GameManager.set_data("house_upgrade_2", game_data.get("house_upgrade_2", false))
+	GameManager.set_data("next_item_quality_boost", game_data.get("next_item_quality_boost", 0))
+	GameManager.set_data("instant_grow_next", game_data.get("instant_grow_next", false))
+	GameManager.set_data("star_tokens", game_data.get("star_tokens", 0))
+	GameManager.set_data("special_orders_completed", game_data.get("completed_special_orders", []))
 
 	# Novos sistemas
-	GameManager.set("collection_shipped", game_data.get("collection_shipped", {}))
-	GameManager.set("collection_fish", game_data.get("collection_fish", {}))
-	GameManager.set("collection_artifacts", game_data.get("collection_artifacts", {}))
-	GameManager.set("collection_minerals", game_data.get("collection_minerals", {}))
-	GameManager.set("collection_recipes", game_data.get("collection_recipes", {}))
-	GameManager.set("known_recipes", game_data.get("known_recipes", []))
-	GameManager.set("museum_donated", game_data.get("museum_donated", {}))
-	GameManager.set("museum_counts", game_data.get("museum_counts", {}))
-	GameManager.set("museum_rewards_claimed", game_data.get("museum_rewards_claimed", []))
-	GameManager.set("cc_greenhouse_unlocked", game_data.get("cc_greenhouse_unlocked", false))
-	GameManager.set("greenhouse_unlocked", game_data.get("greenhouse_unlocked", false))
-	GameManager.set("minecart_unlocked", game_data.get("minecart_unlocked", []))
-	GameManager.set("minecart_connected", game_data.get("minecart_connected", {}))
-	GameManager.set("pet_friendship", game_data.get("pet_friendship", 0))
-	GameManager.set("pet_name", game_data.get("pet_name", ""))
-	GameManager.set("pet_type", game_data.get("pet_type", "Cat"))
-	GameManager.set("pet_last_pet_day", game_data.get("pet_last_pet_day", -1))
-	GameManager.set("tv_last_watched_day", game_data.get("tv_last_watched_day", -1))
-	GameManager.set("tv_watched_shows", game_data.get("tv_watched_shows", {}))
-	GameManager.set("mailbox", game_data.get("mailbox", []))
-	GameManager.set("read_mails", game_data.get("read_mails", []))
-	GameManager.set("next_mail_id", game_data.get("next_mail_id", 1))
-	GameManager.set("welcome_mail_sent", game_data.get("welcome_mail_sent", false))
-	GameManager.set("player_skin", game_data.get("player_skin", 0))
-	GameManager.set("player_hair", game_data.get("player_hair", 0))
-	GameManager.set("player_hair_color", game_data.get("player_hair_color", 0))
-	GameManager.set("player_eyes", game_data.get("player_eyes", 0))
-	GameManager.set("player_pants", game_data.get("player_pants", 0))
-	GameManager.set("player_pants_color", game_data.get("player_pants_color", 0))
-	GameManager.set("player_shirt", game_data.get("player_shirt", 0))
-	GameManager.set("player_shirt_color", game_data.get("player_shirt_color", 0))
-	GameManager.set("player_shoes", game_data.get("player_shoes", 0))
-	GameManager.set("player_accessory", game_data.get("player_accessory", 0))
-	GameManager.set("player_hat", game_data.get("player_hat", -1))
-	GameManager.set("player_gender", game_data.get("player_gender", 0))
-	GameManager.set("equipped_hat", game_data.get("equipped_hat", ""))
-	GameManager.set("equipped_shirt", game_data.get("equipped_shirt", ""))
-	GameManager.set("equipped_pants", game_data.get("equipped_pants", ""))
-	GameManager.set("equipped_boots", game_data.get("equipped_boots", ""))
-	GameManager.set("equipped_ring", game_data.get("equipped_ring", ""))
-	GameManager.set("equipped_ring2", game_data.get("equipped_ring2", ""))
-	GameManager.set("pet_data", game_data.get("pet_data", {}))
+	GameManager.set_data("collection_shipped", game_data.get("collection_shipped", {}))
+	GameManager.set_data("collection_fish", game_data.get("collection_fish", {}))
+	GameManager.set_data("collection_artifacts", game_data.get("collection_artifacts", {}))
+	GameManager.set_data("collection_minerals", game_data.get("collection_minerals", {}))
+	GameManager.set_data("collection_recipes", game_data.get("collection_recipes", {}))
+	GameManager.set_data("known_recipes", game_data.get("known_recipes", []))
+	GameManager.set_data("museum_donated", game_data.get("museum_donated", {}))
+	GameManager.set_data("museum_counts", game_data.get("museum_counts", {}))
+	GameManager.set_data("museum_rewards_claimed", game_data.get("museum_rewards_claimed", []))
+	GameManager.set_data("cc_greenhouse_unlocked", game_data.get("cc_greenhouse_unlocked", false))
+	GameManager.set_data("greenhouse_unlocked", game_data.get("greenhouse_unlocked", false))
+	GameManager.set_data("minecart_unlocked", game_data.get("minecart_unlocked", []))
+	GameManager.set_data("minecart_connected", game_data.get("minecart_connected", {}))
+	GameManager.set_data("pet_friendship", game_data.get("pet_friendship", 0))
+	GameManager.set_data("pet_name", game_data.get("pet_name", ""))
+	GameManager.set_data("pet_type", game_data.get("pet_type", "Cat"))
+	GameManager.set_data("pet_last_pet_day", game_data.get("pet_last_pet_day", -1))
+	GameManager.set_data("tv_last_watched_day", game_data.get("tv_last_watched_day", -1))
+	GameManager.set_data("tv_watched_shows", game_data.get("tv_watched_shows", {}))
+	GameManager.set_data("mailbox", game_data.get("mailbox", []))
+	GameManager.set_data("read_mails", game_data.get("read_mails", []))
+	GameManager.set_data("next_mail_id", game_data.get("next_mail_id", 1))
+	GameManager.set_data("welcome_mail_sent", game_data.get("welcome_mail_sent", false))
+	GameManager.set_data("player_skin", game_data.get("player_skin", 0))
+	GameManager.set_data("player_hair", game_data.get("player_hair", 0))
+	GameManager.set_data("player_hair_color", game_data.get("player_hair_color", 0))
+	GameManager.set_data("player_eyes", game_data.get("player_eyes", 0))
+	GameManager.set_data("player_pants", game_data.get("player_pants", 0))
+	GameManager.set_data("player_pants_color", game_data.get("player_pants_color", 0))
+	GameManager.set_data("player_shirt", game_data.get("player_shirt", 0))
+	GameManager.set_data("player_shirt_color", game_data.get("player_shirt_color", 0))
+	GameManager.set_data("player_shoes", game_data.get("player_shoes", 0))
+	GameManager.set_data("player_accessory", game_data.get("player_accessory", 0))
+	GameManager.set_data("player_hat", game_data.get("player_hat", -1))
+	GameManager.set_data("player_gender", game_data.get("player_gender", 0))
+	GameManager.set_data("equipped_hat", game_data.get("equipped_hat", ""))
+	GameManager.set_data("equipped_shirt", game_data.get("equipped_shirt", ""))
+	GameManager.set_data("equipped_pants", game_data.get("equipped_pants", ""))
+	GameManager.set_data("equipped_boots", game_data.get("equipped_boots", ""))
+	GameManager.set_data("equipped_ring", game_data.get("equipped_ring", ""))
+	GameManager.set_data("equipped_ring2", game_data.get("equipped_ring2", ""))
+	GameManager.set_data("pet_data", game_data.get("pet_data", {}))
 
 	# Emite sinais para atualizar UI
 	GameManager.emit_signal("gold_changed", GameManager.gold)

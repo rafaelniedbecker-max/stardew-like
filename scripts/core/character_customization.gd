@@ -1,4 +1,3 @@
-class_name CharacterCustomization
 extends Node
 
 ## Sistema de Personalização: aparência, roupas, chapéus, calças, camisas, acessórios
@@ -106,26 +105,26 @@ func _load_appearance() -> void:
 	if not GameManager:
 		return
 
-	skin_color = GameManager.get("player_skin", 0)
-	hair_style = GameManager.get("player_hair", 0)
-	hair_color = GameManager.get("player_hair_color", 0)
-	eye_color = GameManager.get("player_eyes", 0)
-	pants_style = GameManager.get("player_pants", 0)
-	pants_color = GameManager.get("player_pants_color", 0)
-	shirt_style = GameManager.get("player_shirt", 0)
-	shirt_color = GameManager.get("player_shirt_color", 0)
-	shoes_color = GameManager.get("player_shoes", 0)
-	accessory = GameManager.get("player_accessory", 0)
-	hat = GameManager.get("player_hat", -1)
-	gender = GameManager.get("player_gender", 0)
+	skin_color = GameManager.get_data("player_skin", 0)
+	hair_style = GameManager.get_data("player_hair", 0)
+	hair_color = GameManager.get_data("player_hair_color", 0)
+	eye_color = GameManager.get_data("player_eyes", 0)
+	pants_style = GameManager.get_data("player_pants", 0)
+	pants_color = GameManager.get_data("player_pants_color", 0)
+	shirt_style = GameManager.get_data("player_shirt", 0)
+	shirt_color = GameManager.get_data("player_shirt_color", 0)
+	shoes_color = GameManager.get_data("player_shoes", 0)
+	accessory = GameManager.get_data("player_accessory", 0)
+	hat = GameManager.get_data("player_hat", -1)
+	gender = GameManager.get_data("player_gender", 0)
 
 	# Roupas equipadas
-	equipped_hat = GameManager.get("equipped_hat", "")
-	equipped_shirt = GameManager.get("equipped_shirt", "")
-	equipped_pants = GameManager.get("equipped_pants", "")
-	equipped_boots = GameManager.get("equipped_boots", "")
-	equipped_ring = GameManager.get("equipped_ring", "")
-	equipped_ring2 = GameManager.get("equipped_ring2", "")
+	equipped_hat = GameManager.get_data("equipped_hat", "")
+	equipped_shirt = GameManager.get_data("equipped_shirt", "")
+	equipped_pants = GameManager.get_data("equipped_pants", "")
+	equipped_boots = GameManager.get_data("equipped_boots", "")
+	equipped_ring = GameManager.get_data("equipped_ring", "")
+	equipped_ring2 = GameManager.get_data("equipped_ring2", "")
 
 func _apply_to_player() -> void:
 	if not GameManager:
@@ -195,67 +194,67 @@ func _create_hat_placeholder(item_id: String) -> Texture2D:
 ## ==================== PERSONALIZAÇÃO DE APARÊNCIA ====================
 func set_skin_color(index: int) -> void:
 	skin_color = clamp(index, 0, SKIN_COLORS.size() - 1)
-	GameManager.set("player_skin", skin_color)
+	GameManager.set_data("player_skin", skin_color)
 	_apply_to_player()
 	emit_signal("color_changed", "skin", skin_color)
 
 func set_hair_style(index: int) -> void:
 	hair_style = clamp(index, 0, 31)
-	GameManager.set("player_hair", hair_style)
+	GameManager.set_data("player_hair", hair_style)
 	_apply_to_player()
 	emit_signal("appearance_changed")
 
 func set_hair_color(index: int) -> void:
 	hair_color = clamp(index, 0, HAIR_COLORS.size() - 1)
-	GameManager.set("player_hair_color", hair_color)
+	GameManager.set_data("player_hair_color", hair_color)
 	_apply_to_player()
 	emit_signal("color_changed", "hair", hair_color)
 
 func set_eye_color(index: int) -> void:
 	eye_color = clamp(index, 0, EYE_COLORS.size() - 1)
-	GameManager.set("player_eyes", eye_color)
+	GameManager.set_data("player_eyes", eye_color)
 	_apply_to_player()
 	emit_signal("color_changed", "eyes", eye_color)
 
 func set_pants_style(index: int) -> void:
 	pants_style = clamp(index, 0, 15)
-	GameManager.set("player_pants", pants_style)
+	GameManager.set_data("player_pants", pants_style)
 	_apply_to_player()
 	emit_signal("appearance_changed")
 
 func set_pants_color(index: int) -> void:
 	pants_color = clamp(index, 0, CLOTHING_COLORS.size() - 1)
-	GameManager.set("player_pants_color", pants_color)
+	GameManager.set_data("player_pants_color", pants_color)
 	_apply_to_player()
 	emit_signal("color_changed", "pants", pants_color)
 
 func set_shirt_style(index: int) -> void:
 	shirt_style = clamp(index, 0, 15)
-	GameManager.set("player_shirt", shirt_style)
+	GameManager.set_data("player_shirt", shirt_style)
 	_apply_to_player()
 	emit_signal("appearance_changed")
 
 func set_shirt_color(index: int) -> void:
 	shirt_color = clamp(index, 0, CLOTHING_COLORS.size() - 1)
-	GameManager.set("player_shirt_color", shirt_color)
+	GameManager.set_data("player_shirt_color", shirt_color)
 	_apply_to_player()
 	emit_signal("color_changed", "shirt", shirt_color)
 
 func set_shoes_color(index: int) -> void:
 	shoes_color = clamp(index, 0, CLOTHING_COLORS.size() - 1)
-	GameManager.set("player_shoes", shoes_color)
+	GameManager.set_data("player_shoes", shoes_color)
 	_apply_to_player()
 	emit_signal("color_changed", "shoes", shoes_color)
 
 func set_accessory(index: int) -> void:
 	accessory = clamp(index, 0, 10)
-	GameManager.set("player_accessory", accessory)
+	GameManager.set_data("player_accessory", accessory)
 	_apply_to_player()
 	emit_signal("appearance_changed")
 
 func set_gender(index: int) -> void:
 	gender = clamp(index, 0, 2)
-	GameManager.set("player_gender", gender)
+	GameManager.set_data("player_gender", gender)
 	_apply_to_player()
 	emit_signal("appearance_changed")
 
@@ -328,22 +327,22 @@ func _set_equipped(slot: String, item_id: String) -> void:
 	match slot:
 		"hat":
 			equipped_hat = item_id
-			GameManager.set("equipped_hat", item_id)
+			GameManager.set_data("equipped_hat", item_id)
 		"shirt":
 			equipped_shirt = item_id
-			GameManager.set("equipped_shirt", item_id)
+			GameManager.set_data("equipped_shirt", item_id)
 		"pants":
 			equipped_pants = item_id
-			GameManager.set("equipped_pants", item_id)
+			GameManager.set_data("equipped_pants", item_id)
 		"boots":
 			equipped_boots = item_id
-			GameManager.set("equipped_boots", item_id)
+			GameManager.set_data("equipped_boots", item_id)
 		"ring":
 			equipped_ring = item_id
-			GameManager.set("equipped_ring", item_id)
+			GameManager.set_data("equipped_ring", item_id)
 		"ring2":
 			equipped_ring2 = item_id
-			GameManager.set("equipped_ring2", item_id)
+			GameManager.set_data("equipped_ring2", item_id)
 
 func _apply_clothing_visual(slot: String, item_id: String) -> void:
 	match slot:
@@ -662,7 +661,7 @@ func _create_clothing_tab(tabs: TabContainer) -> void:
 		var equipped_name = "Nada equipado"
 		if slot_info.equipped != "":
 			var item = DataLoader.get_item(slot_info.equipped)
-			equipped_name = item?.display_name ?? slot_info.equipped
+			equipped_name = item.display_name if item != null else slot_info.equipped
 
 		var equip_lbl = Label.new()
 		equip_lbl.text = equipped_name
@@ -754,7 +753,7 @@ func _add_color_picker(grid: GridContainer, label: String, current: int, max_col
 	# Preview da cor
 	var preview = Panel.new()
 	preview.custom_minimum_size = Vector2(100, 30)
-	var colors = label == "Cabelo" ? HAIR_COLORS : CLOTHING_COLORS
+	var colors = HAIR_COLORS if label == "Cabelo" else CLOTHING_COLORS
 	preview.add_theme_color_override("panel_color", colors[current])
 	box.add_child(preview)
 

@@ -1,4 +1,3 @@
-class_name UIStyle
 extends Node
 
 ## Design System Runtime - aplica tokens, cria componentes padronizados
@@ -94,11 +93,11 @@ func get_season_colors(season: int) -> Dictionary:
 	}[season]
 
 func is_dark_mode() -> bool:
-	return OS.has_feature("editor") ? false : (DisplayServer.screen_get_dpi() > 0 and true) # Placeholder
+	return false if OS.has_feature("editor") else (DisplayServer.screen_get_dpi() > 0 and true) # Placeholder
 
 func get_color(name: String) -> Color:
 	var dark = is_dark_mode()
-	var key = name + (dark ? "_dark" : "")
+	var key = name + ("_dark" if dark else "")
 	return COLORS.get(key, COLORS.get(name, Color.WHITE))
 
 ## ==================== COMPONENT FACTORIES ====================
@@ -160,13 +159,13 @@ func create_item_slot(item_id: String = "", amount: int = 0, show_quality: int =
 	icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	vbox.add_child(icon)
 
+	var item = DataLoader.get_item(item_id) if item_id != "" else null
 	if item_id != "":
-		var item = DataLoader.get_item(item_id)
 		if item and item.texture_path != "":
 			icon.texture = load(item.texture_path)
 
 	var name = Label.new()
-	name.text = item?.display_name ?? item_id
+	name.text = item.display_name if item != null else item_id
 	name.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	name.theme_override_font_size = 10
 	name.autowrap_mode = 1
@@ -220,7 +219,7 @@ func create_toast(title: String, message: String, type: String = "info", duratio
 	panel.anchors_preset = 11 # Top right
 
 	var hbox = HBoxContainer.new()
-	hbox.theme_override_constants/separation = 12
+	hbox.add_theme_constant_override("separation", 12)
 	panel.add_child(hbox)
 
 	var icons = {"info": "ℹ️", "success": "✅", "warning": "⚠️", "danger": "❌", "achievement": "🏆"}
@@ -261,7 +260,7 @@ func create_toast(title: String, message: String, type: String = "info", duratio
 		t.tween_property(panel, "modulate:a", 0.0, 0.3)
 		t.tween_property(panel, "position:x", 50, 0.3)
 		t.finished.connect(panel.queue_free.bind())
-	))
+	)
 	panel.add_child(timer)
 	timer.start()
 
@@ -279,13 +278,13 @@ func generate_theme_tres() -> Theme:
 
 	# Cores base
 	var dark = is_dark_mode()
-	var surface = dark ? COLORS.surface_dark : COLORS.surface
-	var surface_elevated = dark ? COLORS.surface_elevated_dark : COLORS.surface_elevated
-	var surface_hover = dark ? COLORS.surface_hover_dark : COLORS.surface_hover
-	var ink = dark ? COLORS.ink_dark : COLORS.ink
-	var ink_muted = dark ? COLORS.ink_muted_dark : COLORS.ink_muted
-	var brand = dark ? COLORS.brand_dark : COLORS.brand
-	var brand_hover = dark ? COLORS.brand_hover_dark : COLORS.brand_hover
+	var surface = COLORS.surface_dark if dark else COLORS.surface
+	var surface_elevated = COLORS.surface_elevated_dark if dark else COLORS.surface_elevated
+	var surface_hover = COLORS.surface_hover_dark if dark else COLORS.surface_hover
+	var ink = COLORS.ink_dark if dark else COLORS.ink
+	var ink_muted = COLORS.ink_muted_dark if dark else COLORS.ink_muted
+	var brand = COLORS.brand_dark if dark else COLORS.brand
+	var brand_hover = COLORS.brand_hover_dark if dark else COLORS.brand_hover
 
 	# Default font
 	theme.set_font(pixel_font, "Label")

@@ -132,7 +132,7 @@ func upgrade_house(current_level: int) -> Dictionary:
 			InventoryManager.remove_item(mat, upgrade.materials[mat])
 
 	GameManager.emit_signal("gold_changed", GameManager.gold)
-	GameManager.set("house_level", next)
+	GameManager.set_data("house_level", next)
 
 	# Aplica funcionalidades
 	_apply_house_features(next)
@@ -143,16 +143,16 @@ func _apply_house_features(level: int) -> void:
 	var features = HOUSE_UPGRADES[level].features
 
 	if "Kitchen" in features or "Cozinha" in features:
-		GameManager.set("has_kitchen", true)
+		GameManager.set_data("has_kitchen", true)
 	if "Fridge" in features or "Geladeira" in features:
-		GameManager.set("has_fridge", true)
+		GameManager.set_data("has_fridge", true)
 	if "Cellar" in features or "Adega" in features:
-		GameManager.set("has_cellar", true)
+		GameManager.set_data("has_cellar", true)
 	if "Nursery" in features or "Quarto de Bebê" in features:
-		GameManager.set("has_nursery", true)
+		GameManager.set_data("has_nursery", true)
 	if "Greenhouse Access" in features or "Acesso Estufa" in features:
-		GameManager.set("greenhouse_unlocked", true)
-		GameManager.set("cc_greenhouse_unlocked", true)
+		GameManager.set_data("greenhouse_unlocked", true)
+		GameManager.set_data("cc_greenhouse_unlocked", true)
 
 	HUD.show_notification("🏠 Casa Melhorada!", "Novo nível: %s" % HOUSE_UPGRADES[level].name, Color(1.0, 0.8, 0.2))
 
@@ -263,7 +263,7 @@ func upgrade_backpack(current_slots: int) -> Dictionary:
 
 	# Aplica upgrade
 	InventoryManager.max_inventory_slots = next.slots
-	GameManager.set("backpack_slots", next.slots)
+	GameManager.set_data("backpack_slots", next.slots)
 
 	HUD.show_notification("🎒 Mochila Melhorada!", "Capacidade aumentada para %d slots!" % next.slots, Color(0.5, 1.0, 0.5))
 

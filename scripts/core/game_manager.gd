@@ -1,4 +1,3 @@
-class_name GameManager
 extends Node
 
 ## ==================== ESTADO GLOBAL DO JOGO ====================
@@ -47,6 +46,17 @@ extends Node
 
 ## Profissões escolhidas por habilidade (índice: 0=rancho, 1=agricultor, etc.)
 @export var professions: Dictionary = {}
+
+## Modificadores temporários controlados pelo BuffManager.
+var skill_buffs: Dictionary = {}
+var attack_buff: int = 0
+var defense_buff: int = 0
+var speed_buff: int = 0
+var max_energy_buff: int = 0
+var magnetism_buff: int = 0
+var luck_buff: float = 0.0
+var knockback_immunity: bool = false
+var debuff_immunity: bool = false
 
 ## Inventário: {item_id: quantity}
 @export var inventory: Dictionary = {}
@@ -98,19 +108,19 @@ extends Node
 @export var active_special_orders: Array[Dictionary] = []
 
 ## Conquistas desbloqueadas
-@export var achievements: Array[String] = {}
+@export var achievements: Array[String] = []
 
 ## Edifícios construídos na fazenda: Array de {type, position, days_left}
-@export var farm_buildings: Array[Dictionary] = {}
+@export var farm_buildings: Array[Dictionary] = []
 
 ## Cultivos plantados: {position_key: {crop_id, growth_day, watered, ...}}
 @export var farm_crops: Dictionary = {}
 
 ## Animais na fazenda
-@export var farm_animals: Array[Dictionary] = {}
+@export var farm_animals: Array[Dictionary] = []
 
 ## Máquinas colocadas
-@export var placed_machines: Array[Dictionary] = {}
+@export var placed_machines: Array[Dictionary] = []
 
 ## Objetos colocados (baús, decoração, etc.)
 @export var placed_objects: Dictionary = {}
@@ -167,6 +177,7 @@ signal day_changed(new_day: int, new_season: int, new_year: int)
 signal season_changed(new_season: int, new_year: int)
 signal year_changed(new_year: int)
 signal time_changed(new_time: int)
+signal weather_changed(new_weather: int)
 signal hour_changed(new_hour: int)
 signal minute_changed(new_minute: int)
 signal gold_changed(new_gold: int)
@@ -231,17 +242,22 @@ func _load_default_data() -> void:
 
 ## Avança o tempo em minutos
 func advance_time(minutes: int) -> void:
-	var old_time = current_time
-	current_time += minutes
+	var old_time: int = current_time
+	var old_hour: int = old_time / 100
 
-	# Verifica passagem da meia-noite
-	if old_time < MIDNIGHT_TIME and current_time >= MIDNIGHT_TIME:
-		_check_midnight()
+	# current_time usa HHMM; normalize os 60 minutos de cada hora.
+	var total_minutes: int = (old_time / 100) * 60 + (old_time % 100) + minutes
+	current_time = (total_minutes / 60) * 100 + (total_minutes % 60)
 
-	# Verifica desmaio às 2:00
+	# O dia termina às 2:00, quando o desmaio e o processamento diário ocorrem.
 	if old_time < PASS_OUT_TIME and current_time >= PASS_OUT_TIME:
+		_check_midnight()
 		_faint()
 
+	emit_signal("minute_changed", current_time)
+	var new_hour: int = current_time / 100
+	if old_hour != new_hour:
+		emit_signal("hour_changed", new_hour)
 	emit_signal("time_changed", current_time)
 
 func _check_midnight() -> void:
@@ -291,6 +307,7 @@ func _check_midnight() -> void:
 ## Gera clima aleatório para amanhã
 func _generate_weather() -> void:
 	today_weather = tomorrow_weather
+	emit_signal("weather_changed", today_weather)
 
 	# Lógica simplificada de clima
 	var rand = randf()
@@ -340,7 +357,7 @@ func _check_festival() -> void:
 ## Desmaio às 2:00 AM
 func _faint() -> void:
 	has_fainted = true
-	gold_lost_fainting = inti(gold * 0.1)  # Perde 10% do ouro
+	gold_lost_fainting = int(gold * 0.1)  # Perde 10% do ouro
 	gold -= gold_lost_fainting
 	energy = max_energy * 0.5  # Acorda com 50% energia
 	health = max_health * 0.5
@@ -403,7 +420,7 @@ func restore_energy(amount: float) -> void:
 func _pass_out_from_exhaustion() -> void:
 	is_exhausted = true
 	# Teleporta para casa, perde ouro
-	gold_lost_fainting = inti(gold * 0.1)
+	gold_lost_fainting = int(gold * 0.1)
 	gold -= gold_lost_fainting
 	energy = max_energy * 0.25
 	emit_signal("exhausted")
@@ -509,14 +526,20 @@ func _on_skill_level_up(skill_index: int, new_level: int) -> void:
 
 ## ==================== PROCESSAMENTO DIÁRIO ====================
 func _process_crops_daily() -> void:
-	# Delega para WorldInit/FarmPlots
-	if WorldInit:
-		WorldInit.process_crops_daily()
+	var farm_plots: Node = get_tree().get_first_node_in_group("farm_plots")
+	if farm_plots:
+		for plot in farm_plots.get_children():
+			if plot.has_method("new_day"):
+				plot.new_day()
 
 func _process_animals_daily() -> void:
-	# Delega para BuildingManager/Animals
-	if BuildingManager:
-		BuildingManager.process_animals_daily()
+	_call_autoload_method("BuildingManager", "process_animals_daily")
+
+func _call_autoload_method(autoload_name: String, method_name: String) -> void:
+	# Resolve o singleton em runtime, evitando conflito entre class_name e autoload.
+	var system: Node = get_tree().root.get_node_or_null(autoload_name)
+	if system != null and system.has_method(method_name):
+		system.call(method_name)
 
 func _process_machines_daily() -> void:
 	# Processa máquinas colocadas
@@ -528,76 +551,20 @@ func _process_machines_daily() -> void:
 				_complete_machine_process(machine)
 
 func _complete_machine_process(machine: Dictionary) -> void:
-	var output = machine.get_output()
-	if output:
-		InventoryManager.add_item(output.item_id, output.amount, output.quality)
+	var output = machine.get("output", {})
+	if not output.is_empty():
+		InventoryManager.add_item(output.get("item_id", ""), output.get("amount", 1), output.get("quality", 0))
 
 func _process_special_orders_daily() -> void:
-	# Delega para SpecialOrdersBoard
-	if SpecialOrdersBoard:
-		SpecialOrdersBoard.on_day_changed()
+	_call_autoload_method("SpecialOrdersBoard", "on_day_changed")
 
 func _process_new_systems_daily() -> void:
-	# Pet Manager
-	if PetManager:
-		PetManager.process_daily()
-
-	# TV Channels - verifica novo episódio
-	if TVChannels:
-		TVChannels._check_daily_mail()
-
-	# Mail System - verifica cartas diárias
-	if MailSystem:
-		MailSystem._check_daily_mail()
-
-	# Community Center - verifica bundles completados
-	if CommunityCenter:
-		CommunityCenter._check_bundle_completion()
-
-	# Museum - verifica marcos
-	if Museum:
-		pass  # Verifica no donate
-
-	# Greenhouse - processa crescimento
-	if Greenhouse:
-		Greenhouse.process_daily_growth()
-		Greenhouse.process_sprinklers()
-
-	# Mine Cart - verifica desbloqueios
-	if MineCart:
-		MineCart._check_unlocks()
-
-	# Quest Manager - verifica missões diárias
-	if QuestManager:
-		QuestManager.generate_daily_quests()
-
-	# Relationship Manager - verifica eventos de coração
-	if RelationshipManager:
-		pass  # Verifica ao falar com NPC
-
-	# Buff Manager - processa buffs
-	if BuffManager:
-		BuffManager.process_daily()
-
-	# Mine Manager - reseta níveis diários
-	if MineManager:
-		MineManager.process_daily()
-
-	# Fishing Manager - reseta concursos
-	if FishingManager:
-		pass
-
-	# Festival Manager - verifica festivais
-	if FestivalManager:
-		pass  # Já verificado em _generate_weather
-
-	# Special Orders Board
-	if SpecialOrdersBoard:
-		SpecialOrdersBoard.on_day_changed()
-
-	# Building Manager - constrói edifícios
-	if BuildingManager:
-		BuildingManager.process_daily()
+	_call_autoload_method("PetManager", "process_daily")
+	_call_autoload_method("MailSystem", "_check_daily_mail")
+	_call_autoload_method("Greenhouse", "grow_day")
+	_call_autoload_method("MineCart", "_check_unlocks")
+	# BuffManager, QuestManager, BuildingManager e festivais já reagem ao
+	# sinal day_changed; não processe esses sistemas uma segunda vez.
 
 ## ==================== AMIZADE ====================
 func add_friendship(npc: String, amount: int) -> void:
@@ -651,14 +618,17 @@ func get_max_skill_level() -> int:
 	return max_lvl
 
 ## ==================== PERSISTÊNCIA (GET/SET GENÉRICOS) ====================
-func set(key: String, value: Variant) -> void:
-	set(key, value)
+## Estado dinâmico usado pelos sistemas extras. Não sobrescreve Object.get/set.
+var _extra_data: Dictionary = {}
 
-func get(key: String, default: Variant = null) -> Variant:
-	return get(key, default)
+func set_data(key: String, value: Variant) -> void:
+	_extra_data[key] = value
 
-func has(key: String) -> bool:
-	return has(key)
+func get_data(key: String, default: Variant = null) -> Variant:
+	return _extra_data.get(key, default)
+
+func has_data(key: String) -> bool:
+	return _extra_data.has(key)
 
 ## ==================== DESBLOQUEIOS ====================
 func unlock_feature(feature: String) -> void:
@@ -717,21 +687,21 @@ func get_save_data() -> Dictionary:
 		"daily_luck": daily_luck,
 		"active_festival": active_festival,
 		"stats": stats,
-		"deepest_mine_level": get("deepest_mine_level", 0),
-		"mine_elevator_unlocked": get("mine_elevator_unlocked", false),
-		"mine_levels_cleared": get("mine_levels_cleared", {}),
-		"dating_npc": get("dating_npc", ""),
-		"spouse": get("spouse", ""),
-		"spouse_room_unlocked": get("spouse_room_unlocked", false),
-		"children": get("children", []),
-		"divorced_npcs": get("divorced_npcs", []),
-		"qi_gems": get("qi_gems", 0),
-		"wizard_reputation": get("wizard_reputation", 0),
-		"house_upgrade_2": get("house_upgrade_2", false),
-		"next_item_quality_boost": get("next_item_quality_boost", 0),
-		"instant_grow_next": get("instant_grow_next", false),
-		"star_tokens": get("star_tokens", 0),
-		"completed_special_orders": get("special_orders_completed", [])
+		"deepest_mine_level": get_data("deepest_mine_level", 0),
+		"mine_elevator_unlocked": get_data("mine_elevator_unlocked", false),
+		"mine_levels_cleared": get_data("mine_levels_cleared", {}),
+		"dating_npc": get_data("dating_npc", ""),
+		"spouse": get_data("spouse", ""),
+		"spouse_room_unlocked": get_data("spouse_room_unlocked", false),
+		"children": get_data("children", []),
+		"divorced_npcs": get_data("divorced_npcs", []),
+		"qi_gems": get_data("qi_gems", 0),
+		"wizard_reputation": get_data("wizard_reputation", 0),
+		"house_upgrade_2": get_data("house_upgrade_2", false),
+		"next_item_quality_boost": get_data("next_item_quality_boost", 0),
+		"instant_grow_next": get_data("instant_grow_next", false),
+		"star_tokens": get_data("star_tokens", 0),
+		"completed_special_orders": get_data("special_orders_completed", [])
 	}
 
 func load_save_data(data: Dictionary) -> void:
@@ -772,18 +742,18 @@ func load_save_data(data: Dictionary) -> void:
 	stats = data.get("stats", {"steps_taken":0,"items_crafted":0,"items_cooked":0,"fish_caught":0,"monsters_killed":0,"crops_harvested":0,"items_shipped":0,"gold_earned":0,"gold_spent":0,"days_played":0})
 
 	# Dados extras
-	set("deepest_mine_level", data.get("deepest_mine_level", 0))
-	set("mine_elevator_unlocked", data.get("mine_elevator_unlocked", false))
-	set("mine_levels_cleared", data.get("mine_levels_cleared", {}))
-	set("dating_npc", data.get("dating_npc", ""))
-	set("spouse", data.get("spouse", ""))
-	set("spouse_room_unlocked", data.get("spouse_room_unlocked", false))
-	set("children", data.get("children", []))
-	set("divorced_npcs", data.get("divorced_npcs", []))
-	set("qi_gems", data.get("qi_gems", 0))
-	set("wizard_reputation", data.get("wizard_reputation", 0))
-	set("house_upgrade_2", data.get("house_upgrade_2", false))
-	set("next_item_quality_boost", data.get("next_item_quality_boost", 0))
-	set("instant_grow_next", data.get("instant_grow_next", false))
-	set("star_tokens", data.get("star_tokens", 0))
-	set("special_orders_completed", data.get("completed_special_orders", []))
+	set_data("deepest_mine_level", data.get("deepest_mine_level", 0))
+	set_data("mine_elevator_unlocked", data.get("mine_elevator_unlocked", false))
+	set_data("mine_levels_cleared", data.get("mine_levels_cleared", {}))
+	set_data("dating_npc", data.get("dating_npc", ""))
+	set_data("spouse", data.get("spouse", ""))
+	set_data("spouse_room_unlocked", data.get("spouse_room_unlocked", false))
+	set_data("children", data.get("children", []))
+	set_data("divorced_npcs", data.get("divorced_npcs", []))
+	set_data("qi_gems", data.get("qi_gems", 0))
+	set_data("wizard_reputation", data.get("wizard_reputation", 0))
+	set_data("house_upgrade_2", data.get("house_upgrade_2", false))
+	set_data("next_item_quality_boost", data.get("next_item_quality_boost", 0))
+	set_data("instant_grow_next", data.get("instant_grow_next", false))
+	set_data("star_tokens", data.get("star_tokens", 0))
+	set_data("special_orders_completed", data.get("completed_special_orders", []))

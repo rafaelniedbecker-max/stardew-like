@@ -1,4 +1,3 @@
-class_name SpriteGenerator
 extends RefCounted
 
 ## Gerador procedural de sprites de alta qualidade
@@ -249,11 +248,11 @@ static func _draw_character_frame(direction: String, animation: String, frame: i
 
 	# ===== CORPO =====
 	# Pernas
-	var leg_x = facing_right ? -2 : (facing_left ? 2 : 0)
+	var leg_x = -2 if facing_right else (2 if facing_left else 0)
 	var leg_y = 8 + walk_offset
 
 	# Perna traseira
-	var back_leg_x = leg_x + (facing_right ? -1 : (facing_left ? 1 : 0))
+	var back_leg_x = leg_x + (-1 if facing_right else (1 if facing_left else 0))
 	_draw_leg(img, cx + back_leg_x, cy + leg_y, pants_color, shoes_color, false, facing_right)
 
 	# Perna frontal
@@ -263,7 +262,7 @@ static func _draw_character_frame(direction: String, animation: String, frame: i
 	_draw_torso(img, cx, cy - 4, shirt_color, skin_color, facing_right)
 
 	# Braços
-	var arm_swing = animation == "walk" ? walk_offset * 1.5 : (animation.begins_with("tool") ? tool_progress * 10.0 : 0)
+	var arm_swing = walk_offset * 1.5 if animation == "walk" else (tool_progress * 10.0 if animation.begins_with("tool") else 0)
 
 	# Braço traseiro
 	_draw_arm(img, cx - 8, cy - 6, skin_color, shirt_color, -arm_swing, false, facing_right)
@@ -283,7 +282,7 @@ static func _draw_character_frame(direction: String, animation: String, frame: i
 	return img
 
 static func _draw_leg(img: Image, x: int, y: int, pants_color: Color, shoes_color: Color, front: bool, facing_right: bool) -> void:
-	var w = front ? 4 : 3
+	var w = 4 if front else 3
 	var h = 10
 
 	# Perna (calça)
@@ -316,7 +315,7 @@ static func _draw_arm_with_tool(img: Image, x: int, y: int, skin_color: Color, s
 	_draw_arm(img, x, y, skin_color, Color(0.6, 0.4, 0.2), swing, front, facing_right)
 
 	# Ferramenta
-	var tool_x = x + int(swing * 0.5) + (facing_right ? 5 : -5)
+	var tool_x = x + int(swing * 0.5) + (5 if facing_right else -5)
 	var tool_y = y + 10 + int(sin(progress * PI) * 3)
 	draw_rect(img, tool_x, tool_y, 3, 10, Color(0.5, 0.5, 0.5))
 
@@ -337,7 +336,7 @@ static func _draw_head(img: Image, x: int, y: int, skin_color: Color, hair_color
 	elif facing_down:
 		eye_y = y - 1
 
-	var eye_x = x + (facing_right ? 2 : -2)
+	var eye_x = x + (2 if facing_right else -2)
 	if not facing_right and not facing_left:
 		eye_x = x
 
@@ -420,13 +419,13 @@ static func _draw_grass_tile(variant: int) -> Image:
 static func _draw_dirt_tile(variant: int, wet: bool) -> Image:
 	var img = create_base_image(TILE_SIZE, TILE_SIZE)
 	var rng = RandomNumberGenerator.new()
-	rng.seed = variant * 54321 + (wet ? 10000 : 0)
+	rng.seed = variant * 54321 + (10000 if wet else 0)
 
-	var colors = wet ? [
+	var colors = [
 		Color(0.3, 0.2, 0.15),
 		Color(0.35, 0.25, 0.18),
 		Color(0.4, 0.3, 0.2)
-	] : [
+	] if wet else [
 		Color(0.5, 0.35, 0.25),
 		Color(0.55, 0.4, 0.3),
 		Color(0.6, 0.45, 0.35)
@@ -835,7 +834,7 @@ static func _draw_animal_frame(type: String, direction: String, state: String, f
 	var facing_right = direction == "right"
 	var facing_left = direction == "left"
 
-	var walk_offset = state == "walk" ? sin(frame * PI * 2.0 / frame_count) * 2.0 : 0
+	var walk_offset = sin(frame * PI * 2.0 / frame_count) * 2.0 if state == "walk" else 0
 
 	if type == "chicken" or type == "duck":
 		_draw_bird(img, cx, cy, main_color, accent_color, state, walk_offset, facing_right)
@@ -858,20 +857,20 @@ static func _draw_bird(img: Image, cx: int, cy: int, main: Color, accent: Color,
 	draw_rect(img, cx - body_w/2, cy - body_h/2, body_w, body_h, main)
 
 	# Cabeça
-	var head_x = cx + (right ? 10 : -10) + int(walk * 0.5)
+	var head_x = cx + (10 if right else -10) + int(walk * 0.5)
 	var head_y = cy - 10
 	draw_rect(img, head_x - 5, head_y - 5, 10, 10, main)
 
 	# Bico
-	var beak_x = head_x + (right ? 5 : -5)
+	var beak_x = head_x + (5 if right else -5)
 	draw_rect(img, beak_x, head_y, 4, 3, Color(1.0, 0.6, 0.2))
 
 	# Olho
-	draw_pixel(img, head_x + (right ? 2 : -2), head_y - 1, Color(0.1, 0.1, 0.1))
+	draw_pixel(img, head_x + (2 if right else -2), head_y - 1, Color(0.1, 0.1, 0.1))
 
 	# Asa
-	var wing_y = cy + (state == "eat" ? -2 : 0)
-	draw_rect(img, cx + (right ? -6 : 2), wing_y, 8, 4, main.lightened(0.1))
+	var wing_y = cy + (-2 if state == "eat" else 0)
+	draw_rect(img, cx + (-6 if right else 2), wing_y, 8, 4, main.lightened(0.1))
 
 	# Perna(s)
 	if state == "walk":
@@ -891,7 +890,7 @@ static func _draw_quadruped(img: Image, cx: int, cy: int, main: Color, accent: C
 	draw_rect(img, cx - 14, cy - 8, 28, 16, main)
 
 	# Cabeça
-	var head_x = cx + (right ? 18 : -18)
+	var head_x = cx + (18 if right else -18)
 	var head_y = cy - 6
 	draw_rect(img, head_x - 8, head_y - 6, 16, 12, main)
 
@@ -1014,7 +1013,8 @@ static func save_sprites_as_tres(sprites: Dictionary, path: String) -> void:
 	for anim_name in sprites:
 		var frames = sprites[anim_name]
 		sprite_frames.add_animation(anim_name)
-		for i, frame_img in enumerate(frames):
+		for i in range(frames.size()):
+			var frame_img = frames[i]
 			var texture = ImageTexture.create_from_image(frame_img)
 			sprite_frames.set_frame_texture(anim_name, i, texture)
 			sprite_frames.set_frame_duration(anim_name, i, 0.15)

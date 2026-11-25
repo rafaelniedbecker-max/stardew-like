@@ -1,4 +1,3 @@
-class_name Greenhouse
 extends Node
 
 ## Estufa - cultivo o ano todo, 10x12 tiles
@@ -20,7 +19,7 @@ signal crop_harvested(position: Vector2i, item_id: String, amount: int, quality:
 
 ## ==================== INICIALIZAÇÃO ====================
 func _ready() -> void:
-	unlocked = GameManager.get("cc_greenhouse_unlocked", false) or GameManager.get("greenhouse_unlocked", false)
+	unlocked = GameManager.get_data("cc_greenhouse_unlocked", false) or GameManager.get_data("greenhouse_unlocked", false)
 	if unlocked:
 		_initialize_plots()
 		_load_crops()
@@ -45,8 +44,8 @@ func unlock() -> void:
 		return
 
 	unlocked = true
-	GameManager.set("greenhouse_unlocked", true)
-	GameManager.set("cc_greenhouse_unlocked", true)
+	GameManager.set_data("greenhouse_unlocked", true)
+	GameManager.set_data("cc_greenhouse_unlocked", true)
 
 	_initialize_plots()
 	emit_signal("greenhouse_unlocked")
@@ -81,7 +80,7 @@ func _load_crops() -> void:
 	if not GameManager:
 		return
 
-	var saved = GameManager.get("greenhouse_crops", {})
+	var saved = GameManager.get_data("greenhouse_crops", {})
 	for key in saved:
 		if crop_plots.has(key):
 			crop_plots[key] = saved[key]
@@ -374,7 +373,7 @@ func _show_regrow_effect(position: Vector2i) -> void:
 
 func _save_crops() -> void:
 	if GameManager:
-		GameManager.set("greenhouse_crops", crop_plots)
+		GameManager.set_data("greenhouse_crops", crop_plots)
 
 ## ==================== SPRINKLERS ====================
 var sprinklers: Dictionary = {}  # key -> {type, range, pattern}

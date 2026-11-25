@@ -44,12 +44,12 @@ func _ready() -> void:
 		GameManager.day_changed.connect(_check_boat_repair)
 
 func _check_boat_repair() -> void:
-	if not island_unlocked and GameManager.get("boat_repaired", false):
+	if not island_unlocked and GameManager.get_data("boat_repaired", false):
 		_unlock_island()
 
 func _unlock_island() -> void:
 	island_unlocked = true
-	GameManager.set("island_unlocked", true)
+	GameManager.set_data("island_unlocked", true)
 	emit_signal("island_unlocked")
 
 	HUD.show_notification("🏝️ Ilha Ginger!", "O barco foi reparado! Você pode visitar a Ilha Ginger!", Color(0.3, 0.8, 0.5))
@@ -84,15 +84,15 @@ func collect_walnut(location: String, amount: int = 1) -> void:
 
 	# Verifica se já coletou todas deste local
 	var collected_key = "walnut_%s" % location
-	var already = GameManager.get(collected_key, 0)
+	var already = GameManager.get_data(collected_key, 0)
 	if already >= max_walnuts:
 		return
 
 	var to_collect = min(amount, max_walnuts - already)
 	walnuts_collected += to_collect
-	GameManager.set(collected_key, already + to_collect)
+	GameManager.set_data(collected_key, already + to_collect)
 
-	GameManager.set("walnuts_collected", walnuts_collected)
+	GameManager.set_data("walnuts_collected", walnuts_collected)
 
 	emit_signal("walnut_collected", location, to_collect)
 
@@ -109,7 +109,7 @@ func collect_walnut(location: String, amount: int = 1) -> void:
 
 func _unlock_walnut_room() -> void:
 	walnut_room_unlocked = true
-	GameManager.set("walnut_room_unlocked", true)
+	GameManager.set_data("walnut_room_unlocked", true)
 	emit_signal("walnut_room_unlocked")
 
 	HUD.show_notification("🥜 Sala das Nozes do Qi!", "Você coletou 100 nozes! A sala secreta está aberta!", Color(1.0, 0.8, 0.2))
@@ -182,7 +182,7 @@ func unlock_island_farm() -> void:
 	# Requer: 10 nozes + completar quest do papagaio
 	if walnuts_collected >= 10:
 		farm_unlocked = true
-		GameManager.set("island_farm_unlocked", true)
+		GameManager.set_data("island_farm_unlocked", true)
 		HUD.show_notification("🏝️ Fazenda da Ilha!", "A fazenda da ilha está disponível!", Color(0.5, 1.0, 0.5))
 	else:
 		HUD.show_message("Precisa de 10 Nozes Douradas para desbloquear a fazenda!")
@@ -203,16 +203,16 @@ func add_farm_obelisk(obelisk_type: String) -> void:
 		HUD.show_message("Nozes Douradas insuficientes! Precisa de %d" % cost.walnuts)
 		return
 
-	if GameManager.get("cinder_shards", 0) < cost.cinder_shards:
+	if GameManager.get_data("cinder_shards", 0) < cost.cinder_shards:
 		HUD.show_message("Cinder Shards insuficientes! Precisa de %d" % cost.cinder_shards)
 		return
 
 	walnuts_collected -= cost.walnuts
-	GameManager.set("cinder_shards", GameManager.get("cinder_shards", 0) - cost.cinder_shards)
-	GameManager.set("walnuts_collected", walnuts_collected)
+	GameManager.set_data("cinder_shards", GameManager.get_data("cinder_shards", 0) - cost.cinder_shards)
+	GameManager.set_data("walnuts_collected", walnuts_collected)
 
 	farm_obelisks[obelisk_type] = true
-	GameManager.set("farm_obelisks", farm_obelisks)
+	GameManager.set_data("farm_obelisks", farm_obelisks)
 
 	HUD.show_notification("🗿 Obelisco Construído!", "Obelisco %s construído na fazenda da ilha!" % obelisk_type, Color(0.5, 1.0, 0.8))
 

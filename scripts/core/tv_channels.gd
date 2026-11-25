@@ -1,4 +1,3 @@
-class_name TVChannels
 extends Node
 
 ## Sistema de Canais de TV: Adivinha, Tempo, Queen of Sauce, Vivendo da Terra
@@ -31,8 +30,8 @@ func _load_tv_data() -> void:
 	if not GameManager:
 		return
 
-	last_watched_day = GameManager.get("tv_last_watched_day", -1)
-	watched_shows = GameManager.get("tv_watched_shows", {})
+	last_watched_day = GameManager.get_data("tv_last_watched_day", -1)
+	watched_shows = GameManager.get_data("tv_watched_shows", {})
 
 	# Garante arrays para cada canal
 	for ch in CHANNELS:
@@ -221,7 +220,7 @@ func learn_recipe_from_tv(recipe_name: String) -> bool:
 		return false
 
 	InventoryManager.known_recipes.append(recipe_name)
-	GameManager.set("known_recipes", InventoryManager.known_recipes)
+	GameManager.set_data("known_recipes", InventoryManager.known_recipes)
 
 	CollectionsMenu.register_recipe_learned(recipe_name)
 	emit_signal("recipe_learned", recipe_name)
@@ -240,7 +239,7 @@ func watch_queen_of_sauce() -> void:
 	if not watched_shows.has("2"):
 		watched_shows["2"] = []
 	watched_shows["2"].append(str(ep_num))
-	GameManager.set("tv_watched_shows", watched_shows)
+	GameManager.set_data("tv_watched_shows", watched_shows)
 
 # ===== CANAL 3: VIVENDO DA TERRA =====
 const LIVIN_OFF_THE_LAND_TIPS = {
@@ -311,7 +310,7 @@ func learn_tip(tip_text: String) -> void:
 		watched_shows["3"] = []
 	if tip_id not in watched_shows["3"]:
 		watched_shows["3"].append(tip_id)
-		GameManager.set("tv_watched_shows", watched_shows)
+		GameManager.set_data("tv_watched_shows", watched_shows)
 		emit_signal("tip_learned", tip_text)
 
 ## ==================== UI ====================
@@ -404,8 +403,13 @@ func _show_channel_content(content: VBoxContainer, channel: int) -> void:
 			var data = get_queen_of_sauce_today()
 			var lbl = Label.new()
 			if data.airing:
+				var ingredient_names = []
+				for i in data.ingredients:
+					var item_data = DataLoader.get_item(i)
+					var item_name = item_data.display_name if item_data != null else i
+					ingredient_names.append("  • %s" % item_name)
 				lbl.text = "🍳 QUEEN OF SAUCE - Episódio %d\n\nReceita de hoje: %s\n\nIngredientes:\n%s" % [
-					data.episode, data.recipe, "\n".join(["  • %s" % DataLoader.get_item(i)?.display_name ?? i for i in data.ingredients])
+					data.episode, data.recipe, "\n".join(ingredient_names)
 				]
 				if not data.watched:
 					var btn = Button.new()

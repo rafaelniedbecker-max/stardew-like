@@ -133,7 +133,8 @@ func _open_ui() -> void:
 	if is_processing:
 		# Mostra progresso
 		var status = Label.new()
-		status.text = "Processando: %s (%.0f%%)" % [DataLoader.get_item(processing_item)?.display_name ?? processing_item, progress * 100]
+		var processing_data = DataLoader.get_item(processing_item)
+		status.text = "Processando: %s (%.0f%%)" % [processing_data.display_name if processing_data != null else processing_item, progress * 100]
 		status.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		status.theme_override_font_size = 16
 		vbox.add_child(status)
@@ -166,7 +167,7 @@ func _open_ui() -> void:
 
 		var slot_hbox = HBoxContainer.new()
 		slot_hbox.alignment = HORIZONTAL_ALIGNMENT_CENTER
-		slot_hbox.theme_override_constants/separation = 20
+		slot_hbox.add_theme_constant_override("separation", 20)
 
 		# Input slot
 		var input_btn = Button.new()
@@ -197,7 +198,7 @@ func _open_ui() -> void:
 			var out_item = DataLoader.get_item(recipe.output)
 			if out_item and out_item.texture_path != "":
 				output_btn.icon = load(out_item.texture_path)
-			output_btn.tooltip_text = "%s (%d-%d)" % [out_item?.display_name ?? recipe.output, recipe.min, recipe.max]
+			output_btn.tooltip_text = "%s (%d-%d)" % [out_item.display_name if out_item != null else recipe.output, recipe.min, recipe.max]
 			if recipe.rare_chance > 0:
 				output_btn.tooltip_text += "\nChance rara: %.1f%%" % (recipe.rare_chance * 100)
 		slot_hbox.add_child(output_btn)
@@ -266,7 +267,8 @@ func _collect_output(panel: Panel) -> void:
 		if recipe.rare != "":
 			output_item = recipe.rare
 			emit_signal("rare_seed_obtained", output_item)
-			HUD.show_notification("✨ Semente Rara!", "Você obteve %s!" % DataLoader.get_item(output_item)?.display_name, Color(1.0, 0.5, 1.0))
+			var rare_data = DataLoader.get_item(output_item)
+			HUD.show_notification("✨ Semente Rara!", "Você obteve %s!" % (rare_data.display_name if rare_data != null else output_item), Color(1.0, 0.5, 1.0))
 
 	output_amount = amount
 
@@ -287,7 +289,8 @@ func _collect_output(panel: Panel) -> void:
 		if AudioManager:
 			AudioManager.play_sfx_at_position("res://assets/sfx/seed_maker.ogg", global_position)
 
-		HUD.show_notification("🌱 Sementes Prontas!", "%s x%d" % [DataLoader.get_item(output_item)?.display_name ?? output_item, amount], Color(0.5, 1.0, 0.5))
+		var output_data = DataLoader.get_item(output_item)
+		HUD.show_notification("🌱 Sementes Prontas!", "%s x%d" % [output_data.display_name if output_data != null else output_item, amount], Color(0.5, 1.0, 0.5))
 
 	panel.queue_free()
 	_open_ui()
@@ -312,7 +315,7 @@ func _process(delta: float) -> void:
 
 func _save_state() -> void:
 	if GameManager:
-		GameManager.set("seed_maker_%s" % [name], {
+		GameManager.set_data("seed_maker_%s" % [name], {
 			"processing_item": processing_item,
 			"processing_amount": processing_amount,
 			"progress": progress,
@@ -323,7 +326,7 @@ func _save_state() -> void:
 
 func _load_state() -> void:
 	if GameManager:
-		var data = GameManager.get("seed_maker_%s" % [name], {})
+		var data = GameManager.get_data("seed_maker_%s" % [name], {})
 		if data:
 			processing_item = data.get("processing_item", "")
 			processing_amount = data.get("processing_amount", 0)

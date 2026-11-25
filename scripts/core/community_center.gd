@@ -1,4 +1,3 @@
-class_name CommunityCenter
 extends Node
 
 ## Centro Comunitário: Bundles, Junimos, recompensas
@@ -160,10 +159,10 @@ const ROOM_REWARDS = {
 signal bundle_completed(room: String, bundle: String)
 signal room_completed(room: String, reward: Dictionary)
 signal community_center_completed()
-signal junimos_unlocked()
-signal greenhouse_unlocked()
-signal minecart_unlocked(location: String)
-signal bus_unlocked()
+signal junimos_unlocked_signal()
+signal greenhouse_unlocked_signal()
+signal minecart_unlocked_signal(location: String)
+signal bus_unlocked_signal()
 
 ## ==================== INICIALIZAÇÃO ====================
 func _ready() -> void:
@@ -172,7 +171,8 @@ func _ready() -> void:
 
 func _initialize_bundles() -> void:
 	for room_name in BUNDLE_DATA:
-		for bundle_name, data in BUNDLE_DATA[room_name]:
+		for bundle_name in BUNDLE_DATA[room_name]:
+			var data = BUNDLE_DATA[room_name][bundle_name]
 			var key = "%s::%s" % [room_name, bundle_name]
 			var instance = BundleInstance.new()
 			instance.initialize(bundle_name, data)
@@ -191,26 +191,29 @@ func _load_progress() -> void:
 		return
 
 	# Carrega bundles completados
-	var completed = GameManager.get("cc_bundles_completed", {})
-	for key, done in completed:
+	var completed = GameManager.get_data("cc_bundles_completed", {})
+	for key in completed:
+		var done = completed[key]
 		if done and bundles.has(key):
 			bundles[key].complete()
 
 	# Carrega status das salas
-	var saved_rooms = GameManager.get("cc_room_status", {})
-	for room, status in saved_rooms:
+	var saved_rooms = GameManager.get_data("cc_room_status", {})
+	for room in saved_rooms:
+		var status = saved_rooms[room]
 		room_status[room] = status
 
 	# Flags globais
-	junimos_unlocked = GameManager.get("cc_junimos_unlocked", false)
-	greenhouse_unlocked = GameManager.get("cc_greenhouse_unlocked", false)
-	minecarts_unlocked = GameManager.get("cc_minecarts_unlocked", false)
-	bus_unlocked = GameManager.get("cc_bus_unlocked", false)
+	junimos_unlocked = GameManager.get_data("cc_junimos_unlocked", false)
+	greenhouse_unlocked = GameManager.get_data("cc_greenhouse_unlocked", false)
+	minecarts_unlocked = GameManager.get_data("cc_minecarts_unlocked", false)
+	bus_unlocked = GameManager.get_data("cc_bus_unlocked", false)
 
 ## ==================== VERIFICAÇÃO DE ITENS ====================
 func check_item_submission(item_id: String, quality: int = 0) -> void:
 	# Verifica todos bundles não completados
-	for key, instance in bundles:
+	for key in bundles:
+		var instance = bundles[key]
 		if not instance.is_completed:
 			instance.try_submit_item(item_id, quality)
 
@@ -228,7 +231,8 @@ func _on_bundle_completed(key: String) -> void:
 
 func _check_room_completion(room: String) -> void:
 	var all_done = true
-	for key, instance in bundles:
+	for key in bundles:
+		var instance = bundles[key]
 		if key.begins_with(room + "::") and not instance.is_completed:
 			all_done = false
 			break
@@ -245,16 +249,16 @@ func _complete_room(room: String) -> void:
 	match reward.type:
 		"greenhouse":
 			greenhouse_unlocked = true
-			GameManager.set("cc_greenhouse_unlocked", true)
-			emit_signal("greenhouse_unlocked")
+			GameManager.set_data("cc_greenhouse_unlocked", true)
+			emit_signal("greenhouse_unlocked_signal")
 		"minecart":
 			minecarts_unlocked = true
-			GameManager.set("cc_minecarts_unlocked", true)
+			GameManager.set_data("cc_minecarts_unlocked", true)
 			emit_signal("minecart_unlocked", reward.desc)
 		"bus":
 			bus_unlocked = true
-			GameManager.set("cc_bus_unlocked", true)
-			emit_signal("bus_unlocked")
+			GameManager.set_data("cc_bus_unlocked", true)
+			emit_signal("bus_unlocked_signal")
 		"friendship":
 			# +2 corações com todos NPCs
 			for npc in DataLoader.get_all_npcs():
@@ -274,9 +278,9 @@ func _check_full_completion() -> void:
 
 	# Centro Comunitário completo!
 	junimos_unlocked = true
-	GameManager.set("cc_junimos_unlocked", true)
+	GameManager.set_data("cc_junimos_unlocked", true)
 	emit_signal("community_center_completed")
-	emit_signal("junimos_unlocked")
+	emit_signal("junimos_unlocked_signal")
 
 	# Spawna Junimo Hut na fazenda
 	_spawn_junimo_hut()
@@ -292,14 +296,16 @@ func _save_progress() -> void:
 		return
 
 	var completed = {}
-	for key, instance in bundles:
+	for key in bundles:
+		var instance = bundles[key]
 		completed[key] = instance.is_completed
-	GameManager.set("cc_bundles_completed", completed)
+	GameManager.set_data("cc_bundles_completed", completed)
 
 	var rooms = {}
-	for room, status in room_status:
+	for room in room_status:
+		var status = room_status[room]
 		rooms[room] = status
-	GameManager.set("cc_room_status", rooms)
+	GameManager.set_data("cc_room_status", rooms)
 
 ## ==================== UI ====================
 func open_community_center() -> void:
@@ -349,7 +355,8 @@ func _show_generic_cc_ui() -> void:
 			continue
 
 		# Bundles da sala
-		for key, instance in bundles:
+		for key in bundles:
+			var instance = bundles[key]
 			if key.begins_with(room + "::"):
 				var bundle_box = _create_bundle_ui(instance)
 				room_box.add_child(bundle_box)
@@ -363,8 +370,9 @@ func _show_generic_cc_ui() -> void:
 
 func _create_bundle_ui(instance: BundleInstance) -> Control:
 	var panel = Panel.new()
-	panel.theme_override_constants/stylebox = StyleBoxFlat.new()
-	(panel.theme_override_constants/stylebox as StyleBoxFlat).bg_color = Color(0.15, 0.15, 0.2) if instance.is_completed else Color(0.1, 0.1, 0.15)
+	panel.add_theme_constant_override("stylebox", StyleBoxFlat.new())
+	var style = panel.get_theme_stylebox("stylebox") as StyleBoxFlat
+	style.bg_color = Color(0.15, 0.15, 0.2) if instance.is_completed else Color(0.1, 0.1, 0.15)
 
 	var vbox = VBoxContainer.new()
 	panel.add_child(vbox)
@@ -373,26 +381,26 @@ func _create_bundle_ui(instance: BundleInstance) -> Control:
 	vbox.add_child(hbox)
 
 	var name = Label.new()
-	name.text = "%s %s" % [instance.is_completed ? "✅" : "📦", instance.bundle_name]
+	name.text = "%s %s" % ["✅" if instance.is_completed else "📦", instance.bundle_name]
 	name.theme_override_font_size = 18
 	hbox.add_child(name)
 
 	# Itens necessários
 	for item_req in instance.requirements:
 		var item_data = DataLoader.get_item(item_req.item_id)
-		var item_name = item_data?.display_name ?? item_req.item_id
-		var quality_text = item_req.quality > 0 ? " (Qualidade %d)" % [item_req.quality + 1] : ""
+		var item_name = item_data.display_name if item_data != null else item_req.item_id
+		var quality_text = " (Qualidade %d)" % [item_req.quality + 1] if item_req.quality > 0 else ""
 		var progress_text = "%s: %d/%d%s" % [item_name, item_req.submitted, item_req.count, quality_text]
 
 		var item_label = Label.new()
 		item_label.text = progress_text
-		item_label.add_theme_color_override("font_color", item_req.submitted >= item_req.count ? Color(0, 1, 0) : Color(1, 1, 1))
+		item_label.add_theme_color_override("font_color", Color(0, 1, 0) if item_req.submitted >= item_req.count else Color(1, 1, 1))
 		vbox.add_child(item_label)
 
 	# Recompensa
 	if instance.reward:
 		var reward_data = DataLoader.get_item(instance.reward.item_id)
-		var reward_name = reward_data?.display_name ?? instance.reward.item_id
+		var reward_name = reward_data.display_name if reward_data != null else instance.reward.item_id
 		var reward_label = Label.new()
 		reward_label.text = "Recompensa: %s x%d" % [reward_name, instance.reward.count]
 		reward_label.add_theme_color_override("font_color", Color(1, 0.8, 0))

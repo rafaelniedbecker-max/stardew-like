@@ -240,3 +240,19 @@ static func get_adjacent_tiles(center: Vector2i, radius: int = 1) -> Array[Vecto
 				continue
 			tiles.append(Vector2i(center.x + x, center.y + y))
 	return tiles
+
+static func get_farm_plots() -> Node:
+	var tree := Engine.get_main_loop() as SceneTree
+	return tree.get_first_node_in_group("farm_plots") if tree != null else null
+
+static func repair_random_fences(max_count: int = 1) -> void:
+	var tree := Engine.get_main_loop() as SceneTree
+	if tree == null:
+		return
+	var repaired: int = 0
+	for fence in tree.get_nodes_in_group("fences"):
+		if repaired >= max_count:
+			break
+		if fence.has_method("repair"):
+			fence.repair()
+			repaired += 1

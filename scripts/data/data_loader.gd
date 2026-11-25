@@ -1,5 +1,4 @@
 @tool
-class_name DataLoader
 extends Node
 
 ## Caminho base para arquivos JSON
@@ -164,7 +163,7 @@ func load_crops() -> void:
 
 	print("DataLoader: %d cultivos carregados" % _crop_cache.size())
 
-func get_crop(crop_id: String | int) -> CropData:
+func get_crop(crop_id) -> CropData:
 	return _crop_cache.get(str(crop_id))
 
 func get_all_crops() -> Array[CropData]:
@@ -206,8 +205,12 @@ func load_items() -> void:
 
 	print("DataLoader: %d itens carregados" % _item_cache.size())
 
-func get_item(item_id: String | int) -> ItemData:
-	return _item_cache.get(str(item_id))
+func get_item(item_id) -> ItemData:
+	var key: String = str(item_id)
+	var item: ItemData = _item_cache.get(key)
+	if item == null and key.begins_with("(O)"):
+		item = _item_cache.get(key.substr(3))
+	return item
 
 func get_all_items() -> Array[ItemData]:
 	var result = []
@@ -691,7 +694,6 @@ func get_all_pets() -> Array[Dictionary]:
 	return result
 
 func load_pants() -> void: pass
-func load_pants() -> void: pass
 func load_shirts() -> void: pass
 func load_wild_trees() -> void: pass
 func load_garbage_cans() -> void: pass
@@ -785,7 +787,7 @@ func _parse_colors(arr: Array) -> Array[Color]:
 		if c is String:
 			var html = c.strip_edges()
 			if html.begins_with("#"):
-				result.append(Color.from_string(html))
+				result.append(Color.from_string(html, Color.WHITE))
 			else:
 				result.append(Color.WHITE)
 		elif c is Dictionary:
@@ -795,9 +797,8 @@ func _parse_colors(arr: Array) -> Array[Color]:
 ## ==================== UTILITY ====================
 func save_as_resources() -> void:
 	"""Salva todos os caches como arquivos .tres para uso no Editor"""
-	var dir = DirAccess.open(data_path.replace("res://", ""))
-	if not dir:
-		dir = DirAccess.create(data_path.replace("res://", ""))
+	var absolute_path = ProjectSettings.globalize_path(data_path)
+	DirAccess.make_dir_recursive_absolute(absolute_path)
 
 	# Salva crops
 	for crop in _crop_cache.values():

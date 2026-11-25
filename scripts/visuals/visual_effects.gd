@@ -1,4 +1,3 @@
-class_name VisualEffects
 extends Node
 
 ## Sistema de Efeitos Visuais: Shaders, Partículas, Iluminação, Pós-processamento
@@ -912,7 +911,7 @@ class UIEffects:
 		panel.add_theme_stylebox_override("panel", UIEffects._create_toast_stylebox(colors.get(type, Color.WHITE)))
 
 		var vbox = VBoxContainer.new()
-		vbox.theme_override_constants/separation = 5
+		vbox.add_theme_constant_override("separation", 5)
 		panel.add_child(vbox)
 
 		var icon_label = Label.new()
@@ -1014,7 +1013,7 @@ class UIEffects:
 		vbox.offset_top = 20
 		vbox.offset_right = -20
 		vbox.offset_bottom = -20
-		vbox.theme_override_constants/separation = 10
+		vbox.add_theme_constant_override("separation", 10)
 		panel.add_child(vbox)
 
 		var icon_label = Label.new()

@@ -113,7 +113,7 @@ func _open_ui() -> void:
 	panel.add_child(vbox)
 
 	var title = Label.new()
-	title.text = "🦀 Crab Pot (%s)" % (water_type == "freshwater" ? "Água Doce" : "Água Salgada")
+	title.text = "🦀 Crab Pot (%s)" % ("Água Doce" if water_type == "freshwater" else "Água Salgada")
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	title.theme_override_font_size = 24
 	vbox.add_child(title)
@@ -146,7 +146,7 @@ func _open_ui() -> void:
 
 		var info_hbox = HBoxContainer.new()
 		info_hbox.alignment = HORIZONTAL_ALIGNMENT_CENTER
-		info_hbox.theme_override_constants/separation = 20
+		info_hbox.add_theme_constant_override("separation", 20)
 
 		var bait_info = Label.new()
 		bait_info.text = "Isca: %s (%s)" % [bait_name, ["Normal", "Prata", "Ouro", "Irídio"][bait_quality]]
@@ -154,7 +154,7 @@ func _open_ui() -> void:
 		info_hbox.add_child(bait_info)
 
 		var water_info = Label.new()
-		water_info.text = "Tipo: %s" % (water_type == "freshwater" ? "🌊 Doce" : "🌊 Salgada")
+		water_info.text = "Tipo: %s" % ("🌊 Doce" if water_type == "freshwater" else "🌊 Salgada")
 		water_info.theme_override_font_size = 16
 		info_hbox.add_child(water_info)
 
@@ -181,7 +181,7 @@ func _open_ui() -> void:
 		elif output_ready:
 			var item = DataLoader.get_item(output_item)
 			var collect_btn = Button.new()
-			collect_btn.text = "Coletar: %s (%s)" % [item?.display_name ?? output_item, ["Normal", "Prata", "Ouro", "Irídio"][output_quality]]
+			collect_btn.text = "Coletar: %s (%s)" % [item.display_name if item != null else output_item, ["Normal", "Prata", "Ouro", "Irídio"][output_quality]]
 			collect_btn.custom_minimum_size = Vector2(250, 50)
 			collect_btn.theme_override_font_size = 16
 			collect_btn.add_theme_color_override("font_color", Color(0.5, 1.0, 0.5))
@@ -287,7 +287,7 @@ func _collect_output(panel: Panel) -> void:
 
 		var item = DataLoader.get_item(output_item)
 		var q_names = ["Normal", "Prata", "Ouro", "Irídio"]
-		HUD.show_notification("🦀 Captura!", "%s (%s)" % [item?.display_name ?? output_item, q_names[output_quality]], Color(0.5, 1.0, 0.5))
+		HUD.show_notification("🦀 Captura!", "%s (%s)" % [item.display_name if item != null else output_item, q_names[output_quality]], Color(0.5, 1.0, 0.5))
 
 		emit_signal("catch_ready", output_item, output_quality)
 
@@ -316,7 +316,7 @@ func _finish_processing() -> void:
 	progress = 1.0
 
 	# Determina captura baseada no tipo de água
-	var catch_table = water_type == "freshwater" ? FRESHWATER_CATCH : SALTWATER_CATCH
+	var catch_table = FRESHWATER_CATCH if water_type == "freshwater" else SALTWATER_CATCH
 	var bait_data = BAIT_TYPES.get(bait_type, {})
 	var quality_boost = bait_data.get("quality_boost", 0.0)
 
@@ -408,7 +408,7 @@ func _on_day_changed(day: int, season: int, year: int) -> void:
 ## ==================== PERSISTÊNCIA ====================
 func _save_state() -> void:
 	if GameManager:
-		GameManager.set("crab_pot_%s" % [name], {
+		GameManager.set_data("crab_pot_%s" % [name], {
 			"bait_type": bait_type,
 			"bait_quality": bait_quality,
 			"has_bait": has_bait,
@@ -422,7 +422,7 @@ func _save_state() -> void:
 
 func _load_state() -> void:
 	if GameManager:
-		var data = GameManager.get("crab_pot_%s" % [name], {})
+		var data = GameManager.get_data("crab_pot_%s" % [name], {})
 		if data:
 			bait_type = data.get("bait_type", "")
 			bait_quality = data.get("bait_quality", 0)

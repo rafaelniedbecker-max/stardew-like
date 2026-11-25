@@ -1,4 +1,3 @@
-class_name TravelingCart
 extends Node
 
 ## Carrinho Viajante - aparece Sexta e Domingo na Cindersap Forest
@@ -150,7 +149,8 @@ func _fill_cart_visual() -> void:
 	for child in slots_container.get_children():
 		child.queue_free()
 
-	for i, stock in enumerate(current_stock):
+	for i in range(current_stock.size()):
+		var stock = current_stock[i]
 		if i >= slots_container.get_child_count():
 			break
 
@@ -174,7 +174,7 @@ func _create_stock_slot(stock: Dictionary) -> Control:
 	vbox.add_child(icon)
 
 	var name = Label.new()
-	name.text = item?.display_name ?? stock.item_id
+	name.text = item.display_name if item != null else stock.item_id
 	name.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	name.theme_override_font_size = 11
 	name.autowrap_mode = 1
@@ -218,7 +218,8 @@ func _buy_item(stock: Dictionary, btn: Button) -> void:
 		if AudioManager:
 			AudioManager.play_sfx("res://assets/sfx/buy.ogg")
 
-		HUD.show_message("Comprado: %s por %dg" % [DataLoader.get_item(stock.item_id)?.display_name ?? stock.item_id, stock.price])
+		var item_data = DataLoader.get_item(stock.item_id)
+		HUD.show_message("Comprado: %s por %dg" % [item_data.display_name if item_data != null else stock.item_id, stock.price])
 
 		# Atualiza visual
 		var qty_label = btn.get_node_or_null("VBoxContainer/Label[1]")

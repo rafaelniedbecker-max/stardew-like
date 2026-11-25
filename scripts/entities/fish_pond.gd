@@ -95,7 +95,8 @@ func _on_player_exited(area: Area2D) -> void:
 
 func _on_output_entered(area: Area2D) -> void:
 	if area.is_in_group("player") and output_ready:
-		HUD.show_interaction_prompt("E: Coletar %s" % DataLoader.get_item(output_item)?.display_name, output_bin.global_position + Vector2(0, -30))
+		var output_data = DataLoader.get_item(output_item)
+		HUD.show_interaction_prompt("E: Coletar %s" % (output_data.display_name if output_data != null else output_item), output_bin.global_position + Vector2(0, -30))
 
 func interact() -> void:
 	_open_ui()
@@ -147,7 +148,7 @@ func _open_ui() -> void:
 		# Info do peixe
 		var info_hbox = HBoxContainer.new()
 		info_hbox.alignment = HORIZONTAL_ALIGNMENT_CENTER
-		info_hbox.theme_override_constants/separation = 20
+		info_hbox.add_theme_constant_override("separation", 20)
 
 		var fish_info = Label.new()
 		fish_info.text = "%s: %d/%d" % [config.get("name", "Peixe"), fish_count, max_fish]
@@ -172,8 +173,8 @@ func _open_ui() -> void:
 		var scroll = ScrollContainer.new()
 		var grid = GridContainer.new()
 		grid.columns = 5
-		grid.theme_override_constants/h_separation = 10
-		grid.theme_override_constants/v_separation = 10
+		grid.add_theme_constant_override("h_separation", 10)
+		grid.add_theme_constant_override("v_separation", 10)
 		scroll.add_child(grid)
 		scroll.custom_minimum_size = Vector2(0, 150)
 		vbox.add_child(scroll)
@@ -185,7 +186,7 @@ func _open_ui() -> void:
 		# Produção
 		var produce_box = HBoxContainer.new()
 		produce_box.alignment = HORIZONTAL_ALIGNMENT_CENTER
-		produce_box.theme_override_constants/separation = 20
+		produce_box.add_theme_constant_override("separation", 20)
 
 		var produce_title = Label.new()
 		produce_title.text = "🥚 Produção:"
@@ -195,7 +196,7 @@ func _open_ui() -> void:
 		if output_ready:
 			var item = DataLoader.get_item(output_item)
 			var collect_btn = Button.new()
-			collect_btn.text = "Coletar: %s (%s)" % [item?.display_name ?? output_item, ["Normal", "Prata", "Ouro", "Irídio"][output_quality]]
+			collect_btn.text = "Coletar: %s (%s)" % [item.display_name if item != null else output_item, ["Normal", "Prata", "Ouro", "Irídio"][output_quality]]
 			collect_btn.custom_minimum_size = Vector2(250, 50)
 			collect_btn.theme_override_font_size = 16
 			collect_btn.add_theme_color_override("font_color", Color(0.5, 1.0, 0.5))
@@ -214,7 +215,8 @@ func _open_ui() -> void:
 		# Quest
 		if has_quest:
 			var quest = Label.new()
-			quest.text = "📋 Missão: Traga %d %s" % [quest_target, DataLoader.get_item(quest_type)?.display_name ?? quest_type]
+			var quest_data = DataLoader.get_item(quest_type)
+			quest.text = "📋 Missão: Traga %d %s" % [quest_target, quest_data.display_name if quest_data != null else quest_type]
 			quest.theme_override_font_size = 14
 			quest.add_theme_color_override("font_color", Color(1.0, 0.8, 0.3))
 			quest.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -382,7 +384,7 @@ func _collect_output(panel: Panel) -> void:
 
 		var item = DataLoader.get_item(output_item)
 		var q_names = ["Normal", "Prata", "Ouro", "Irídio"]
-		HUD.show_notification("🐟 Coletado!", "%s (%s)" % [item?.display_name ?? output_item, q_names[output_quality]], Color(0.5, 1.0, 0.5))
+		HUD.show_notification("🐟 Coletado!", "%s (%s)" % [item.display_name if item != null else output_item, q_names[output_quality]], Color(0.5, 1.0, 0.5))
 
 		panel.queue_free()
 		_open_ui()
@@ -441,7 +443,8 @@ func _produce_item() -> void:
 	if ParticleManager:
 		ParticleManager.spawn("harvest", output_bin.global_position)
 
-	HUD.show_notification("🥚 Pronto!", "O tanque produziu %s" % DataLoader.get_item(output_item)?.display_name, Color(1.0, 0.7, 0.3))
+	var output_data = DataLoader.get_item(output_item)
+	HUD.show_notification("🥚 Pronto!", "O tanque produziu %s" % (output_data.display_name if output_data != null else output_item), Color(1.0, 0.7, 0.3))
 
 	emit_signal("produce_ready", output_item, output_quality)
 
@@ -551,7 +554,7 @@ func _update_visuals() -> void:
 ## ==================== PERSISTÊNCIA ====================
 func _save_state() -> void:
 	if GameManager:
-		GameManager.set("fish_pond_%s" % [name], {
+		GameManager.set_data("fish_pond_%s" % [name], {
 			"fish_type": fish_type,
 			"fish_count": fish_count,
 			"max_fish": max_fish,
@@ -568,7 +571,7 @@ func _save_state() -> void:
 
 func _load_state() -> void:
 	if GameManager:
-		var data = GameManager.get("fish_pond_%s" % [name], {})
+		var data = GameManager.get_data("fish_pond_%s" % [name], {})
 		if data:
 			fish_type = data.get("fish_type", "")
 			fish_count = data.get("fish_count", 0)

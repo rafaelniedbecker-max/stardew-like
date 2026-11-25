@@ -1,4 +1,3 @@
-class_name Museum
 extends Node
 
 ## Museu: doações de minerais, artefatos, fósseis, recompensas do Gunther
@@ -98,9 +97,9 @@ func _load_museum_data() -> void:
 	if not GameManager:
 		return
 
-	donated_items = GameManager.get("museum_donated", {})
-	donation_counts = GameManager.get("museum_counts", {"Minerals": 0, "Artifacts": 0, "Fossils": 0, "Lost Books": 0})
-	rewards_claimed = GameManager.get("museum_rewards_claimed", [])
+	donated_items = GameManager.get_data("museum_donated", {})
+	donation_counts = GameManager.get_data("museum_counts", {"Minerals": 0, "Artifacts": 0, "Fossils": 0, "Lost Books": 0})
+	rewards_claimed = GameManager.get_data("museum_rewards_claimed", [])
 
 func _populate_categories() -> void:
 	for category in CATEGORIES:
@@ -164,12 +163,12 @@ func _claim_milestone(milestone: int) -> void:
 	else:
 		InventoryManager.add_item(reward_item, data.count)
 		var item_data = DataLoader.get_item(reward_item)
-		var name = item_data?.display_name ?? data.name
+		var name = item_data.display_name if item_data != null else data.name
 		_show_message("Marco de %d doações atingido! Recebeu: %s" % [milestone, name])
 
 	emit_signal("milestone_reached", milestone, data)
 
-	if total_donations() >= 100:
+	if get_total_donations() >= 100:
 		emit_signal("museum_completed")
 
 	_save_progress()
@@ -207,7 +206,7 @@ func get_completion_percentage() -> float:
 		for item_id in CATEGORIES[category].items:
 			if donated_items.has(item_id):
 				donated += 1
-	return total > 0 ? (donated / total * 100.0) : 0.0
+	return (donated / float(total) * 100.0) if total > 0 else 0.0
 
 ## ==================== UI ====================
 func open_museum() -> void:
@@ -253,15 +252,15 @@ func _show_generic_museum_ui() -> void:
 		# Grid de itens
 		var grid = GridContainer.new()
 		grid.columns = 10
-		grid.theme_override_constants/h_separation = 5
-		grid.theme_override_constants/v_separation = 5
+		grid.add_theme_constant_override("h_separation", 5)
+		grid.add_theme_constant_override("v_separation", 5)
 		cat_box.add_child(grid)
 
 		for item_id in CATEGORIES[category].items:
 			var item_data = DataLoader.get_item(item_id)
 			var btn = Button.new()
 			btn.custom_minimum_size = Vector2(50, 50)
-			btn.tooltip_text = item_data?.display_name ?? item_id
+			btn.tooltip_text = item_data.display_name if item_data != null else item_id
 
 			if donated_items.has(item_id):
 				btn.disabled = true
@@ -309,9 +308,9 @@ func _show_message(text: String) -> void:
 func _save_progress() -> void:
 	if not GameManager:
 		return
-	GameManager.set("museum_donated", donated_items)
-	GameManager.set("museum_counts", donation_counts)
-	GameManager.set("museum_rewards_claimed", rewards_claimed)
+	GameManager.set_data("museum_donated", donated_items)
+	GameManager.set_data("museum_counts", donation_counts)
+	GameManager.set_data("museum_rewards_claimed", rewards_claimed)
 
 func get_save_data() -> Dictionary:
 	return {

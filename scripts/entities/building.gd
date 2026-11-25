@@ -89,7 +89,9 @@ func _setup_collision() -> void:
 	var h = size.y * 32
 	var rect = RectangleShape2D.new()
 	rect.size = Vector2(w, h)
-	interaction_area.get_node_or_null("CollisionShape2D")?.queue_free()
+	var old_collision = interaction_area.get_node_or_null("CollisionShape2D")
+	if old_collision != null:
+		old_collision.queue_free()
 	var col = CollisionShape2D.new()
 	col.shape = rect
 	interaction_area.add_child(col)

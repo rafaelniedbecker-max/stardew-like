@@ -1,4 +1,3 @@
-class_name CollectionsMenu
 extends Control
 
 ## Menu de Coleções: Itens Enviados, Peixes, Artefatos, Minerais, Receitas, Conquistas
@@ -48,8 +47,8 @@ func _create_tabs() -> void:
 		var scroll = ScrollContainer.new()
 		var grid = GridContainer.new()
 		grid.columns = 10
-		grid.theme_override_constants/h_separation = 5
-		grid.theme_override_constants/v_separation = 5
+		grid.add_theme_constant_override("h_separation", 5)
+		grid.add_theme_constant_override("v_separation", 5)
 		scroll.add_child(grid)
 		tabs.add_child(scroll)
 		tabs.set_tab_title(tabs.get_child_count() - 1, "%s %s" % [cat.icon, cat.name])
@@ -62,12 +61,12 @@ func _load_collections_data() -> void:
 		return
 
 	collections_data = {
-		"shipped_items": GameManager.get("collection_shipped", {}),
-		"fish_caught": GameManager.get("collection_fish", {}),
-		"artifacts_found": GameManager.get("collection_artifacts", {}),
-		"minerals_found": GameManager.get("collection_minerals", {}),
-		"recipes_learned": GameManager.get("collection_recipes", {}),
-		"achievements_unlocked": GameManager.get("achievements", [])
+		"shipped_items": GameManager.get_data("collection_shipped", {}),
+		"fish_caught": GameManager.get_data("collection_fish", {}),
+		"artifacts_found": GameManager.get_data("collection_artifacts", {}),
+		"minerals_found": GameManager.get_data("collection_minerals", {}),
+		"recipes_learned": GameManager.get_data("collection_recipes", {}),
+		"achievements_unlocked": GameManager.get_data("achievements", [])
 	}
 
 	_update_completion_label()
@@ -180,7 +179,7 @@ func _update_completion_label() -> void:
 				if data.has(item):
 					collected += 1
 
-	var pct = total > 0 ? (collected / total * 100.0) : 0.0
+	var pct = (collected / total * 100.0) if total > 0 else 0.0
 	completion_label.text = "Coleção: %d/%d (%.1f%%)" % [collected, total, pct]
 
 ## ==================== REGISTRO DE COLETA ====================
@@ -188,7 +187,7 @@ func register_shipped(item_id: String, amount: int = 1) -> void:
 	var data = collections_data.get("shipped_items", {})
 	data[item_id] = data.get(item_id, 0) + amount
 	collections_data["shipped_items"] = data
-	GameManager.set("collection_shipped", data)
+	GameManager.set_data("collection_shipped", data)
 	_update_completion_label()
 	_refresh_current_grid()
 
@@ -200,7 +199,7 @@ func register_fish_caught(item_id: String, size: float = 0, quality: int = 0) ->
 	data[item_id].max_size = max(data[item_id].max_size, size)
 	data[item_id].best_quality = max(data[item_id].best_quality, quality)
 	collections_data["fish_caught"] = data
-	GameManager.set("collection_fish", data)
+	GameManager.set_data("collection_fish", data)
 	_update_completion_label()
 	_refresh_current_grid()
 
@@ -208,7 +207,7 @@ func register_artifact_found(item_id: String) -> void:
 	var data = collections_data.get("artifacts_found", {})
 	data[item_id] = true
 	collections_data["artifacts_found"] = data
-	GameManager.set("collection_artifacts", data)
+	GameManager.set_data("collection_artifacts", data)
 	_update_completion_label()
 	_refresh_current_grid()
 
@@ -216,7 +215,7 @@ func register_mineral_found(item_id: String) -> void:
 	var data = collections_data.get("minerals_found", {})
 	data[item_id] = true
 	collections_data["minerals_found"] = data
-	GameManager.set("collection_minerals", data)
+	GameManager.set_data("collection_minerals", data)
 	_update_completion_label()
 	_refresh_current_grid()
 
@@ -224,7 +223,7 @@ func register_recipe_learned(recipe_name: String) -> void:
 	var data = collections_data.get("recipes_learned", {})
 	data[recipe_name] = true
 	collections_data["recipes_learned"] = data
-	GameManager.set("collection_recipes", data)
+	GameManager.set_data("collection_recipes", data)
 	_update_completion_label()
 	_refresh_current_grid()
 
@@ -233,7 +232,7 @@ func register_achievement(achievement: String) -> void:
 	if achievement not in data:
 		data.append(achievement)
 		collections_data["achievements_unlocked"] = data
-		GameManager.set("achievements", data)
+		GameManager.set_data("achievements", data)
 		_update_completion_label()
 		_refresh_current_grid()
 

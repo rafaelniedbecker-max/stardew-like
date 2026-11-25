@@ -1,4 +1,3 @@
-class_name RelationshipManager
 extends Node
 
 ## Gerencia relacionamentos profundos: eventos de coração, namoro, casamento, filhos
@@ -40,7 +39,7 @@ signal dating_started(npc: String)
 signal dating_ended(npc: String)
 signal marriage_proposed(npc: String)
 signal married(npc: String)
-signal divorced(npc: String)
+signal divorced_signal(npc: String)
 signal child_born(child_data: Dictionary)
 signal child_grew_up(child_data: Dictionary)
 
@@ -57,11 +56,11 @@ func _load_relationship_data() -> void:
 	if not GameManager:
 		return
 
-	dating_npc = GameManager.get("dating_npc", "")
-	spouse = GameManager.get("spouse", "")
-	spouse_room_unlocked = GameManager.get("spouse_room_unlocked", false)
-	children = GameManager.get("children", [])
-	divorced = GameManager.get("divorced_npcs", [])
+	dating_npc = GameManager.get_data("dating_npc", "")
+	spouse = GameManager.get_data("spouse", "")
+	spouse_room_unlocked = GameManager.get_data("spouse_room_unlocked", false)
+	children = GameManager.get_data("children", [])
+	divorced = GameManager.get_data("divorced_npcs", [])
 
 func _on_day_changed() -> void:
 	_check_heart_events()
@@ -100,7 +99,7 @@ func _check_heart_event_unlock(npc: String, heart_level: int) -> void:
 		if _check_event_conditions(event):
 			# Marca evento como disponível
 			var key = "%s_%d" % [npc, heart_level]
-			GameManager.set("heart_event_%s_unlocked" % key, true)
+			GameManager.set_data("heart_event_%s_unlocked" % key, true)
 			emit_signal("heart_event_available", npc, heart_level)
 
 func _check_event_conditions(event: Dictionary) -> bool:
@@ -136,7 +135,7 @@ func _check_heart_events() -> void:
 		var events = HEART_EVENTS[npc]
 		for heart_level in events:
 			var key = "%s_%d" % [npc, heart_level]
-			if GameManager.get("heart_event_%s_unlocked" % key, false) and not GameManager.get("heart_event_%s_done" % key, false):
+			if GameManager.get_data("heart_event_%s_unlocked" % key, false) and not GameManager.get_data("heart_event_%s_done" % key, false):
 				var event = events[heart_level]
 				if _check_event_conditions(event):
 					_trigger_heart_event(npc, heart_level, event.id)
@@ -147,7 +146,7 @@ func _trigger_heart_event(npc: String, heart_level: int, event_id: String) -> vo
 
 	# Marca como iniciado
 	var key = "%s_%d" % [npc, heart_level]
-	GameManager.set("heart_event_%s_done" % key, true)
+	GameManager.set_data("heart_event_%s_done" % key, true)
 
 	emit_signal("heart_event_started", event_id)
 
@@ -164,7 +163,7 @@ func _trigger_heart_event(npc: String, heart_level: int, event_id: String) -> vo
 
 func _show_generic_heart_event(npc: String, heart_level: int, event_id: String) -> void:
 	var npc_data = DataLoader.get_npc(npc)
-	var name = npc_data?.get_display_name() ?? npc
+	var name = npc_data.get_display_name() if npc_data != null else npc
 
 	var panel = Panel.new()
 	panel.name = "HeartEvent_%s" % event_id
@@ -247,7 +246,7 @@ func _on_heart_event_completed(event_id: String) -> void:
 ## ==================== NAMORO ====================
 func _show_bouquet_available(npc: String) -> void:
 	var npc_data = DataLoader.get_npc(npc)
-	var name = npc_data?.get_display_name() ?? npc
+	var name = npc_data.get_display_name() if npc_data != null else npc
 
 	var dialog = ConfirmationDialog.new()
 	dialog.title = "Buquê Disponível"
@@ -266,7 +265,7 @@ func _buy_and_give_bouquet(npc: String) -> void:
 
 	# Inicia namoro
 	dating_npc = npc
-	GameManager.set("dating_npc", npc)
+	GameManager.set_data("dating_npc", npc)
 	GameManager.add_friendship(npc, 250)  # Boost imediato
 
 	emit_signal("dating_started", npc)
@@ -292,7 +291,7 @@ func give_bouquet(npc: String) -> bool:
 
 	InventoryManager.remove_item("(O)458", 1)
 	dating_npc = npc
-	GameManager.set("dating_npc", npc)
+	GameManager.set_data("dating_npc", npc)
 	GameManager.add_friendship(npc, 250)
 
 	emit_signal("dating_started", npc)
@@ -303,7 +302,7 @@ func break_up(npc: String) -> void:
 		return
 
 	dating_npc = ""
-	GameManager.set("dating_npc", "")
+	GameManager.set_data("dating_npc", "")
 	GameManager.add_friendship(npc, -500)  # Penalidade
 
 	emit_signal("dating_ended", npc)
@@ -312,7 +311,7 @@ func break_up(npc: String) -> void:
 ## ==================== CASAMENTO ====================
 func _show_mermaid_pendant_available(npc: String) -> void:
 	var npc_data = DataLoader.get_npc(npc)
-	var name = npc_data?.get_display_name() ?? npc
+	var name = npc_data.get_display_name() if npc_data != null else npc
 
 	var dialog = ConfirmationDialog.new()
 	dialog.title = "Pingente de Sereia"
@@ -339,7 +338,7 @@ func propose_marriage(npc: String) -> bool:
 		return false
 
 	# Verifica casa upgradeada
-	if not GameManager.get("house_upgrade_2", false):
+	if not GameManager.get_data("house_upgrade_2", false):
 		_show_message("Você precisa da segunda ampliação da casa (com quarto de bebê).")
 		return false
 
@@ -347,27 +346,27 @@ func propose_marriage(npc: String) -> bool:
 	pending_proposal = npc
 
 	# Evento de casamento (3 dias depois)
-	GameManager.set("wedding_day", GameManager.current_day + 3)
-	GameManager.set("wedding_npc", npc)
+	GameManager.set_data("wedding_day", GameManager.current_day + 3)
+	GameManager.set_data("wedding_npc", npc)
 
 	emit_signal("marriage_proposed", npc)
 	_show_message("Você propôs casamento a %s! O casamento será em 3 dias." % npc)
 	return true
 
 func _on_wedding_day() -> void:
-	var npc = GameManager.get("wedding_npc", "")
+	var npc = GameManager.get_data("wedding_npc", "")
 	if not npc:
 		return
 
-	_spouse = npc
+	spouse = npc
 	dating_npc = ""
-	GameManager.set("spouse", npc)
-	GameManager.set("dating_npc", "")
-	GameManager.set("wedding_npc", "")
+	GameManager.set_data("spouse", npc)
+	GameManager.set_data("dating_npc", "")
+	GameManager.set_data("wedding_npc", "")
 
 	# Desbloqueia quarto do cônjuge
 	spouse_room_unlocked = true
-	GameManager.set("spouse_room_unlocked", true)
+	GameManager.set_data("spouse_room_unlocked", true)
 
 	# Adiciona cônjuge à casa
 	_add_spouse_to_house(npc)
@@ -506,7 +505,7 @@ func _confirm_divorce() -> void:
 
 	var ex = spouse
 	divorced.append(ex)
-	GameManager.set("divorced_npcs", divorced)
+	GameManager.set_data("divorced_npcs", divorced)
 
 	# Remove cônjuge da casa
 	var house = BuildingManager.get_building_by_type("House")
@@ -516,13 +515,13 @@ func _confirm_divorce() -> void:
 
 	spouse = ""
 	spouse_room_unlocked = false
-	GameManager.set("spouse", "")
-	GameManager.set("spouse_room_unlocked", false)
+	GameManager.set_data("spouse", "")
+	GameManager.set_data("spouse_room_unlocked", false)
 
 	# Zera amizade
 	GameManager.friendships[ex] = 0
 
-	emit_signal("divorced", ex)
+	emit_signal("divorced_signal", ex)
 	_show_message("Você se divorciou de %s." % ex)
 
 ## ==================== FILHOS ====================
@@ -559,16 +558,16 @@ func _pregnancy_announced() -> void:
 	dialog.popup_centered()
 
 func _schedule_birth() -> void:
-	GameManager.set("baby_due_day", GameManager.current_day + 14)
-	GameManager.set("baby_spouse", spouse)
+	GameManager.set_data("baby_due_day", GameManager.current_day + 14)
+	GameManager.set_data("baby_spouse", spouse)
 
 func _check_birth() -> void:
-	var due_day = GameManager.get("baby_due_day", 0)
+	var due_day = GameManager.get_data("baby_due_day", 0)
 	if due_day > 0 and GameManager.current_day >= due_day:
 		_give_birth()
 
 func _give_birth() -> void:
-	GameManager.set("baby_due_day", 0)
+	GameManager.set_data("baby_due_day", 0)
 
 	# Gênero aleatório
 	var is_boy = randf() < 0.5
@@ -586,7 +585,7 @@ func _give_birth() -> void:
 	}
 
 	children.append(child)
-	GameManager.set("children", children)
+	GameManager.set_data("children", children)
 
 	emit_signal("child_born", child)
 	_show_message("Nasceu %s! Parabéns!" % name)
@@ -623,7 +622,7 @@ func get_dating_npc() -> String:
 func get_spouse() -> String:
 	return spouse
 
-func get_children() -> Array:
+func get_children_data() -> Array:
 	return children
 
 func is_married() -> bool:

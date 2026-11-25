@@ -1,4 +1,3 @@
-class_name FestivalManager
 extends Node
 
 ## Gerencia festivais sazonais com minigames, lojas especiais, eventos
@@ -281,8 +280,8 @@ func _open_dance_ui() -> void:
 	var scroll = ScrollContainer.new()
 	var grid = GridContainer.new()
 	grid.columns = 2
-	grid.theme_override_constants/h_separation = 10
-	grid.theme_override_constants/v_separation = 10
+	grid.add_theme_constant_override("h_separation", 10)
+	grid.add_theme_constant_override("v_separation", 10)
 	scroll.add_child(grid)
 	scroll.custom_minimum_size = Vector2(0, 200)
 	vbox.add_child(scroll)
@@ -384,8 +383,8 @@ func _show_generic_festival_shop() -> void:
 	var scroll = ScrollContainer.new()
 	var grid = GridContainer.new()
 	grid.columns = 4
-	grid.theme_override_constants/h_separation = 10
-	grid.theme_override_constants/v_separation = 10
+	grid.add_theme_constant_override("h_separation", 10)
+	grid.add_theme_constant_override("v_separation", 10)
 	scroll.add_child(grid)
 	scroll.custom_minimum_size = Vector2(0, 300)
 	vbox.add_child(scroll)
@@ -401,29 +400,29 @@ func _show_generic_festival_shop() -> void:
 		btn.custom_minimum_size = Vector2(120, 120)
 		btn.flat = true
 
-		var vbox = VBoxContainer.new()
-		vbox.anchors_preset = 15
-		btn.add_child(vbox)
+		var item_vbox = VBoxContainer.new()
+		item_vbox.anchors_preset = 15
+		btn.add_child(item_vbox)
 
 		var icon = TextureRect.new()
 		icon.custom_minimum_size = Vector2(48, 48)
 		if item.texture_path != "":
 			icon.texture = load(item.texture_path)
-		vbox.add_child(icon)
+		item_vbox.add_child(icon)
 
 		var name = Label.new()
 		name.text = item.display_name
 		name.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		name.theme_override_font_size = 12
 		name.autowrap_mode = 1
-		vbox.add_child(name)
+		item_vbox.add_child(name)
 
 		var price = Label.new()
 		price.text = "%dg" % item.price
 		price.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		price.theme_override_font_size = 12
 		price.add_theme_color_override("font_color", Color(1.0, 0.9, 0.3))
-		vbox.add_child(price)
+		item_vbox.add_child(price)
 
 		btn.pressed.connect(_buy_festival_item.bind(item_id, item.price))
 		grid.add_child(btn)
@@ -463,7 +462,9 @@ func _buy_festival_item(item_id: String, price: int) -> void:
 	GameManager.emit_signal("gold_changed", GameManager.gold)
 
 	if InventoryManager.add_item(item_id, 1):
-		HUD.show_message("Comprado: %s por %dg" % [DataLoader.get_item(item_id)?.display_name ?? item_id, price])
+		var item_data = DataLoader.get_item(item_id)
+		var item_name = item_data.display_name if item_data != null else item_id
+		HUD.show_message("Comprado: %s por %dg" % [item_name, price])
 	else:
 		GameManager.gold += price
 		GameManager.emit_signal("gold_changed", GameManager.gold)

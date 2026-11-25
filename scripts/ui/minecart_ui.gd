@@ -1,4 +1,3 @@
-class_name MinecartUI
 extends Control
 
 ## UI do Minecart: viagem rápida entre locais desbloqueados
@@ -47,7 +46,7 @@ func _create_location_buttons() -> void:
 
 		var hbox = HBoxContainer.new()
 		hbox.anchors_preset = 15
-		hbox.theme_override_constants/separation = 20
+		hbox.add_theme_constant_override("separation", 20)
 		btn.add_child(hbox)
 
 		var icon = Label.new()
@@ -59,7 +58,7 @@ func _create_location_buttons() -> void:
 		hbox.add_child(icon)
 
 		var info = VBoxContainer.new()
-		info.theme_override_constants/separation = 5
+		info.add_theme_constant_override("separation", 5)
 
 		var name = Label.new()
 		name.text = loc.name
@@ -154,12 +153,14 @@ func _on_location_unlocked(location: String) -> void:
 	if not unlocked_locations.has(location):
 		unlocked_locations.append(location)
 		_update_ui()
-		UIStyle.show_toast("⛏️ Novo Destino!", "%s desbloqueado!" % LOCATIONS.find({"id": location})?.name ?? location, "achievement")
+		var location_data: Variant = LOCATIONS.find({"id": location})
+		UIStyle.show_toast("⛏️ Novo Destino!", "%s desbloqueado!" % (location_data.name if location_data != null else location), "achievement")
 
 func _on_travel_completed(location: String) -> void:
 	current_location = location
 	_update_ui()
-	HUD.show_message("Chegou em %s!" % LOCATIONS.find({"id": location})?.name ?? location)
+	var location_data: Variant = LOCATIONS.find({"id": location})
+	HUD.show_message("Chegou em %s!" % (location_data.name if location_data != null else location))
 
 ## ==================== PÚBLICO ====================
 func open() -> void:

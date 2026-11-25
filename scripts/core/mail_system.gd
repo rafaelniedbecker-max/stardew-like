@@ -1,4 +1,3 @@
-class_name MailSystem
 extends Node
 
 ## Sistema de Correio: cartas, pacotes, notificações de missões, convites de festivais
@@ -95,14 +94,14 @@ func _load_mail_data() -> void:
 	if not GameManager:
 		return
 
-	mailbox = GameManager.get("mailbox", [])
-	read_mails = GameManager.get("read_mails", [])
-	next_mail_id = GameManager.get("next_mail_id", 1)
+	mailbox = GameManager.get_data("mailbox", [])
+	read_mails = GameManager.get_data("read_mails", [])
+	next_mail_id = GameManager.get_data("next_mail_id", 1)
 
 	# Envia carta de boas-vindas se primeira vez
-	if mailbox.is_empty() and not GameManager.get("welcome_mail_sent", false):
+	if mailbox.is_empty() and not GameManager.get_data("welcome_mail_sent", false):
 		send_welcome_mail()
-		GameManager.set("welcome_mail_sent", true)
+		GameManager.set_data("welcome_mail_sent", true)
 
 func _check_daily_mail() -> void:
 	# Verifica convites de festival
@@ -165,7 +164,8 @@ func _create_mail(template_key: String, params: Dictionary = {}) -> Dictionary:
 
 	# Substitui placeholders
 	for key in ["sender", "subject", "body"]:
-		for param_key, param_val in params:
+		for param_key in params:
+			var param_val = params[param_key]
 			mail[key] = mail[key].replace("{%s}" % param_key, str(param_val))
 
 	next_mail_id += 1
@@ -204,7 +204,7 @@ func send_friendship_mail(npc_id: String) -> void:
 
 	var gift_id = gifts.pick_random()
 	var gift_data = DataLoader.get_item(gift_id)
-	var gift_name = gift_data?.display_name ?? gift_id
+	var gift_name = gift_data.display_name if gift_data != null else gift_id
 
 	send_mail("friendship_milestone", {
 		"npc": npc.display_name,
@@ -258,7 +258,8 @@ func claim_package(mail_id: int) -> bool:
 				mail.attachment = ""
 				_save_mail_data()
 				emit_signal("package_claimed", mail_id, item_id)
-				_show_message("Recebeu: %s" % DataLoader.get_item(item_id)?.display_name ?? item_id)
+				var item_data = DataLoader.get_item(item_id)
+				_show_message("Recebeu: %s" % (item_data.display_name if item_data != null else item_id))
 				return true
 			else:
 				_show_message("Inventário cheio!")
@@ -271,7 +272,7 @@ func claim_recipe(mail_id: int) -> bool:
 			var recipe_name = mail.attachment
 			if not InventoryManager.known_recipes.has(recipe_name):
 				InventoryManager.known_recipes.append(recipe_name)
-				GameManager.set("known_recipes", InventoryManager.known_recipes)
+				GameManager.set_data("known_recipes", InventoryManager.known_recipes)
 				CollectionsMenu.register_recipe_learned(recipe_name)
 				mail.attachment = ""
 				_save_mail_data()
@@ -358,7 +359,7 @@ func _show_generic_mail_ui() -> void:
 
 	# Mostra primeira carta não lida ou a primeira
 	var first_unread = mailbox.find(lambda m: not m.read)
-	var mail_to_show = first_unread >= 0 ? mailbox[first_unread] : (mailbox[0] if mailbox else null)
+	var mail_to_show = mailbox[first_unread] if first_unread >= 0 else (mailbox[0] if mailbox else null)
 
 	if mail_to_show:
 		_show_mail_content(content_box, mail_to_show)
@@ -412,7 +413,8 @@ func _show_mail_content(content: VBoxContainer, mail: Dictionary) -> void:
 		content.add_child(separator2)
 
 		var attach_lbl = Label.new()
-		attach_lbl.text = "📎 Anexo: %s" % (DataLoader.get_item(mail.attachment)?.display_name ?? mail.attachment)
+		var item_data = DataLoader.get_item(mail.attachment)
+		attach_lbl.text = "📎 Anexo: %s" % (item_data.display_name if item_data != null else mail.attachment)
 		attach_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		attach_lbl.add_theme_color_override("font_color", Color(0.5, 1.0, 0.5))
 		content.add_child(attach_lbl)
@@ -452,9 +454,9 @@ func _show_message(text: String) -> void:
 func _save_mail_data() -> void:
 	if not GameManager:
 		return
-	GameManager.set("mailbox", mailbox)
-	GameManager.set("read_mails", read_mails)
-	GameManager.set("next_mail_id", next_mail_id)
+	GameManager.set_data("mailbox", mailbox)
+	GameManager.set_data("read_mails", read_mails)
+	GameManager.set_data("next_mail_id", next_mail_id)
 
 ## ==================== SERIALIZAÇÃO ====================
 func get_save_data() -> Dictionary:

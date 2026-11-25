@@ -1,4 +1,3 @@
-class_name Logger
 extends Node
 
 ## Sistema de log centralizado com salvamento automático em arquivo
@@ -34,11 +33,8 @@ signal log_received(level: int, message: String, timestamp: Dictionary)
 ## ==================== INICIALIZAÇÃO ====================
 func _ready() -> void:
 	_setup_log_file()
-
-	# Intercepta prints e erros do Godot
-	OS.set_print_handler(_on_print.bind())
-	OS.set_error_handler(_on_error.bind())
-
+	# Godot 4 não expõe handlers globais de print/erro via GDScript.
+	# Os métodos log_* continuam disponíveis para os sistemas do jogo.
 	log_info("Logger inicializado")
 
 func _setup_log_file() -> void:

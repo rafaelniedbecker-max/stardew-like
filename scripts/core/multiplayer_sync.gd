@@ -89,10 +89,12 @@ func _initialize_host_data() -> void:
 	sync_data.world.luck = GameManager.daily_luck if GameManager else 0.0
 
 	# Registra host como player 1
+	var player = get_tree().get_first_node_in_group("player")
+	var player_position = player.global_position if player != null else Vector2(320, 240)
 	connected_players[1] = {
 		"id": 1,
 		"name": GameManager.player_name if GameManager else "Host",
-		"position": get_tree().get_first_node_in_group("player")?.global_position ?? Vector2(320, 240),
+		"position": player_position,
 		"farm_level": 0,
 		"ready": true
 	}
@@ -329,7 +331,7 @@ func send_chat_message(player_id: int, message: String) -> void:
 func chat_message_received(player_id: int, message: String) -> void:
 	# Mostra no chat UI
 	if HUD:
-		var name = connected_players.has(player_id) ? connected_players[player_id].name : "Player %d" % player_id
+		var name = connected_players[player_id].name if connected_players.has(player_id) else "Player %d" % player_id
 		HUD.show_message("[%s] %s" % [name, message])
 
 ## ==================== SINCRONIZAÇÃO DE FAZENDA ====================

@@ -1,4 +1,3 @@
-class_name CommunityCenterUI
 extends Control
 
 ## UI do Centro Comunitário: bundles, salas, recompensas
@@ -42,7 +41,7 @@ func _create_tabs() -> void:
 	for room in ROOMS:
 		var scroll = ScrollContainer.new()
 		var vbox = VBoxContainer.new()
-		vbox.theme_override_constants/separation = 10
+		vbox.add_theme_constant_override("separation", 10)
 		scroll.add_child(vbox)
 		tabs.add_child(scroll)
 		tabs.set_tab_title(tabs.get_child_count() - 1, "%s %s" % [room.icon, room.name])
@@ -71,7 +70,8 @@ func _populate_all_rooms() -> void:
 			continue
 
 		var room_bundles = CommunityCenter.get_room_bundles(room_id)
-		for bundle_name, bundle_data in room_bundles:
+		for bundle_name in room_bundles:
+	var bundle_data = room_bundles[bundle_name]
 			var bundle_ui = _create_bundle_ui(bundle_name, bundle_data)
 			vbox.add_child(bundle_ui)
 
@@ -81,12 +81,12 @@ func _create_bundle_ui(bundle_name: String, bundle_data: Dictionary) -> Panel:
 
 	var vbox = VBoxContainer.new()
 	vbox.anchors_preset = 15
-	vbox.theme_override_constants/separation = 8
+	vbox.add_theme_constant_override("separation", 8)
 	panel.add_child(vbox)
 
 	# Header
 	var header = HBoxContainer.new()
-	header.theme_override_constants/separation = 10
+	header.add_theme_constant_override("separation", 10)
 
 	var title = Label.new()
 	title.text = bundle_name
@@ -110,7 +110,7 @@ func _create_bundle_ui(bundle_name: String, bundle_data: Dictionary) -> Panel:
 
 	# Itens necessários
 	var items_container = VBoxContainer.new()
-	items_container.theme_override_constants/separation = 5
+	items_container.add_theme_constant_override("separation", 5)
 
 	var required_items = bundle_data.get("items", [])
 	for item_req in required_items:
@@ -122,7 +122,7 @@ func _create_bundle_ui(bundle_name: String, bundle_data: Dictionary) -> Panel:
 		var has_amount = InventoryManager.get_item_count(item_id) >= amount if InventoryManager else 0
 
 		var hbox = HBoxContainer.new()
-		hbox.theme_override_constants/separation = 10
+		hbox.add_theme_constant_override("separation", 10)
 
 		var icon = TextureRect.new()
 		icon.custom_minimum_size = Vector2(32, 32)
@@ -131,7 +131,7 @@ func _create_bundle_ui(bundle_name: String, bundle_data: Dictionary) -> Panel:
 		hbox.add_child(icon)
 
 		var name = Label.new()
-		name.text = "%s x%d" % [item?.display_name ?? item_id, amount]
+		name.text = "%s x%d" % [item.display_name if item != null else item_id, amount]
 		name.theme_override_font_size = 14
 		if not has_amount:
 			name.add_theme_color_override("font_color", Color(1.0, 0.4, 0.4))
@@ -221,8 +221,8 @@ func _open_donate_ui(bundle_name: String) -> void:
 	var scroll = ScrollContainer.new()
 	var grid = GridContainer.new()
 	grid.columns = 4
-	grid.theme_override_constants/h_separation = 10
-	grid.theme_override_constants/v_separation = 5
+	grid.add_theme_constant_override("h_separation", 10)
+	grid.add_theme_constant_override("v_separation", 5)
 	scroll.add_child(grid)
 	scroll.custom_minimum_size = Vector2(0, 300)
 	vbox.add_child(scroll)
@@ -327,7 +327,8 @@ func _update_progress() -> void:
 
 	for room in ROOMS:
 		var bundles = CommunityCenter.get_room_bundles(room.id)
-		for bundle_name, _ in bundles:
+		for bundle_name in bundles:
+	var _ = bundles[bundle_name]
 			total_bundles += 1
 			if CommunityCenter.is_bundle_completed(bundle_name):
 				completed_bundles += 1

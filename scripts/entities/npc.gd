@@ -110,7 +110,6 @@ func _parse_schedule(schedule_str: String) -> void:
 	current_route.append(home_pos)
 	target_position = home_pos
 	global_position = home_pos
-end
 
 func _get_home_position() -> Vector2:
 	# Posição baseada na home_region

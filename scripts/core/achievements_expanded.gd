@@ -903,8 +903,8 @@ func _check_requirements(reqs: Dictionary) -> bool:
 			"winter_crop": current = _check_season_crop(3)
 			"items_found": current = _check_items_found(target)
 			"ores_mined": current = GameManager.stats.ores_mined
-			"mine_level": current = GameManager.get("deepest_mine_level", 0)
-			"skull_cavern_level": current = GameManager.get("deepest_skull_level", 0)
+			"mine_level": current = GameManager.get_data("deepest_mine_level", 0)
+			"skull_cavern_level": current = GameManager.get_data("deepest_skull_level", 0)
 			"unique_gems": current = _count_unique_gems()
 			"fish_caught": current = GameManager.stats.fish_caught
 			"iridium_fish": current = GameManager.stats.iridium_fish
@@ -912,40 +912,40 @@ func _check_requirements(reqs: Dictionary) -> bool:
 			"unique_fish": current = _count_unique_fish()
 			"forage_collected": current = GameManager.stats.forage_collected
 			"unique_forage": current = _count_unique_forage()
-			"visited_secret_woods": current = GameManager.get("visited_secret_woods", false)
+			"visited_secret_woods": current = GameManager.get_data("visited_secret_woods", false)
 			"monsters_killed": current = GameManager.stats.monsters_killed
 			"slimes_killed": current = GameManager.stats.slimes_killed
 			"boss_killed": current = _check_boss_killed(target)
 			"any_friendship": current = _get_max_friendship()
 			"five_hearts_count": current = _count_friendship_at_least(5)
 			"max_friendship": current = _get_max_friendship()
-			"married": current = GameManager.get("spouse", "") != ""
-			"spouse_friendship": current = GameManager.friendships.get(GameManager.get("spouse", ""), 0) / 250
+			"married": current = GameManager.get_data("spouse", "") != ""
+			"spouse_friendship": current = GameManager.friendships.get(GameManager.get_data("spouse", ""), 0) / 250
 			"npcs_talked_today": current = GameManager.npcs_talked_today.size()
 			"loved_gifts_given": current = GameManager.stats.loved_gifts_given
-			"unique_shipped": current = GameManager.get("collection_shipped", {}).size()
-			"museum_complete": current = GameManager.get("museum_complete", false)
-			"cc_complete": current = GameManager.get("cc_complete", false)
+			"unique_shipped": current = GameManager.get_data("collection_shipped", {}).size()
+			"museum_complete": current = GameManager.get_data("museum_complete", false)
+			"cc_complete": current = GameManager.get_data("cc_complete", false)
 			"all_collections_complete": current = _check_all_collections()
 			"cooking_recipes": current = GameManager.unlocked_cooking_recipes.size()
 			"buff_recipes_cooked": current = GameManager.stats.buff_recipes_cooked
 			"crafting_recipes": current = GameManager.unlocked_recipes.size()
 			"artisan_items_produced": current = GameManager.stats.artisan_items_produced
 			"locations_visited": current = _count_locations_visited()
-			"visited_desert": current = GameManager.get("desert_unlocked", false)
-			"visited_skull_cavern": current = GameManager.get("skull_cavern_unlocked", false)
-			"island_unlocked": current = GameManager.get("island_unlocked", false)
-			"walnuts_collected": current = GameManager.get("walnuts_collected", 0)
-			"qi_walnut_room": current = GameManager.get("walnut_room_unlocked", false)
+			"visited_desert": current = GameManager.get_data("desert_unlocked", false)
+			"visited_skull_cavern": current = GameManager.get_data("skull_cavern_unlocked", false)
+			"island_unlocked": current = GameManager.get_data("island_unlocked", false)
+			"walnuts_collected": current = GameManager.get_data("walnuts_collected", 0)
+			"qi_walnut_room": current = GameManager.get_data("walnut_room_unlocked", false)
 			"special_orders_completed": current = GameManager.stats.special_orders_completed
 			"buildings_built": current = GameManager.farm_buildings.size()
 			"unique_buildings": current = _count_unique_buildings()
-			"house_level": current = GameManager.get("house_level", 0)
+			"house_level": current = GameManager.get_data("house_level", 0)
 			"all_tools_iridium": current = _check_all_tools_iridium()
 			"backpack_max": current = InventoryManager.max_inventory_slots >= 36
 			"late_nights": current = GameManager.stats.late_nights
 			"early_mornings": current = GameManager.stats.early_mornings
-			"grandpa_score": current = GameManager.get("grandpa_score", 0)
+			"grandpa_score": current = GameManager.get_data("grandpa_score", 0)
 			"years_played": current = GameManager.current_year
 
 			# Arrays/objetos complexos
@@ -960,15 +960,15 @@ func _check_requirements(reqs: Dictionary) -> bool:
 			"unique_forage":
 				return _count_unique_forage() >= target
 			"visited_desert":
-				return target == true and GameManager.get("desert_unlocked", false)
+				return target == true and GameManager.get_data("desert_unlocked", false)
 			"visited_skull_cavern":
-				return target == true and GameManager.get("skull_cavern_unlocked", false)
+				return target == true and GameManager.get_data("skull_cavern_unlocked", false)
 			"island_unlocked":
-				return target == true and GameManager.get("island_unlocked", false)
+				return target == true and GameManager.get_data("island_unlocked", false)
 			"museum_complete":
-				return target == true and GameManager.get("museum_complete", false)
+				return target == true and GameManager.get_data("museum_complete", false)
 			"cc_complete":
-				return target == true and GameManager.get("cc_complete", false)
+				return target == true and GameManager.get_data("cc_complete", false)
 			"all_collections_complete":
 				return target == true and _check_all_collections()
 			"all_tools_iridium":
@@ -982,7 +982,7 @@ func _check_requirements(reqs: Dictionary) -> bool:
 			"max_friendship":
 				return _get_max_friendship() >= target
 			"spouse_friendship":
-				var spouse = GameManager.get("spouse", "")
+				var spouse = GameManager.get_data("spouse", "")
 				if spouse:
 					return GameManager.friendships.get(spouse, 0) / 250 >= target
 				return false
@@ -1010,10 +1010,10 @@ func _check_season_crop(season: int) -> int:
 
 func _check_items_found(target_items: Array) -> bool:
 	for item in target_items:
-		if not GameManager.get("collection_shipped", {}).has(item) and \
-		   not GameManager.get("collection_fish", {}).has(item) and \
-		   not GameManager.get("collection_artifacts", {}).has(item) and \
-		   not GameManager.get("collection_minerals", {}).has(item):
+		if not GameManager.get_data("collection_shipped", {}).has(item) and \
+		   not GameManager.get_data("collection_fish", {}).has(item) and \
+		   not GameManager.get_data("collection_artifacts", {}).has(item) and \
+		   not GameManager.get_data("collection_minerals", {}).has(item):
 			return false
 	return true
 
@@ -1021,24 +1021,24 @@ func _count_unique_gems() -> int:
 	var gems = ["(O)60", "(O)62", "(O)64", "(O)66", "(O)68", "(O)70"]
 	var count = 0
 	for gem in gems:
-		if GameManager.get("collection_minerals", {}).has(gem):
+		if GameManager.get_data("collection_minerals", {}).has(gem):
 			count += 1
 	return count
 
 func _check_legendary_fish(target: Array) -> bool:
 	for fish in target:
-		if not GameManager.get("collection_fish", {}).has(fish):
+		if not GameManager.get_data("collection_fish", {}).has(fish):
 			return false
 	return true
 
 func _count_unique_fish() -> int:
-	return GameManager.get("collection_fish", {}).size()
+	return GameManager.get_data("collection_fish", {}).size()
 
 func _count_unique_forage() -> int:
-	return GameManager.get("collection_artifacts", {}).size()  # Aproximação
+	return GameManager.get_data("collection_artifacts", {}).size()  # Aproximação
 
 func _check_boss_killed(target: Array) -> bool:
-	var killed = GameManager.get("bosses_killed", [])
+	var killed = GameManager.get_data("bosses_killed", [])
 	for boss in target:
 		if boss not in killed:
 			return false
@@ -1058,7 +1058,7 @@ func _count_friendship_at_least(hearts: int) -> int:
 	return count
 
 func _count_locations_visited() -> int:
-	return GameManager.get("locations_visited", {}).size()
+	return GameManager.get_data("locations_visited", {}).size()
 
 func _check_all_tools_iridium() -> bool:
 	var tools = ["Pickaxe", "Axe", "Hoe", "WateringCan", "TrashCan", "FishingRod"]
@@ -1070,7 +1070,7 @@ func _check_all_tools_iridium() -> bool:
 func _check_all_collections() -> bool:
 	var collections = ["collection_shipped", "collection_fish", "collection_artifacts", "collection_minerals", "collection_recipes"]
 	for coll in collections:
-		if GameManager.get(coll, {}).size() < 100:  # Threshold arbitrário
+		if GameManager.get_data(coll, {}).size() < 100:  # Threshold arbitrário
 			return false
 	return true
 
@@ -1101,7 +1101,7 @@ func _unlock_achievement(ach_id: String) -> void:
 	if reward.has("item"):
 		InventoryManager.add_item(reward.item, 1)
 	if reward.has("title"):
-		GameManager.set("title", reward.title)
+		GameManager.set_data("title", reward.title)
 
 	# Notificação
 	HUD.show_notification("🏆 Conquista Desbloqueada!", "%s: %s" % [ach.name, ach.description], Color(1.0, 0.9, 0.2))
@@ -1149,7 +1149,7 @@ func open_achievements_menu() -> void:
 
 	# Filtros
 	var filter_bar = HBoxContainer.new()
-	filter_bar.theme_override_constants/separation = 5
+	filter_bar.add_theme_constant_override("separation", 5)
 	var categories = ["all", "farming", "mining", "fishing", "foraging", "combat", "social", "money", "collections", "cooking", "crafting", "exploration", "building", "time"]
 	for cat in categories:
 		var btn = Button.new()
@@ -1164,7 +1164,7 @@ func open_achievements_menu() -> void:
 	var scroll = ScrollContainer.new()
 	var grid = GridContainer.new()
 	grid.columns = 1
-	grid.theme_override_constants/v_separation = 5
+	grid.add_theme_constant_override("v_separation", 5)
 	scroll.add_child(grid)
 	scroll.custom_minimum_size = Vector2(0, 400)
 	vbox.add_child(scroll)
@@ -1198,7 +1198,7 @@ func _populate_achievements_grid(grid: GridContainer, filter: String) -> void:
 		panel.add_child(hbox)
 
 		var icon = Label.new()
-		icon.text = unlocked ? ach.icon : "❓"
+		icon.text = ach.icon if unlocked else "❓"
 		icon.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		icon.custom_minimum_size = Vector2(60, 60)
 		icon.theme_override_font_size = 28
@@ -1210,14 +1210,14 @@ func _populate_achievements_grid(grid: GridContainer, filter: String) -> void:
 		hbox.add_child(info)
 
 		var name = Label.new()
-		name.text = unlocked ? ach.name : "???"
+		name.text = ach.name if unlocked else "???"
 		name.theme_override_font_size = 18
 		if not unlocked:
 			name.add_theme_color_override("font_color", Color(0.6, 0.6, 0.6))
 		info.add_child(name)
 
 		var desc = Label.new()
-		desc.text = unlocked ? ach.description : "Conquista oculta"
+		desc.text = ach.description if unlocked else "Conquista oculta"
 		desc.theme_override_font_size = 13
 		desc.autowrap_mode = 1
 		if not unlocked:

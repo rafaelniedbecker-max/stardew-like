@@ -1,4 +1,3 @@
-class_name TimeManager
 extends Node
 
 ## Gerencia o relógio do jogo, estações e eventos temporais
@@ -37,7 +36,7 @@ func _process(delta: float) -> void:
 	if not GameManager:
 		return
 
-	_accumulator += delta * tick_rate * 60  # Converte para minutos de jogo por segundo
+	_accumulator += delta * tick_rate  # tick_rate = minutos de jogo por segundo real
 
 	while _accumulator >= 1.0:
 		_accumulator -= 1.0

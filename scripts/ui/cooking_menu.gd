@@ -1,4 +1,3 @@
-class_name CookingMenu
 extends Control
 
 ## Menu de Culinária: receitas descobertas, ingredientes, qualidade
@@ -16,7 +15,7 @@ extends Control
 ## Estado
 var all_recipes: Array[Dictionary] = []
 var filtered_recipes: Array[Dictionary] = []
-var selected_recipe: Dictionary = null
+var selected_recipe: Dictionary = {}
 var current_filter: String = "all"  # all, cooking, baking, drinks, discovered, undiscovered
 
 ## ==================== INICIALIZAÇÃO ====================
@@ -37,18 +36,18 @@ func _load_recipes() -> void:
 
 	# Carrega receitas de culinária
 	var cooking_data = DataLoader.get_all_recipes()
-	for recipe_id, recipe in cooking_data:
+	for recipe in cooking_data:
 		var r = recipe.duplicate()
-		r.id = recipe_id
+		r.id = recipe.recipe_name
 		r.category = "cooking"
 		all_recipes.append(r)
 
 	# Carrega receitas de artesanato que geram comida
 	var crafting_data = DataLoader.get_all_crafting_recipes()
-	for recipe_id, recipe in crafting_data:
-		if recipe.get("Category", "").to_lower().in(["food", "cooking", "artisan"]):
+	for recipe in crafting_data:
+		if recipe.get("Category", "").to_lower() in ["food", "cooking", "artisan"]:
 			var r = recipe.duplicate()
-			r.id = recipe_id
+			r.id = recipe.recipe_name
 			r.category = "crafting"
 			all_recipes.append(r)
 
@@ -87,7 +86,8 @@ func _apply_filters() -> void:
 func _populate_list() -> void:
 	recipe_list.clear()
 
-	for i, recipe in enumerate(filtered_recipes):
+	for i in range(filtered_recipes.size()):
+		var recipe = filtered_recipes[i]
 		var name = recipe.get("DisplayName", recipe.get("Name", "Unknown"))
 		var known = GameManager and recipe.id in GameManager.unlocked_cooking_recipes
 		var prefix = "✓ " if known else "?? "
@@ -163,12 +163,12 @@ func _show_recipe_info(recipe: Dictionary) -> void:
 			var ing_id = ing.get("ItemId", "")
 			var amount = ing.get("Count", 1)
 			var item = DataLoader.get_item(ing_id)
-			var item_name = item?.display_name ?? ing_id
+			var item_name = item.display_name if item != null else ing_id
 
 			var has_amount = InventoryManager and InventoryManager.get_item_count(ing_id) >= amount
 
 			var hbox = HBoxContainer.new()
-			hbox.theme_override_constants/separation = 10
+			hbox.add_theme_constant_override("separation", 10)
 
 			var icon = TextureRect.new()
 			icon.custom_minimum_size = Vector2(32, 32)
@@ -184,7 +184,7 @@ func _show_recipe_info(recipe: Dictionary) -> void:
 			hbox.add_child(name_lbl)
 
 			var have_lbl = Label.new()
-			var have_count = InventoryManager ? InventoryManager.get_item_count(ing_id) : 0
+			var have_count = InventoryManager.get_item_count(ing_id) if InventoryManager else 0
 			have_lbl.text = "(%d)" % have_count
 			have_lbl.theme_override_font_size = 12
 			have_lbl.add_theme_color_override("font_color", Color(0.7, 0.7, 0.7))
@@ -203,7 +203,7 @@ func _show_recipe_info(recipe: Dictionary) -> void:
 		recipe_info.add_child(result_title)
 
 		var hbox = HBoxContainer.new()
-		hbox.theme_override_constants/separation = 10
+		hbox.add_theme_constant_override("separation", 10)
 
 		var icon = TextureRect.new()
 		icon.custom_minimum_size = Vector2(32, 32)
@@ -272,7 +272,8 @@ func _on_cook_pressed() -> void:
 		GameManager.stats.items_cooked += 1
 
 	# Notificação
-	HUD.show_notification("🍳 Cozinhado!", "%s x%d" % [result_item?.display_name ?? result_id, result_amount], Color(1.0, 0.7, 0.3))
+	var result_item = DataLoader.get_item(result_id)
+	HUD.show_notification("🍳 Cozinhado!", "%s x%d" % [result_item.display_name if result_item != null else result_id, result_amount], Color(1.0, 0.7, 0.3))
 
 	# Partículas
 	if ParticleManager:
@@ -327,11 +328,12 @@ func _on_filter_changed(tab_idx: int) -> void:
 func open() -> void:
 	visible = true
 	panel.visible = true
-	popup_centered()
+	panel.position = (get_viewport_rect().size - panel.size) * 0.5
 	_load_recipes()
-	_get_tree().paused = true
+	get_tree().paused = true
 
+@warning_ignore("native_method_override")
 func hide() -> void:
 	visible = false
 	panel.visible = false
-	_get_tree().paused = false
+	get_tree().paused = false

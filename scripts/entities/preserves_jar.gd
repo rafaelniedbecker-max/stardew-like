@@ -95,9 +95,9 @@ func _get_output_item(item_id: String, preserve_type: String) -> String:
 
 	# Tenta achar no DataLoader
 	var all_items = DataLoader.get_all_items()
-	for id, data in all_items:
+	for data in all_items:
 		if data.display_name == output_name:
-			return id
+			return str(data.id)
 
 	# Fallback: cria ID baseado no original
 	# Geleias de frutas geralmente têm IDs sequenciais
@@ -128,7 +128,7 @@ func _open_ui() -> void:
 	if is_processing:
 		var item = DataLoader.get_item(processing_item)
 		var status = Label.new()
-		status.text = "Processando: %s (%.1f%%)" % [item?.display_name ?? processing_item, progress * 100]
+		status.text = "Processando: %s (%.1f%%)" % [item.display_name if item != null else processing_item, progress * 100]
 		status.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		status.theme_override_font_size = 16
 		vbox.add_child(status)
@@ -161,7 +161,7 @@ func _open_ui() -> void:
 
 		var slot_hbox = HBoxContainer.new()
 		slot_hbox.alignment = HORIZONTAL_ALIGNMENT_CENTER
-		slot_hbox.theme_override_constants/separation = 20
+		slot_hbox.add_theme_constant_override("separation", 20)
 
 		var input_btn = Button.new()
 		input_btn.custom_minimum_size = Vector2(80, 80)
@@ -189,7 +189,8 @@ func _open_ui() -> void:
 		output_btn.disabled = true
 		if processing_item != "" and can_process(processing_item):
 			var ptype = _get_preserve_type(processing_item)
-			var out_name = "%s %s" % [DataLoader.get_item(processing_item)?.display_name ?? processing_item, PRESERVES_TYPES[ptype].output_suffix]
+			var processing_data = DataLoader.get_item(processing_item)
+			var out_name = "%s %s" % [processing_data.display_name if processing_data != null else processing_item, PRESERVES_TYPES[ptype].output_suffix]
 			var out_item = DataLoader.get_item(_get_output_item(processing_item, ptype))
 			if out_item and out_item.texture_path != "":
 				output_btn.icon = load(out_item.texture_path)
@@ -266,7 +267,7 @@ func _collect_output(panel: Panel) -> void:
 			AudioManager.play_sfx_at_position("res://assets/sfx/preserves_jar.ogg", global_position)
 
 		var item = DataLoader.get_item(output_item)
-		HUD.show_notification("🫙 Pronto!", "%s (%s)" % [item?.display_name ?? output_item, ["Normal", "Prata", "Ouro", "Irídio"][output_quality]], QUALITY_COLORS[output_quality])
+		HUD.show_notification("🫙 Pronto!", "%s (%s)" % [item.display_name if item != null else output_item, ["Normal", "Prata", "Ouro", "Irídio"][output_quality]], QUALITY_COLORS[output_quality])
 
 	panel.queue_free()
 	_open_ui()
@@ -313,7 +314,7 @@ func _process(delta: float) -> void:
 
 func _save_state() -> void:
 	if GameManager:
-		GameManager.set("preserves_jar_%s" % [name], {
+		GameManager.set_data("preserves_jar_%s" % [name], {
 			"processing_item": processing_item,
 			"processing_quality": processing_quality,
 			"progress": progress,
@@ -324,7 +325,7 @@ func _save_state() -> void:
 
 func _load_state() -> void:
 	if GameManager:
-		var data = GameManager.get("preserves_jar_%s" % [name], {})
+		var data = GameManager.get_data("preserves_jar_%s" % [name], {})
 		if data:
 			processing_item = data.get("processing_item", "")
 			processing_quality = data.get("processing_quality", 0)

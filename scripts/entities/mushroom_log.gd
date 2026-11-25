@@ -107,7 +107,7 @@ func _collect() -> void:
 	var names = []
 	for id in collected:
 		var item = DataLoader.get_item(id)
-		names.append(item?.display_name ?? id)
+		names.append(item.display_name if item != null else id)
 	HUD.show_notification("🍄 Colhido!", "%s" % names.join(", "), Color(0.8, 0.5, 1.0))
 
 	emit_signal("mushrooms_harvested", collected)
@@ -179,7 +179,7 @@ func _update_visuals() -> void:
 
 func _save_state() -> void:
 	if GameManager:
-		GameManager.set("mushroom_log_%s" % [name], {
+		GameManager.set_data("mushroom_log_%s" % [name], {
 			"is_ready": is_ready,
 			"mushrooms": mushrooms,
 			"current_day": current_day
@@ -187,7 +187,7 @@ func _save_state() -> void:
 
 func _load_state() -> void:
 	if GameManager:
-		var data = GameManager.get("mushroom_log_%s" % [name], {})
+		var data = GameManager.get_data("mushroom_log_%s" % [name], {})
 		if data:
 			is_ready = data.get("is_ready", false)
 			mushrooms = data.get("mushrooms", [])

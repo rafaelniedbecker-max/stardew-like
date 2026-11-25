@@ -1,4 +1,3 @@
-class_name AudioManager
 extends Node
 
 ## Gerenciador de áudio: música sazonal, ambientes, SFX
@@ -152,7 +151,7 @@ func _update_ambient() -> void:
 	var ambient_key = "%s%s" % [time_prefix, weather_suffix]
 
 	# Verifica se está em local especial
-	if GameManager.get("in_mine", false):
+	if GameManager.get_data("in_mine", false):
 		ambient_key = "mine"
 	elif GameManager.active_festival != "":
 		ambient_key = "festival"

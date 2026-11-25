@@ -127,7 +127,7 @@ func _open_ui() -> void:
 
 		var grid = GridContainer.new()
 		grid.columns = 3
-		grid.theme_override_constants/h_separation = 10
+		grid.add_theme_constant_override("h_separation", 10)
 		vbox.add_child(grid)
 
 		for junimo in junimos:
@@ -179,7 +179,7 @@ func _open_ui() -> void:
 
 		# Culturas colhidas hoje
 		if GameManager:
-			var today_harvest = GameManager.get("junimo_harvest_today_%s" % [name], 0)
+			var today_harvest = GameManager.get_data("junimo_harvest_today_%s" % [name], 0)
 			var harvest_info = Label.new()
 			harvest_info.text = "Colhidas hoje: %d" % today_harvest
 			harvest_info.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -224,7 +224,7 @@ func _on_day_changed(day: int, season: int, year: int) -> void:
 
 	# Reset contador diário
 	if GameManager:
-		GameManager.set("junimo_harvest_today_%s" % [name], 0)
+		GameManager.set_data("junimo_harvest_today_%s" % [name], 0)
 
 	_save_state()
 
@@ -261,8 +261,8 @@ func _harvest_crops() -> void:
 
 	# Atualiza contador
 	if GameManager and total_harvested > 0:
-		var current = GameManager.get("junimo_harvest_today_%s" % [name], 0)
-		GameManager.set("junimo_harvest_today_%s" % [name], current + total_harvested)
+		var current = GameManager.get_data("junimo_harvest_today_%s" % [name], 0)
+		GameManager.set_data("junimo_harvest_today_%s" % [name], current + total_harvested)
 
 		HUD.show_notification("🧙 Junimos!", "%d culturas colhidas automaticamente!" % total_harvested, Color(0.5, 1.0, 0.5))
 
@@ -314,7 +314,8 @@ func _spawn_junimos() -> void:
 	for child in junimo_container.get_children():
 		child.queue_free()
 
-	for i, junimo in enumerate(junimos):
+	for i in range(junimos.size()):
+		var junimo = junimos[i]
 		var junimo_node = _create_junimo_visual(junimo.color)
 		junimo_node.name = junimo.id
 		junimo_node.global_position = junimo_container.global_position + Vector2(randf_range(-40, 40), randf_range(-40, 40))
@@ -363,14 +364,14 @@ func _junimo_wander(junimo: Node2D) -> void:
 
 func _save_state() -> void:
 	if GameManager:
-		GameManager.set("junimo_hut_%s" % [name], {
+		GameManager.set_data("junimo_hut_%s" % [name], {
 			"is_active": is_active,
 			"junimos": junimos
 		})
 
 func _load_state() -> void:
 	if GameManager:
-		var data = GameManager.get("junimo_hut_%s" % [name], {})
+		var data = GameManager.get_data("junimo_hut_%s" % [name], {})
 		if data:
 			is_active = data.get("is_active", false)
 			junimos = data.get("junimos", [])

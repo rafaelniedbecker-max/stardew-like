@@ -109,4 +109,4 @@ func get_sell_price(quality: int = 0) -> int:
 		1: multiplier = 1.25  # Prata
 		2: multiplier = 1.5   # Ouro
 		3: multiplier = 2.0   # Irídio
-	return inti(price * multiplier)
+	return int(price * multiplier)

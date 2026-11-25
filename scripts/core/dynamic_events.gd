@@ -309,7 +309,7 @@ func _check_requirements(reqs: Dictionary) -> bool:
 				if GameManager.skill_levels[3] < reqs[key]:
 					return false
 			"in_mine":
-				if not GameManager.get("in_mine", false):
+				if not GameManager.get_data("in_mine", false):
 					return false
 			"time":
 				var h = GameManager.current_time / 100
@@ -383,7 +383,8 @@ func _open_event_ui(event_instance: Dictionary) -> void:
 			if GameManager.gold < action.cost.gold:
 				can_do = false
 		if action.cost.has("item"):
-			cost_text += "%s " % DataLoader.get_item(action.cost.item)?.display_name
+			var cost_item = DataLoader.get_item(action.cost.item)
+			cost_text += "%s " % (cost_item.display_name if cost_item != null else null)
 			if not InventoryManager.has_item(action.cost.item):
 				can_do = false
 		if action.cost.has("time"):
@@ -424,9 +425,9 @@ func _on_event_choice(event_id: String, choice_id: String, panel: Panel) -> void
 
 	# Determina resultado
 	var success = randf() < action.success
-	var outcome_key = choice_id + (success ? "_success" : "_fail")
+	var outcome_key = choice_id + ("_success" if success else "_fail")
 	if not event.outcomes.has(outcome_key):
-		outcome_key = success ? "%s_success" % choice_id : "%s_fail" % choice_id
+		outcome_key = "%s_success" % choice_id if success else "%s_fail" % choice_id
 
 	var outcome = event.outcomes.get(outcome_key, {})
 
@@ -435,7 +436,7 @@ func _on_event_choice(event_id: String, choice_id: String, panel: Panel) -> void
 
 	# Notificação
 	var text = outcome.get("text", "Evento concluído.")
-	HUD.show_notification("⚡ Resultado", text, success ? Color(0.5, 1.0, 0.5) : Color(1.0, 0.5, 0.5))
+	HUD.show_notification("⚡ Resultado", text, Color(0.5, 1.0, 0.5) if success else Color(1.0, 0.5, 0.5))
 
 	# Remove evento
 	active_events.erase(event_instance)
@@ -448,7 +449,7 @@ func _on_event_choice(event_id: String, choice_id: String, panel: Panel) -> void
 	})
 
 	panel.queue_free()
-	emit_signal("event_completed", event_instance.id, success ? "success" : "fail")
+	emit_signal("event_completed", event_instance.id, "success" if success else "fail")
 
 func _apply_outcome(outcome: Dictionary) -> void:
 	if outcome.has("reward"):
@@ -505,7 +506,7 @@ func _check_midday_events() -> void:
 
 func _check_evening_events() -> void:
 	# Eventos à noite
-	if GameManager.get("in_mine", false) and randf() < 0.05:
+	if GameManager.get_data("in_mine", false) and randf() < 0.05:
 		_trigger_event("mine_collapse")
 
 func _check_midnight_events() -> void:

@@ -1,4 +1,3 @@
-class_name PetManager
 extends Node
 
 ## Gerenciador global de pets: adoção, spawn, múltiplos pets
@@ -32,7 +31,7 @@ func _load_pet_data() -> void:
 	if not GameManager:
 		return
 
-	var pet_data = GameManager.get("pet_data", {})
+	var pet_data = GameManager.get_data("pet_data", {})
 	if pet_data:
 		_adopt_pet_from_data(pet_data)
 
@@ -168,7 +167,7 @@ func _show_name_dialog() -> void:
 
 func _on_name_submitted(name: String, panel: Panel) -> void:
 	if current_pet:
-		current_pet.rename(name.strip())
+		current_pet.rename(name.strip_edges())
 	panel.queue_free()
 
 ## ==================== CUIDADOS ====================
@@ -232,7 +231,7 @@ func remove_pet() -> void:
 	var name = current_pet.pet_name
 	current_pet.queue_free()
 	current_pet = null
-	GameManager.set("pet_data", {})
+	GameManager.set_data("pet_data", {})
 	emit_signal("pet_removed")
 	_show_message("%s foi para um novo lar." % name)
 
@@ -319,7 +318,7 @@ func open_pet_status() -> void:
 func _save_pet_data() -> void:
 	if not GameManager or not current_pet:
 		return
-	GameManager.set("pet_data", current_pet.get_save_data())
+	GameManager.set_data("pet_data", current_pet.get_save_data())
 
 func _show_message(text: String) -> void:
 	print("PetManager: %s" % text)

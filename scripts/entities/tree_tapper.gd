@@ -65,7 +65,8 @@ func _ready() -> void:
 func _on_player_entered(area: Area2D) -> void:
 	if area.is_in_group("player"):
 		if is_ready:
-			HUD.show_interaction_prompt("E: Coletar %s" % DataLoader.get_item(product_item)?.display_name, global_position + Vector2(0, -50))
+			var product_data = DataLoader.get_item(product_item)
+			HUD.show_interaction_prompt("E: Coletar %s" % (product_data.display_name if product_data != null else product_item), global_position + Vector2(0, -50))
 		else:
 			HUD.show_interaction_prompt("Tapper: %d dias" % (days_to_ready - current_day), global_position + Vector2(0, -50))
 
@@ -105,7 +106,7 @@ func _collect() -> void:
 			AudioManager.play_sfx_at_position("res://assets/sfx/tapper_collect.ogg", global_position)
 
 		var item = DataLoader.get_item(product_item)
-		HUD.show_notification("🌲 Coletado!", "%s x%d" % [item?.display_name ?? product_item, product_amount], Color(0.5, 1.0, 0.5))
+		HUD.show_notification("🌲 Coletado!", "%s x%d" % [item.display_name if item != null else product_item, product_amount], Color(0.5, 1.0, 0.5))
 
 		emit_signal("product_ready", product_item, product_amount)
 
@@ -187,7 +188,7 @@ func _update_visuals() -> void:
 
 func _save_state() -> void:
 	if GameManager:
-		GameManager.set("tree_tapper_%s" % [name], {
+		GameManager.set_data("tree_tapper_%s" % [name], {
 			"tree_type": tree_type,
 			"is_ready": is_ready,
 			"product_item": product_item,
@@ -198,7 +199,7 @@ func _save_state() -> void:
 
 func _load_state() -> void:
 	if GameManager:
-		var data = GameManager.get("tree_tapper_%s" % [name], {})
+		var data = GameManager.get_data("tree_tapper_%s" % [name], {})
 		if data:
 			tree_type = data.get("tree_type", "")
 			is_ready = data.get("is_ready", false)

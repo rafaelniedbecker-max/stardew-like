@@ -1,4 +1,3 @@
-class_name FishingManager
 extends Node
 
 ## Sistema de Pesca completo: minigame, peixes por estação/hora/clima/local, iscas, anzóis
@@ -25,7 +24,7 @@ var perfect_catch: bool = true
 var time_fishing: float = 0.0
 
 ## Peixe atual
-var hooked_fish: Dictionary = null
+var hooked_fish: Dictionary = {}
 var fish_quality: int = 0
 var fish_size: float = 1.0
 
@@ -147,7 +146,8 @@ func _determine_tackle() -> void:
 		InventoryManager.remove_item(_get_bait_item_id(current_bait), 1)
 
 func _get_bait_item_id(bait: String) -> String:
-	return {"Bait": "(O)685", "Wild Bait": "(O)773", "Magnet": "(O)702"}[bait] ?? ""
+	var baits = {"Bait": "(O)685", "Wild Bait": "(O)773", "Magnet": "(O)702"}
+	return baits.get(bait, "")
 
 ## ==================== SELEÇÃO DE PEIXE ====================
 func _select_fish(spot: Node2D) -> Dictionary:

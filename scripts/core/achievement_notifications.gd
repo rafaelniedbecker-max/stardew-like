@@ -1,4 +1,3 @@
-class_name AchievementNotifications
 extends Node
 
 ## Sistema de Notificações de Conquistas e Progresso
@@ -118,12 +117,12 @@ func _check_startup_achievements() -> void:
 		_check_milestone("millionaire", GameManager.gold)
 
 		# Verifica nível de mina
-		var mine_level = GameManager.get("deepest_mine_level", 0)
+		var mine_level = GameManager.get_data("deepest_mine_level", 0)
 		_check_milestone("deep_delver", mine_level)
 		_check_milestone("skull_cavern", mine_level)
 
 		# Verifica casamento
-		if GameManager.get("spouse", "") != "":
+		if GameManager.get_data("spouse", "") != "":
 			_unlock_achievement("married")
 
 func _check_skill_achievements(skill_index: int, level: int) -> void:
@@ -206,7 +205,7 @@ func _check_building_achievements(building_type: String) -> void:
 	var key_buildings = ["House", "Barn", "Coop", "Silo", "Stable", "Well", "Greenhouse"]
 	var count = 0
 	for b in key_buildings:
-		if GameManager.get("building_%s_built" % b, false):
+		if GameManager.get_data("building_%s_built" % b, false):
 			count += 1
 	# Conquista implícita por completar
 
@@ -226,7 +225,8 @@ func _increment_counter(stat: String, amount: int) -> void:
 	_achievement_progress[stat] = current + amount
 
 	# Verifica conquistas baseadas em contador
-	for ach_id, ach_data in ACHIEVEMENTS:
+	for ach_id in ACHIEVEMENTS:
+		var ach_data = ACHIEVEMENTS[ach_id]
 		if ach_data.type == "counter" and ach_data.stat == stat:
 			var target = ach_data.target
 			if _achievement_progress[stat] >= target:

@@ -1,4 +1,3 @@
-class_name MineTransitions
 extends Control
 
 ## Transições de nível da Mina com efeitos visuais
@@ -37,9 +36,9 @@ func _ready() -> void:
 
 func _load_progress() -> void:
 	if GameManager:
-		current_level = GameManager.get("current_mine_level", 0)
-		deepest_level = GameManager.get("deepest_mine_level", 0)
-		unlocked_elevators = GameManager.get("mine_elevator_unlocked", [])
+		current_level = GameManager.get_data("current_mine_level", 0)
+		deepest_level = GameManager.get_data("deepest_mine_level", 0)
+		unlocked_elevators = GameManager.get_data("mine_elevator_unlocked", [])
 		_update_theme()
 
 func _update_theme() -> void:
@@ -75,7 +74,7 @@ func _show_theme_transition() -> void:
 				0: particles.color = Color(0.5, 0.4, 0.3, 1.0)  # Poeira
 				1: particles.color = Color(0.4, 0.7, 1.0, 1.0)  # Neve
 				2: particles.color = Color(1.0, 0.4, 0.2, 1.0)  # Cinzas/brasa
-	))
+	)
 
 ## ==================== ENTRADA NA MINA ====================
 func enter_mine(level: int = -1) -> void:
@@ -92,8 +91,8 @@ func enter_mine(level: int = -1) -> void:
 	_update_theme()
 	visible = true
 	panel.visible = true
-	popup_centered()
-	_get_tree().paused = true
+	panel.position = (get_viewport_rect().size - panel.size) * 0.5
+	get_tree().paused = true
 
 	_update_ui()
 
@@ -198,13 +197,13 @@ func _on_elevator_selected(level: int, selector: Panel) -> void:
 func _on_leave_pressed() -> void:
 	# Salva progresso
 	if GameManager:
-		GameManager.set("current_mine_level", current_level)
-		GameManager.set("deepest_mine_level", deepest_level)
-		GameManager.set("mine_elevator_unlocked", unlocked_elevators)
+		GameManager.set_data("current_mine_level", current_level)
+		GameManager.set_data("deepest_mine_level", deepest_level)
+		GameManager.set_data("mine_elevator_unlocked", unlocked_elevators)
 
 	visible = false
 	panel.visible = false
-	_get_tree().paused = false
+	get_tree().paused = false
 
 	# Teleporta player para fora
 	var player = get_tree().get_first_node_in_group("player")
@@ -229,9 +228,9 @@ func next_level() -> void:
 
 	# Salva
 	if GameManager:
-		GameManager.set("current_mine_level", current_level)
-		GameManager.set("deepest_mine_level", deepest_level)
-		GameManager.set("mine_elevator_unlocked", unlocked_elevators)
+		GameManager.set_data("current_mine_level", current_level)
+		GameManager.set_data("deepest_mine_level", deepest_level)
+		GameManager.set_data("mine_elevator_unlocked", unlocked_elevators)
 
 	_update_ui()
 
@@ -244,7 +243,7 @@ func _show_level_transition() -> void:
 	tween.finished.connect(func():
 		_update_ui()
 		tween.tween_property(panel, "modulate:a", 1.0, 0.3)
-	))
+	)
 
 	# Partículas
 	if particles:

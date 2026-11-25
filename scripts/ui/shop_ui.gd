@@ -130,7 +130,7 @@ func _populate_buy_tab() -> void:
 			continue
 
 		# Preço da loja
-		var price = item_entry.get_price(GameManager.get("shop_prices_multiplier", 1.0) if GameManager else 1.0)
+		var price = item_entry.get_price(GameManager.get_data("shop_prices_multiplier", 1.0) if GameManager else 1.0)
 		var stock = item_entry.get_stock()
 
 		filtered_items.append({
